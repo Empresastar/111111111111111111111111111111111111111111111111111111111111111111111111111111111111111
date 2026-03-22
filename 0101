@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>NEXUS HUB - SERVER CORE v2.0</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --secondary: #7000ff;
+            --success: #0f0;
+            --danger: #f00;
+            --warning: #ff0;
+            --bg: #000;
+            --card: #0a0a0a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--primary);
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            border: 2px solid var(--primary);
+            padding: 25px;
+            background: var(--card);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 30px rgba(0,242,255,0.1);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        .status-box {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .status-item {
+            background: #111;
+            border: 1px solid #333;
+            padding: 15px 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .status-item .label {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .status-item .value {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: 1px solid var(--primary);
+            background: transparent;
+            color: var(--primary);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+
+        button:hover {
+            background: var(--primary);
+            color: var(--bg);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        button.danger {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        button.danger:hover {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        button.success {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        button.success:hover {
+            background: var(--success);
+            color: var(--bg);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel {
+            border: 1px solid #333;
+            padding: 20px;
+            background: var(--card);
+            border-radius: 10px;
+        }
+
+        .panel h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat {
+            background: #111;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .log {
+            height: 500px;
+            overflow-y: auto;
+            background: #050505;
+            border: 1px solid #222;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .log-entry {
+            padding: 8px 0;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .log-time {
+            color: #555;
+            margin-right: 10px;
+        }
+
+        .log-success { color: var(--success); }
+        .log-error { color: var(--danger); }
+        .log-warning { color: var(--warning); }
+        .log-info { color: var(--primary); }
+
+        .users-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .user-item {
+            background: #111;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border-left: 3px solid var(--secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .user-email {
+            color: #888;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .user-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .status-online {
+            background: rgba(0, 255, 0, 0.2);
+            color: var(--success);
+        }
+
+        .status-offline {
+            background: rgba(255, 0, 0, 0.2);
+            color: var(--danger);
+        }
+
+        .projects-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .project-item {
+            background: #111;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border-left: 3px solid var(--warning);
+            font-size: 12px;
+        }
+
+        .project-title {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .project-meta {
+            color: #888;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            margin: 2px;
+            font-weight: bold;
+        }
+
+        .badge-public { background: rgba(0,255,0,0.2); color: var(--success); }
+        .badge-private { background: rgba(128,0,128,0.2); color: #b0b; }
+        .badge-sale { background: rgba(255,160,0,0.2); color: #ff8; }
+
+        @media (max-width: 1024px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <div>
+                    <h1>🖥️ NEXUS SERVER CORE v2.0</h1>
+                    <small>Sistema Descentralizado com Autenticação</small>
+                </div>
+                <div class="status-box">
+                    <div class="status-item">
+                        <div class="label">Status</div>
+                        <div class="value" id="status" style="color: #f00;">OFFLINE</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="label">Conexões</div>
+                        <div class="value" id="count" style="color: #0f0;">0</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="label">Usuários</div>
+                        <div class="value" id="users-count" style="color: #0ff;">0</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="label">Projetos</div>
+                        <div class="value" id="projects-count" style="color: #ff0;">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button onclick="exportarDados()">💾 Exportar Dados</button>
+                <button onclick="importarDados()">📥 Importar Dados</button>
+                <button class="success" onclick="mostrarBD()">📊 Ver Banco de Dados</button>
+                <button class="danger" onclick="limparTudo()">🗑️ Limpar Tudo</button>
+                <button onclick="atualizarUI()">🔄 Atualizar</button>
+            </div>
+        </header>
+
+        <div class="grid-2">
+            <!-- PANEL DE USUÁRIOS -->
+            <div class="panel">
+                <h2>👥 Usuários Registrados</h2>
+                <div class="stats-grid">
+                    <div class="stat">
+                        <div class="stat-label">Total</div>
+                        <div class="stat-value" id="total-usuarios">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Online</div>
+                        <div class="stat-value" id="online-usuarios" style="color: #0f0;">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Offline</div>
+                        <div class="stat-value" id="offline-usuarios" style="color: #f00;">0</div>
+                    </div>
+                </div>
+                <div class="users-list" id="users-list"></div>
+            </div>
+
+            <!-- PANEL DE PROJETOS -->
+            <div class="panel">
+                <h2>📦 Projetos do Sistema</h2>
+                <div class="stats-grid">
+                    <div class="stat">
+                        <div class="stat-label">Total</div>
+                        <div class="stat-value" id="total-projetos">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Públicos</div>
+                        <div class="stat-value" id="count-public" style="color: #0f0;">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Privados</div>
+                        <div class="stat-value" id="count-private" style="color: #b0b;">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">À Venda</div>
+                        <div class="stat-value" id="count-sale" style="color: #ff8;">0</div>
+                    </div>
+                </div>
+                <div class="projects-list" id="projects-list"></div>
+            </div>
+        </div>
+
+        <!-- LOG DO SERVIDOR -->
+        <div class="panel">
+            <h2>📋 Log do Servidor</h2>
+            <div class="log" id="log">Iniciando NEXUS SERVER v2.0...</div>
+        </div>
+    </div>
+
+    <!-- INPUT HIDDEN PARA IMPORTAR -->
+    <input type="file" id="file-input" accept=".json" style="display: none;">
+
+    <script>
+        // ========== DATABASE ==========
+        let db = {
+            usuarios: JSON.parse(localStorage.getItem('nexus_usuarios')) || [],
+            projetos: JSON.parse(localStorage.getItem('nexus_projetos')) || [],
+            transacoes: JSON.parse(localStorage.getItem('nexus_transacoes')) || []
+        };
+
+        let conexoes = [];
+        const peer = new Peer("DEV_NEXUS_SERVER_2026");
+
+        // ========== INICIALIZAÇÃO ==========
+        peer.on('open', (id) => {
+            atualizarStatus('ONLINE', '#0f0');
+            log('🚀 Servidor iniciado com sucesso!', 'success');
+            log(`ID: ${id}`, 'info');
+            log(`Usuários: ${db.usuarios.length} | Projetos: ${db.projetos.length}`, 'info');
+            atualizarUI();
+        });
+
+        peer.on('connection', (conn) => {
+            conexoes.push(conn);
+            log(`📡 Nova conexão recebida!`, 'success');
+            atualizarUI();
+
+            conn.on('open', () => {
+                // Enviar dados iniciais
+                conn.send({
+                    type: 'SYNC_INICIAL',
+                    data: {
+                        usuarios: db.usuarios,
+                        projetos: db.projetos,
+                        transacoes: db.transacoes
+                    }
+                });
+                log(`✅ Sincronização enviada para cliente`, 'info');
+            });
+
+            conn.on('data', (d) => {
+                processarMensagem(d, conn);
+            });
+
+            conn.on('close', () => {
+                conexoes = conexoes.filter(c => c !== conn);
+                log(`❌ Conexão encerrada`, 'warning');
+                atualizarUI();
+            });
+
+            conn.on('error', (err) => {
+                log(`⚠️ Erro na conexão: ${err}`, 'error');
+            });
+        });
+
+        // ========== PROCESSAR MENSAGENS ==========
+        function processarMensagem(dados, conn) {
+            const tipo = dados.type;
+
+            switch(tipo) {
+                case 'REGISTRAR':
+                    registrarUsuario(dados.payload, conn);
+                    break;
+                case 'LOGIN':
+                    fazerLogin(dados.payload, conn);
+                    break;
+                case 'LOGOUT':
+                    fazerLogout(dados.payload, conn);
+                    break;
+                case 'PUBLISH':
+                    publicarProjeto(dados.payload, conn);
+                    break;
+                case 'DELETE_PROJECT':
+                    deletarProjeto(dados.payload, conn);
+                    break;
+                case 'COMPRA':
+                    registrarCompra(dados.payload, conn);
+                    break;
+            }
+        }
+
+        // ========== AUTENTICAÇÃO ==========
+        function registrarUsuario(payload, conn) {
+            const { usuario, email, nome, senha } = payload;
+
+            // Verificar se usuário já existe
+            if(db.usuarios.find(u => u.usuario === usuario)) {
+                conn.send({ type: 'ERRO_REGISTRO', msg: 'Usuário já existe!' });
+                log(`❌ Tentativa de registro com usuário existente: ${usuario}`, 'warning');
+                return;
+            }
+
+            // Criar novo usuário
+            const novoUsuario = {
+                id: Date.now(),
+                usuario: usuario,
+                email: email || null,
+                nome: nome,
+                senha: btoa(senha),
+                criado: new Date().toLocaleString('pt-BR'),
+                ultimoAcesso: new Date().toLocaleString('pt-BR'),
+                ativo: true
+            };
+
+            db.usuarios.push(novoUsuario);
+            localStorage.setItem('nexus_usuarios', JSON.stringify(db.usuarios));
+
+            conn.send({
+                type: 'SUCESSO_REGISTRO',
+                msg: 'Conta criada com sucesso!',
+                usuario: {
+                    id: novoUsuario.id,
+                    usuario: novoUsuario.usuario,
+                    nome: novoUsuario.nome
+                }
+            });
+
+            log(`✅ Nova conta: ${usuario} (${nome})`, 'success');
+            broadcast();
+            atualizarUI();
+        }
+
+        function fazerLogin(payload, conn) {
+            const { usuario, senha } = payload;
+            const user = db.usuarios.find(u => (u.usuario === usuario || u.email === usuario) && u.senha === btoa(senha));
+
+            if(!user) {
+                conn.send({ type: 'ERRO_LOGIN', msg: 'Usuário/Email ou senha incorretos!' });
+                log(`❌ Login falhou: ${usuario}`, 'warning');
+                return;
+            }
+
+            user.ultimoAcesso = new Date().toLocaleString('pt-BR');
+            user.ativo = true;
+            localStorage.setItem('nexus_usuarios', JSON.stringify(db.usuarios));
+
+            conn.send({
+                type: 'SUCESSO_LOGIN',
+                usuario: {
+                    id: user.id,
+                    usuario: user.usuario,
+                    nome: user.nome,
+                    email: user.email
+                },
+                meusProjetos: db.projetos.filter(p => p.autorId === user.id),
+                todosOsProjetos: db.projetos
+            });
+
+            log(`🟢 Login: ${user.usuario}`, 'success');
+            broadcast();
+            atualizarUI();
+        }
+
+        function fazerLogout(payload, conn) {
+            const { usuarioId } = payload;
+            const usuario = db.usuarios.find(u => u.id === usuarioId);
+
+            if(usuario) {
+                usuario.ativo = false;
+                localStorage.setItem('nexus_usuarios', JSON.stringify(db.usuarios));
+                log(`🔴 Logout: ${usuario.nome}`, 'warning');
+            }
+
+            atualizarUI();
+        }
+
+        // ========== PROJETOS ==========
+        function publicarProjeto(payload, conn) {
+            const projeto = {
+                id: Date.now(),
+                autorId: payload.autorId,
+                autor: payload.autor,
+                titulo: payload.titulo,
+                codigo: payload.codigo,
+                publico: payload.publico !== false, // Sempre público na galeria
+                aberto: payload.aberto || false, // Código aberto ou fechado
+                parVenda: payload.parVenda || false,
+                preco: payload.preco || 0,
+                contato: payload.contato || '', // discord, whatsapp, email, telegram
+                contatoInfo: payload.contatoInfo || '',
+                pix: payload.pix || '',
+                criado: new Date().toLocaleString('pt-BR'),
+                acessos: 0
+            };
+
+            db.projetos.unshift(projeto);
+            localStorage.setItem('nexus_projetos', JSON.stringify(db.projetos));
+
+            const tipo = projeto.aberto ? '🌐' : (projeto.parVenda ? '💰' : '🔒');
+            log(`🚀 Projeto: "${projeto.titulo}" (${tipo}) - ${projeto.autor}`, 'success');
+
+            if(projeto.parVenda) {
+                log(`💰 Preço: R$ ${projeto.preco.toFixed(2)} | ${projeto.contato.toUpperCase()}: ${projeto.contatoInfo}`, 'info');
+            }
+
+            conn.send({ type: 'SUCESSO_PUBLICACAO', projectId: projeto.id });
+            broadcast();
+            atualizarUI();
+        }
+
+        function deletarProjeto(payload, conn) {
+            const { projectId } = payload;
+            const projeto = db.projetos.find(p => p.id === projectId);
+
+            if(projeto) {
+                db.projetos = db.projetos.filter(p => p.id !== projectId);
+                localStorage.setItem('nexus_projetos', JSON.stringify(db.projetos));
+                log(`🗑️ Projeto deletado: "${projeto.title}"`, 'warning');
+                broadcast();
+                atualizarUI();
+            }
+        }
+
+        function registrarCompra(payload, conn) {
+            const transacao = {
+                id: Date.now(),
+                projectId: payload.projectId,
+                comprador: payload.comprador,
+                vendedor: payload.vendedor,
+                valor: payload.valor,
+                data: new Date().toLocaleString('pt-BR')
+            };
+
+            db.transacoes.push(transacao);
+            localStorage.setItem('nexus_transacoes', JSON.stringify(db.transacoes));
+
+            log(`💰 VENDA: ${payload.comprador} → ${payload.vendedor} | R$ ${payload.valor.toFixed(2)}`, 'success');
+            atualizarUI();
+        }
+
+        // ========== BROADCAST ==========
+        function broadcast() {
+            conexoes.forEach(c => {
+                if(c.open) {
+                    c.send({
+                        type: 'SYNC_ATUALIZAR',
+                        data: {
+                            usuarios: db.usuarios,
+                            projetos: db.projetos,
+                            transacoes: db.transacoes
+                        }
+                    });
+                }
+            });
+        }
+
+        // ========== UI UPDATES ==========
+        function atualizarUI() {
+            // Contadores
+            document.getE
