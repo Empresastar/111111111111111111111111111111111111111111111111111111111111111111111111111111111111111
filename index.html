@@ -1,1 +1,747 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS | Plataforma de Códigos</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        :root {
+            --primary: #00f2ff;
+            --primary-dark: #0099cc;
+            --secondary: #7000ff;
+            --success: #0f0;
+            --danger: #f00;
+            --bg: #050505;
+            --card: #0f0f0f;
+            --text: #ffffff;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0e27 0%, #0f0f23 50%, #1a0a2e 100%);
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ========== TELAS ==========*/
+        .tela {
+            display: none;
+            min-height: 100vh;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .tela.ativa {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ========== LOGIN ==========*/
+        .login-screen {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a0a2e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: rgba(15, 15, 15, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 0 50px rgba(0, 242, 255, 0.1);
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-logo h1 {
+            font-size: 3.5em;
+            color: var(--primary);
+            text-shadow: 0 0 30px var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .login-logo p {
+            color: #888;
+            font-size: 0.95em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1.5px solid rgba(0, 242, 255, 0.3);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--bg);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 242, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            margin-top: 12px;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: var(--bg);
+        }
+
+        .alert {
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert.error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .alert.success {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .toggle-form {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 242, 255, 0.2);
+        }
+
+        .toggle-form p {
+            color: #888;
+            margin-bottom: 12px;
+        }
+
+        /* ========== DASHBOARD ==========*/
+        .dashboard {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0e27 0%, #0f0f23 50%, #1a0a2e 100%);
+        }
+
+        .navbar {
+            background: rgba(15, 15, 15, 0.95);
+            border-bottom: 1px solid rgba(0, 242, 255, 0.2);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--primary);
+            text-shadow: 0 0 15px var(--primary);
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .logout-btn {
+            background: var(--danger);
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c00;
+            transform: scale(1.05);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn-nav {
+            padding: 12px 24px;
+            border: 2px solid rgba(0, 242, 255, 0.3);
+            background: transparent;
+            color: #aaa;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-nav:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-nav.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: var(--bg);
+        }
+
+        /* ========== PROJETOS GRID ==========*/
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .project-card {
+            background: rgba(20, 20, 30, 0.6);
+            border: 1.5px solid rgba(0, 242, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .project-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 242, 255, 0.15);
+        }
+
+        .project-badge {
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .badge-public {
+            background: rgba(0, 255, 0, 0.15);
+            color: var(--success);
+        }
+
+        .badge-private {
+            background: rgba(112, 0, 255, 0.15);
+            color: #b0b;
+        }
+
+        .badge-sale {
+            background: rgba(255, 200, 0, 0.15);
+            color: #ffc800;
+        }
+
+        .project-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        .project-meta {
+            font-size: 0.85em;
+            color: #888;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .project-price {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--success);
+            margin: 15px 0;
+        }
+
+        .project-contact {
+            font-size: 0.9em;
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .card-actions .btn {
+            flex: 1;
+            padding: 10px;
+            font-size: 0.85em;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state p {
+            margin: 15px 0;
+        }
+
+        /* ========== MODAL CRIAR/EDITAR ==========*/
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(20, 20, 30, 0.95);
+            border: 1.5px solid rgba(0, 242, 255, 0.3);
+            border-radius: 15px;
+            padding: 0;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 0 60px rgba(0, 242, 255, 0.2);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid rgba(0, 242, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 242, 255, 0.05);
+        }
+
+        .modal-header h2 {
+            color: var(--primary);
+            margin: 0;
+            font-size: 1.6em;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--danger);
+            font-size: 2em;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-box {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-box .form-group {
+            margin: 0;
+        }
+
+        .form-box textarea {
+            min-height: 150px;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1.5px solid rgba(0, 242, 255, 0.3);
+            border-radius: 10px;
+            color: var(--text);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            resize: vertical;
+        }
+
+        .form-box textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+        }
+
+        .form-box input[type="text"],
+        .form-box input[type="email"],
+        .form-box input[type="number"],
+        .form-box select {
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1.5px solid rgba(0, 242, 255, 0.3);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .form-box input:focus,
+        .form-box select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: rgba(0, 242, 255, 0.05);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .form-section {
+            padding: 20px;
+            background: rgba(0, 242, 255, 0.03);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .form-section h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* ========== MODAL VER PROJETO ==========*/
+        .modal-view {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .modal-view.show {
+            display: flex;
+        }
+
+        .view-header {
+            width: 100%;
+            background: rgba(15, 15, 15, 0.95);
+            border-bottom: 1px solid rgba(0, 242, 255, 0.2);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .view-header h2 {
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .view-close {
+            background: none;
+            border: none;
+            color: var(--danger);
+            font-size: 2em;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .view-content {
+            flex: 1;
+            width: 100%;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .project-details {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .detail-item {
+            margin-bottom: 25px;
+        }
+
+        .detail-label {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .detail-value {
+            color: var(--text);
+            padding: 15px;
+            background: rgba(0, 242, 255, 0.05);
+            border-left: 3px solid var(--primary);
+            border-radius: 5px;
+        }
+
+        .detail-value.code {
+            background: #000;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+            padding: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                max-width: 95vw;
+            }
+
+            .buttons-container {
+                flex-direction: column;
+            }
+
+            .btn-nav {
+                width: 100%;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .btn-small {
+            padding: 8px 12px !important;
+            font-size: 0.8em !important;
+        }
+
+        .btn-danger {
+            background: var(--danger) !important;
+            color: white !important;
+        }
+
+        .btn-danger:hover {
+            background: #c00 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== TELA LOGIN ==========-->
+    <div id="login-screen" class="tela login-screen ativa">
+        <div class="login-container">
+            <div class="login-box">
+                <div class="login-logo">
+                    <h1>⚡ NEXUS</h1>
+                    <p>Compartilhe e venda seus códigos</p>
+                </div>
+
+                <div id="login-alert" class="alert"></div>
+
+                <!-- LOGIN FORM -->
+                <div id="login-form">
+                    <h3 style="color: var(--primary); text-align: center; margin-bottom: 25px;">LOGIN</h3>
+
+                    <div class="form-group">
+                        <label>Usuário</label>
+                        <input type="text" id="login-user" placeholder="seu_usuario">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Senha</label>
+                        <input type="password" id="login-pass" placeholder="••••••••">
+                    </div>
+
+                    <button class="btn btn-primary" onclick="fazerLogin()">ENTRAR</button>
+
+                    <div class="toggle-form">
+                        <p>Não tem conta?</p>
+                        <button class="btn btn-secondary" onclick="trocarTela('registro')">CRIAR CONTA</button>
+                    </div>
+                </div>
+
+                <!-- REGISTRO FORM -->
+                <div id="registro-form" style="display: none;">
+                    <h3 style="color: var(--primary); text-align: center; margin-bottom: 25px;">CRIAR CONTA</h3>
+
+                    <div class="form-group">
+                        <label>Usuário</label>
+                        <input type="text" id="registro-user" placeholder="seu_usuario">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nome</label>
+                        <input type="text" id="registro-nome" placeholder="Seu Nome Completo">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Senha</label>
+                        <input type="password" id="registro-pass" placeholder="••••••••">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirmar Senha</label>
+                        <input type="password" id="registro-pass2" placeholder="••••••••">
+                    </div>
+
+                    <button class="btn btn-primary" onclick="fazerRegistro()">CRIAR CONTA</button>
+
+                    <div class="toggle-form">
+                        <p>Já tem conta?</p>
+                        <button class="btn btn-secondary" onclick="trocarTela('login')">FAZER LOGIN</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== TELA DASHBOARD ==========-->
+    <div id="dashboard-screen" class="tela">
+        <div class="dashboard">
+            <!-- NAVBAR -->
+            <div class="navbar">
+                <div class="navbar-brand">⚡ NEXUS</div>
+                <div class="navbar-user">
+                    <div class="user-info">
+                        👤 <span id="user-name">Usuário</span>
+                    </div>
+                    <button class="logout-btn" onclick="fazerLogout()">🚪 Sair</button>
+                </div>
+            </div>
+
+            <!-- CONTEÚDO PRINCIPAL -->
+            <div class="main-content">
+                <!-- BOTÕE
