@@ -1,747 +1,1707 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS | Plataforma de Códigos</title>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #00f2ff;
-            --primary-dark: #0099cc;
-            --secondary: #7000ff;
-            --success: #0f0;
-            --danger: #f00;
-            --bg: #050505;
-            --card: #0f0f0f;
-            --text: #ffffff;
-        }
-
-        body {
-            background: linear-gradient(135deg, #0a0e27 0%, #0f0f23 50%, #1a0a2e 100%);
-            color: var(--text);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-        }
-
-        /* ========== TELAS ==========*/
-        .tela {
-            display: none;
-            min-height: 100vh;
-            position: fixed;
-            inset: 0;
-            z-index: 1000;
-            overflow-y: auto;
-        }
-
-        .tela.ativa {
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* ========== LOGIN ==========*/
-        .login-screen {
-            background: linear-gradient(135deg, #0a0e27 0%, #1a0a2e 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
-
-        .login-container {
-            width: 100%;
-            max-width: 450px;
-            padding: 20px;
-        }
-
-        .login-box {
-            background: rgba(15, 15, 15, 0.8);
-            backdrop-filter: blur(10px);
-            border: 2px solid var(--primary);
-            border-radius: 20px;
-            padding: 50px 40px;
-            box-shadow: 0 0 50px rgba(0, 242, 255, 0.1);
-        }
-
-        .login-logo {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .login-logo h1 {
-            font-size: 3.5em;
-            color: var(--primary);
-            text-shadow: 0 0 30px var(--primary);
-            margin-bottom: 10px;
-        }
-
-        .login-logo p {
-            color: #888;
-            font-size: 0.95em;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #aaa;
-            font-weight: 500;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 14px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1.5px solid rgba(0, 242, 255, 0.3);
-            border-radius: 10px;
-            color: var(--text);
-            font-size: 1em;
-            transition: all 0.3s;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px 20px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 1em;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: var(--bg);
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 242, 255, 0.3);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            margin-top: 12px;
-        }
-
-        .btn-secondary:hover {
-            background: var(--primary);
-            color: var(--bg);
-        }
-
-        .alert {
-            padding: 14px 16px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 0.9em;
-            display: none;
-        }
-
-        .alert.show {
-            display: block;
-        }
-
-        .alert.error {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid var(--danger);
-            color: var(--danger);
-        }
-
-        .alert.success {
-            background: rgba(0, 255, 0, 0.1);
-            border: 1px solid var(--success);
-            color: var(--success);
-        }
-
-        .toggle-form {
-            text-align: center;
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(0, 242, 255, 0.2);
-        }
-
-        .toggle-form p {
-            color: #888;
-            margin-bottom: 12px;
-        }
-
-        /* ========== DASHBOARD ==========*/
-        .dashboard {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #0a0e27 0%, #0f0f23 50%, #1a0a2e 100%);
-        }
-
-        .navbar {
-            background: rgba(15, 15, 15, 0.95);
-            border-bottom: 1px solid rgba(0, 242, 255, 0.2);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-        }
-
-        .navbar-brand {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: var(--primary);
-            text-shadow: 0 0 15px var(--primary);
-        }
-
-        .navbar-user {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .user-info {
-            background: rgba(0, 242, 255, 0.1);
-            border: 1px solid var(--primary);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9em;
-        }
-
-        .logout-btn {
-            background: var(--danger);
-            border: none;
-            color: white;
-            padding: 8px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .logout-btn:hover {
-            background: #c00;
-            transform: scale(1.05);
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 30px;
-            overflow-y: auto;
-        }
-
-        .buttons-container {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .btn-nav {
-            padding: 12px 24px;
-            border: 2px solid rgba(0, 242, 255, 0.3);
-            background: transparent;
-            color: #aaa;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-nav:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .btn-nav.active {
-            border-color: var(--primary);
-            background: var(--primary);
-            color: var(--bg);
-        }
-
-        /* ========== PROJETOS GRID ==========*/
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .project-card {
-            background: rgba(20, 20, 30, 0.6);
-            border: 1.5px solid rgba(0, 242, 255, 0.2);
-            border-radius: 15px;
-            padding: 25px;
-            transition: all 0.3s;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .project-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 242, 255, 0.15);
-        }
-
-        .project-badge {
-            display: inline-block;
-            padding: 5px 14px;
-            border-radius: 20px;
-            font-size: 0.75em;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-
-        .badge-public {
-            background: rgba(0, 255, 0, 0.15);
-            color: var(--success);
-        }
-
-        .badge-private {
-            background: rgba(112, 0, 255, 0.15);
-            color: #b0b;
-        }
-
-        .badge-sale {
-            background: rgba(255, 200, 0, 0.15);
-            color: #ffc800;
-        }
-
-        .project-title {
-            font-size: 1.3em;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--text);
-        }
-
-        .project-meta {
-            font-size: 0.85em;
-            color: #888;
-            margin-bottom: 15px;
-            line-height: 1.6;
-        }
-
-        .project-price {
-            font-size: 1.8em;
-            font-weight: 700;
-            color: var(--success);
-            margin: 15px 0;
-        }
-
-        .project-contact {
-            font-size: 0.9em;
-            color: #aaa;
-            margin-bottom: 15px;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .card-actions .btn {
-            flex: 1;
-            padding: 10px;
-            font-size: 0.85em;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #666;
-        }
-
-        .empty-state p {
-            margin: 15px 0;
-        }
-
-        /* ========== MODAL CRIAR/EDITAR ==========*/
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            overflow-y: auto;
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
-            background: rgba(20, 20, 30, 0.95);
-            border: 1.5px solid rgba(0, 242, 255, 0.3);
-            border-radius: 15px;
-            padding: 0;
-            max-width: 700px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 0 60px rgba(0, 242, 255, 0.2);
-            animation: slideUp 0.3s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .modal-header {
-            padding: 25px;
-            border-bottom: 1px solid rgba(0, 242, 255, 0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0, 242, 255, 0.05);
-        }
-
-        .modal-header h2 {
-            color: var(--primary);
-            margin: 0;
-            font-size: 1.6em;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--danger);
-            font-size: 2em;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-body {
-            padding: 30px;
-        }
-
-        .form-box {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .form-box .form-group {
-            margin: 0;
-        }
-
-        .form-box textarea {
-            min-height: 150px;
-            padding: 14px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1.5px solid rgba(0, 242, 255, 0.3);
-            border-radius: 10px;
-            color: var(--text);
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            resize: vertical;
-        }
-
-        .form-box textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
-        }
-
-        .form-box input[type="text"],
-        .form-box input[type="email"],
-        .form-box input[type="number"],
-        .form-box select {
-            padding: 14px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1.5px solid rgba(0, 242, 255, 0.3);
-            border-radius: 10px;
-            color: var(--text);
-            font-size: 1em;
-            transition: all 0.3s;
-        }
-
-        .form-box input:focus,
-        .form-box select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 15px;
-            background: rgba(0, 242, 255, 0.05);
-            border-radius: 10px;
-            cursor: pointer;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
-
-        .checkbox-group label {
-            margin: 0;
-            cursor: pointer;
-            color: var(--text);
-            font-weight: 500;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .form-section {
-            padding: 20px;
-            background: rgba(0, 242, 255, 0.03);
-            border: 1px solid rgba(0, 242, 255, 0.2);
-            border-radius: 10px;
-        }
-
-        .form-section h3 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.1em;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        /* ========== MODAL VER PROJETO ==========*/
-        .modal-view {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 2000;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 0;
-            overflow: hidden;
-        }
-
-        .modal-view.show {
-            display: flex;
-        }
-
-        .view-header {
-            width: 100%;
-            background: rgba(15, 15, 15, 0.95);
-            border-bottom: 1px solid rgba(0, 242, 255, 0.2);
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .view-header h2 {
-            color: var(--primary);
-            margin: 0;
-        }
-
-        .view-close {
-            background: none;
-            border: none;
-            color: var(--danger);
-            font-size: 2em;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .view-content {
-            flex: 1;
-            width: 100%;
-            padding: 30px;
-            overflow-y: auto;
-        }
-
-        .project-details {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .detail-item {
-            margin-bottom: 25px;
-        }
-
-        .detail-label {
-            color: var(--primary);
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 0.9em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .detail-value {
-            color: var(--text);
-            padding: 15px;
-            background: rgba(0, 242, 255, 0.05);
-            border-left: 3px solid var(--primary);
-            border-radius: 5px;
-        }
-
-        .detail-value.code {
-            background: #000;
-            font-family: 'Courier New', monospace;
-            font-size: 0.85em;
-            overflow-x: auto;
-            padding: 15px;
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-content {
-                max-width: 95vw;
-            }
-
-            .buttons-container {
-                flex-direction: column;
-            }
-
-            .btn-nav {
-                width: 100%;
-            }
-
-            .projects-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .btn-small {
-            padding: 8px 12px !important;
-            font-size: 0.8em !important;
-        }
-
-        .btn-danger {
-            background: var(--danger) !important;
-            color: white !important;
-        }
-
-        .btn-danger:hover {
-            background: #c00 !important;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS — Plataforma de Projetos</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+
+  :root {
+    --bg: #04060e;
+    --surface: #080c18;
+    --surface2: #0e1525;
+    --border: #172038;
+    --accent: #00e5ff;
+    --accent2: #ff2d6b;
+    --accent3: #8b5cf6;
+    --text: #cdd8f0;
+    --text-dim: #3d4e6e;
+    --green: #00ffaa;
+    --yellow: #fbbf24;
+    --glow: 0 0 30px rgba(0,229,255,0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ANIMATED BG */
+  .bg-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .bg-layer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 50%, rgba(0,229,255,0.04) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 60% at 80% 30%, rgba(139,92,246,0.04) 0%, transparent 70%),
+      linear-gradient(rgba(0,229,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.02) 1px, transparent 1px);
+    background-size: auto, auto, 50px 50px, 50px 50px;
+  }
+
+  #app { position: relative; z-index: 1; }
+
+  /* ═══ SCREENS ═══ */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ═══ CONNECTION SCREEN ═══ */
+  #screenConnect {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .connect-box {
+    padding: 60px;
+    border: 1px solid var(--border);
+    background: rgba(8,12,24,0.9);
+    backdrop-filter: blur(20px);
+    max-width: 500px;
+    width: 90%;
+  }
+
+  .nexus-logo {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(36px, 8vw, 64px);
+    font-weight: 900;
+    letter-spacing: 12px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+    animation: logo-glow 3s ease-in-out infinite;
+  }
+
+  @keyframes logo-glow {
+    0%, 100% { filter: drop-shadow(0 0 20px rgba(0,229,255,0.4)); }
+    50% { filter: drop-shadow(0 0 40px rgba(0,229,255,0.8)); }
+  }
+
+  .nexus-tagline {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: var(--text-dim);
+    margin-bottom: 40px;
+  }
+
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+  }
+
+  .status-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    transition: all 0.5s;
+  }
+
+  .status-dot.connecting { background: var(--yellow); animation: pulse 1s infinite; box-shadow: 0 0 10px var(--yellow); }
+  .status-dot.connected { background: var(--green); box-shadow: 0 0 10px var(--green); }
+  .status-dot.error { background: var(--accent2); box-shadow: 0 0 10px var(--accent2); }
+
+  @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+
+  .retry-counter {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 8px;
+  }
+
+  /* ═══ AUTH SCREEN ═══ */
+  #screenAuth {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .auth-box {
+    width: min(440px, 94vw);
+    border: 1px solid var(--border);
+    background: rgba(8,12,24,0.95);
+    backdrop-filter: blur(30px);
+    padding: 48px 40px;
+    position: relative;
+  }
+
+  .auth-box::before, .auth-box::after {
+    content: '';
+    position: absolute;
+    width: 20px; height: 20px;
+  }
+  .auth-box::before { top: -1px; left: -1px; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); }
+  .auth-box::after { bottom: -1px; right: -1px; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+
+  .auth-logo {
+    font-family: 'Orbitron', monospace;
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  .auth-sub {
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 3px;
+    margin-bottom: 36px;
+  }
+
+  .tab-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin-bottom: 32px;
+    border: 1px solid var(--border);
+  }
+
+  .tab-btn {
+    padding: 10px;
+    background: transparent;
+    border: none;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+  }
+
+  .tab-btn.active {
+    background: rgba(0,229,255,0.1);
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
+  }
+
+  .field-group { margin-bottom: 20px; }
+
+  .field-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .field-input {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    outline: none;
+    transition: all 0.3s;
+  }
+
+  .field-input:focus {
+    border-color: var(--accent);
+    background: rgba(0,229,255,0.04);
+    box-shadow: 0 0 15px rgba(0,229,255,0.1);
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, rgba(0,229,255,0.15), rgba(139,92,246,0.15));
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 8px;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, rgba(0,229,255,0.25), rgba(139,92,246,0.25));
+    box-shadow: var(--glow);
+    transform: translateY(-1px);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .auth-error {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--accent2);
+    text-align: center;
+    padding: 10px;
+    border: 1px solid rgba(255,45,107,0.3);
+    background: rgba(255,45,107,0.05);
+    margin-top: 16px;
+    display: none;
+  }
+
+  /* ═══ MAIN SCREEN ═══ */
+  #screenMain { flex-direction: column; }
+
+  .top-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 28px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(4,6,14,0.95);
+    backdrop-filter: blur(20px);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    gap: 16px;
+  }
+
+  .nav-logo {
+    font-family: 'Orbitron', monospace;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 6px;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    flex-shrink: 0;
+  }
+
+  .nav-center {
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 4px;
+    flex-wrap: wrap;
+  }
+
+  .nav-tab {
+    padding: 6px 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .nav-tab.active { background: rgba(0,229,255,0.1); color: var(--accent); }
+  .nav-tab:hover { color: var(--text); }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+
+  .user-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+  }
+
+  .online-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: blink 2s infinite;
+  }
+
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  .btn-logout {
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid rgba(255,45,107,0.4);
+    color: var(--accent2);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-logout:hover { background: rgba(255,45,107,0.1); }
+
+  /* PAGE VIEWS */
+  .page-view { display: none; flex: 1; }
+  .page-view.active { display: flex; flex-direction: column; }
+
+  /* ═══ DISCOVER PAGE ═══ */
+  .discover-hero {
+    padding: 60px 40px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .discover-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,255,0.06) 0%, transparent 70%);
+  }
+
+  .hero-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 900;
+    letter-spacing: 4px;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .hero-sub {
+    color: var(--text-dim);
+    font-size: 16px;
+    letter-spacing: 2px;
+    font-family: 'Share Tech Mono', monospace;
+    position: relative;
+  }
+
+  /* PROJECTS GRID */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px 32px 40px;
+    flex: 1;
+  }
+
+  .project-card {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-card:hover {
+    border-color: rgba(0,229,255,0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,229,255,0.08);
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    transform: scaleX(0);
+    transition: transform 0.3s;
+  }
+
+  .project-card:hover::before { transform: scaleX(1); }
+
+  .card-preview {
+    height: 180px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .card-preview iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    pointer-events: none;
+    transform: scale(0.5);
+    transform-origin: top left;
+    width: 200%;
+    height: 200%;
+  }
+
+  .card-preview-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .preview-icon {
+    font-size: 32px;
+    opacity: 0.3;
+  }
+
+  .card-body {
+    padding: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .card-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .card-owner {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .card-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+
+  .ctag {
+    font-size: 10px;
+    padding: 2px 8px;
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 1px;
+    border: 1px solid;
+  }
+
+  .ctag.open { border-color: var(--accent3); color: var(--accent3); }
+  .ctag.paid { border-color: var(--green); color: var(--green); }
+  .ctag.free { border-color: var(--text-dim); color: var(--text-dim); }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    background: rgba(255,255,255,0.01);
+  }
+
+  .card-price {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  .btn-view {
+    padding: 5px 14px;
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-view:hover { background: rgba(0,229,255,0.1); }
+
+  .empty-projects {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    gap: 16px;
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--text-dim);
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-align: center;
+  }
+
+  /* ═══ UPLOAD PAGE ═══ */
+  .upload-page {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    width: 100%;
+  }
+
+  .upload-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--accent);
+    margin-bottom: 32px;
+    text-align: center;
+  }
+
+  .upload-section {
+    border: 1px solid var(--border);
+    padding: 24px;
+    margin-bottom: 20px;
+    background: var(--surface);
+    position: relative;
+  }
+
+  .upload-section-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .code-area {
+    width: 100%;
+    min-height: 120px;
+    padding: 14px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    color: var(--green);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    resize: vertical;
+    line-height: 1.5;
+    transition: border-color 0.3s;
+  }
+
+  .code-area:focus { border-color: var(--accent3); }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .toggle {
+    position: relative;
+    width: 44px; height: 24px;
+    flex-shrink: 0;
+  }
+
+  .toggle input { opacity: 0; width: 0; height: 0; }
+
+  .toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: var(--border);
+    border-radius: 0;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 18px; height: 18px;
+    top: 3px; left: 3px;
+    background: var(--text-dim);
+    transition: 0.3s;
+  }
+
+  .toggle input:checked + .toggle-slider { background: rgba(0,229,255,0.2); border: 1px solid var(--accent); }
+  .toggle input:checked + .toggle-slider::before { transform: translateX(20px); background: var(--accent); }
+
+  .toggle-label { font-size: 14px; color: var(--text); }
+
+  .payment-select {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+  .payment-select:focus { border-color: var(--accent); }
+  .payment-select option { background: var(--surface2); }
+
+  .preview-live-btn {
+    width: 100%;
+    padding: 12px;
+    background: rgba(139,92,246,0.1);
+    border: 1px solid var(--accent3);
+    color: var(--accent3);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 16px;
+  }
+
+  .preview-live-btn:hover { background: rgba(139,92,246,0.2); }
+
+  /* ═══ PROJECT MODAL ═══ */
+  #projectModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(4,6,14,0.97);
+    flex-direction: column;
+  }
+
+  #projectModal.open { display: flex; }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,12,24,0.98);
+    flex-shrink: 0;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .modal-project-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 2px;
+  }
+
+  .modal-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .modal-price {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  .modal-close {
+    width: 36px; height: 36px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .modal-close:hover { border-color: var(--accent2); color: var(--accent2); background: rgba(255,45,107,0.1); }
+
+  .modal-body {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  @media (max-width: 768px) {
+    .modal-body { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
+  }
+
+  .modal-iframe-container {
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .modal-iframe-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .modal-sidebar {
+    border-left: 1px solid var(--border);
+    background: var(--surface);
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .modal-sidebar::-webkit-scrollbar { width: 3px; }
+  .modal-sidebar::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .sidebar-section-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .code-viewer {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--border);
+    padding: 14px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    max-height: 200px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.5;
+  }
+
+  .social-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .social-link:hover { background: rgba(0,229,255,0.05); border-color: var(--accent); }
+
+  .pix-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid rgba(0,255,170,0.2);
+    background: rgba(0,255,170,0.03);
+  }
+
+  .pix-key {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--green);
+    word-break: break-all;
+  }
+
+  .btn-copy {
+    padding: 6px 12px;
+    border: 1px solid var(--green);
+    background: transparent;
+    color: var(--green);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-copy:hover { background: rgba(0,255,170,0.1); }
+
+  /* TOAST */
+  #toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    padding: 12px 20px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    z-index: 9999;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s;
+    border: 1px solid;
+  }
+
+  #toast.show { transform: translateY(0); opacity: 1; }
+  #toast.success { background: rgba(0,255,170,0.1); color: var(--green); border-color: var(--green); }
+  #toast.error { background: rgba(255,45,107,0.1); color: var(--accent2); border-color: var(--accent2); }
+  #toast.info { background: rgba(0,229,255,0.1); color: var(--accent); border-color: var(--accent); }
+
+  /* CONNECTION OFFLINE BANNER */
+  #offlineBanner {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9998;
+    background: rgba(255,45,107,0.15);
+    border-bottom: 2px solid var(--accent2);
+    padding: 8px;
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--accent2);
+    letter-spacing: 2px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .nav-center { display: none; }
+    .mobile-nav {
+      display: flex;
+      gap: 4px;
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      overflow-x: auto;
+    }
+    .projects-grid { grid-template-columns: 1fr; padding: 16px; }
+    .auth-box { padding: 32px 20px; }
+    .upload-page { padding: 20px 12px; }
+    .discover-hero { padding: 40px 20px 20px; }
+  }
+
+  @media (min-width: 601px) {
+    .mobile-nav { display: none; }
+  }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 480px) { .grid2 { grid-template-columns: 1fr; } }
+
+  /* LOADING BAR */
+  .loading-bar {
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent3), var(--accent));
+    background-size: 200% 100%;
+    animation: loading-move 1.5s linear infinite;
+    width: 100%;
+  }
+
+  @keyframes loading-move { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+</style>
 </head>
 <body>
+<div class="bg-layer"></div>
+<div id="app">
 
-    <!-- ========== TELA LOGIN ==========-->
-    <div id="login-screen" class="tela login-screen ativa">
-        <div class="login-container">
-            <div class="login-box">
-                <div class="login-logo">
-                    <h1>⚡ NEXUS</h1>
-                    <p>Compartilhe e venda seus códigos</p>
-                </div>
+  <!-- OFFLINE BANNER -->
+  <div id="offlineBanner">⚠ HOST OFFLINE — RECONECTANDO AUTOMATICAMENTE...</div>
 
-                <div id="login-alert" class="alert"></div>
+  <!-- ═══ SCREEN: CONNECTING ═══ -->
+  <div class="screen active" id="screenConnect">
+    <div class="connect-box">
+      <div class="nexus-logo">NEXUS</div>
+      <div class="nexus-tagline">PLATAFORMA DE PROJETOS P2P</div>
 
-                <!-- LOGIN FORM -->
-                <div id="login-form">
-                    <h3 style="color: var(--primary); text-align: center; margin-bottom: 25px;">LOGIN</h3>
+      <div class="status-indicator">
+        <div class="status-dot connecting" id="statusDot"></div>
+        <span id="statusText">Conectando ao host...</span>
+      </div>
+      <div class="loading-bar" id="loadingBar"></div>
+      <div class="retry-counter" id="retryCounter"></div>
+    </div>
+  </div>
 
-                    <div class="form-group">
-                        <label>Usuário</label>
-                        <input type="text" id="login-user" placeholder="seu_usuario">
-                    </div>
+  <!-- ═══ SCREEN: AUTH ═══ -->
+  <div class="screen" id="screenAuth">
+    <div class="auth-box">
+      <div class="auth-logo">NEXUS</div>
+      <div class="auth-sub">PLATAFORMA DE PROJETOS</div>
 
-                    <div class="form-group">
-                        <label>Senha</label>
-                        <input type="password" id="login-pass" placeholder="••••••••">
-                    </div>
+      <div class="tab-row">
+        <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">ENTRAR</button>
+        <button class="tab-btn" id="tabRegister" onclick="switchTab('register')">CRIAR CONTA</button>
+      </div>
 
-                    <button class="btn btn-primary" onclick="fazerLogin()">ENTRAR</button>
-
-                    <div class="toggle-form">
-                        <p>Não tem conta?</p>
-                        <button class="btn btn-secondary" onclick="trocarTela('registro')">CRIAR CONTA</button>
-                    </div>
-                </div>
-
-                <!-- REGISTRO FORM -->
-                <div id="registro-form" style="display: none;">
-                    <h3 style="color: var(--primary); text-align: center; margin-bottom: 25px;">CRIAR CONTA</h3>
-
-                    <div class="form-group">
-                        <label>Usuário</label>
-                        <input type="text" id="registro-user" placeholder="seu_usuario">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Nome</label>
-                        <input type="text" id="registro-nome" placeholder="Seu Nome Completo">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Senha</label>
-                        <input type="password" id="registro-pass" placeholder="••••••••">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Confirmar Senha</label>
-                        <input type="password" id="registro-pass2" placeholder="••••••••">
-                    </div>
-
-                    <button class="btn btn-primary" onclick="fazerRegistro()">CRIAR CONTA</button>
-
-                    <div class="toggle-form">
-                        <p>Já tem conta?</p>
-                        <button class="btn btn-secondary" onclick="trocarTela('login')">FAZER LOGIN</button>
-                    </div>
-                </div>
-            </div>
+      <div id="loginForm">
+        <div class="field-group">
+          <div class="field-label">Usuário</div>
+          <input class="field-input" type="text" id="loginUser" placeholder="seu_usuario" autocomplete="username">
         </div>
+        <div class="field-group">
+          <div class="field-label">Senha</div>
+          <input class="field-input" type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button class="btn-primary" id="btnLogin" onclick="doLogin()">ENTRAR</button>
+      </div>
+
+      <div id="registerForm" style="display:none">
+        <div class="field-group">
+          <div class="field-label">Usuário</div>
+          <input class="field-input" type="text" id="regUser" placeholder="escolha_um_usuario" autocomplete="username">
+        </div>
+        <div class="field-group">
+          <div class="field-label">Senha</div>
+          <input class="field-input" type="password" id="regPass" placeholder="••••••••" autocomplete="new-password">
+        </div>
+        <div class="field-group">
+          <div class="field-label">Confirmar Senha</div>
+          <input class="field-input" type="password" id="regPassConfirm" placeholder="••••••••" autocomplete="new-password">
+        </div>
+        <button class="btn-primary" id="btnRegister" onclick="doRegister()">CRIAR CONTA</button>
+      </div>
+
+      <div class="auth-error" id="authError"></div>
+    </div>
+  </div>
+
+  <!-- ═══ SCREEN: MAIN ═══ -->
+  <div class="screen" id="screenMain">
+
+    <!-- NAV -->
+    <div class="top-nav">
+      <div class="nav-logo">NEXUS</div>
+      <div class="nav-center">
+        <button class="nav-tab active" onclick="switchPage('discover')">◈ DESCOBRIR</button>
+        <button class="nav-tab" onclick="switchPage('upload')">⬆ ENVIAR PROJETO</button>
+      </div>
+      <div class="nav-right">
+        <div class="user-chip">
+          <span class="online-dot"></span>
+          <span id="navUsername">user</span>
+        </div>
+        <button class="btn-logout" onclick="doLogout()">SAIR</button>
+      </div>
     </div>
 
-    <!-- ========== TELA DASHBOARD ==========-->
-    <div id="dashboard-screen" class="tela">
-        <div class="dashboard">
-            <!-- NAVBAR -->
-            <div class="navbar">
-                <div class="navbar-brand">⚡ NEXUS</div>
-                <div class="navbar-user">
-                    <div class="user-info">
-                        👤 <span id="user-name">Usuário</span>
-                    </div>
-                    <button class="logout-btn" onclick="fazerLogout()">🚪 Sair</button>
-                </div>
-            </div>
+    <!-- MOBILE NAV -->
+    <div class="mobile-nav">
+      <button class="nav-tab active" onclick="switchPage('discover')">DESCOBRIR</button>
+      <button class="nav-tab" onclick="switchPage('upload')">ENVIAR</button>
+    </div>
 
-            <!-- CONTEÚDO PRINCIPAL -->
-            <div class="main-content">
-                <!-- BOTÕE
+    <!-- ═══ PAGE: DISCOVER ═══ -->
+    <div class="page-view active" id="pageDiscover">
+      <div class="discover-hero">
+        <div class="hero-title">PROJETOS DA COMUNIDADE</div>
+        <div class="hero-sub">Explore · Compre · Colabore</div>
+      </div>
+      <div class="projects-grid" id="projectsGrid">
+        <div class="empty-projects">
+          <div style="font-size:40px;opacity:0.2">◈</div>
+          <div>NENHUM PROJETO AINDA</div>
+          <div style="font-size:12px;opacity:0.5">Seja o primeiro a publicar</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGE: UPLOAD ═══ -->
+    <div class="page-view" id="pageUpload">
+      <div class="upload-page">
+        <div class="upload-title">PUBLICAR PROJETO</div>
+
+        <div class="upload-section">
+          <div class="upload-section-title">01 — Informações do Projeto</div>
+          <div class="field-group">
+            <div class="field-label">Nome do Projeto</div>
+            <input class="field-input" type="text" id="projName" placeholder="Meu Projeto Incrível">
+          </div>
+        </div>
+
+        <div class="upload-section">
+          <div class="upload-section-title">02 — Código Fonte (HTML + CSS + JS em um arquivo)</div>
+          <div style="font-size:13px;color:var(--text-dim);margin-bottom:12px">
+            Cole todo o código HTML (pode incluir &lt;style&gt; e &lt;script&gt; inline) ou HTML completo
+          </div>
+          <textarea class="code-area" id="projHTML" placeholder="<!DOCTYPE html>&#10;<html>&#10;  <head>...</head>&#10;  <body>...seu projeto aqui...</body>&#10;</html>" rows="10"></textarea>
+          <button class="preview-live-btn" onclick="previewDraft()">👁 PRÉ-VISUALIZAR</button>
+        </div>
+
+        <div class="upload-section">
+          <div class="upload-section-title">03 — Configurações de Venda</div>
+          <div class="toggle-row">
+            <label class="toggle"><input type="checkbox" id="projFree" checked onchange="togglePriceField()"><div class="toggle-slider"></div></label>
+            <span class="toggle-label">Projeto Gratuito</span>
+          </div>
+          <div id="priceField" style="display:none">
+            <div class="field-group">
+              <div class="field-label">Valor (R$)</div>
+              <input class="field-input" type="number" id="projPrice" placeholder="0.00" min="0" step="0.01">
+            </div>
+            <div class="field-group">
+              <div class="field-label">Forma de Pagamento</div>
+              <select class="payment-select" id="projPayment">
+                <option value="pix">PIX</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Chave PIX</div>
+              <input class="field-input" type="text" id="projPixKey" placeholder="email@exemplo.com / CPF / telefone">
+            </div>
+          </div>
+        </div>
+
+        <div class="upload-section">
+          <div class="upload-section-title">04 — Código Aberto?</div>
+          <div class="toggle-row">
+            <label class="toggle"><input type="checkbox" id="projOpenSource"><div class="toggle-slider"></div></label>
+            <span class="toggle-label">Deixar código visível para todos</span>
+          </div>
+        </div>
+
+        <div class="upload-section">
+          <div class="upload-section-title">05 — Redes Sociais (para contato)</div>
+          <div class="grid2">
+            <div class="field-group">
+              <div class="field-label">Discord</div>
+              <input class="field-input" type="text" id="socialDiscord" placeholder="usuario#0000 ou link">
+            </div>
+            <div class="field-group">
+              <div class="field-label">WhatsApp</div>
+              <input class="field-input" type="text" id="socialWhatsapp" placeholder="+55 11 99999-9999">
+            </div>
+            <div class="field-group">
+              <div class="field-label">Instagram</div>
+              <input class="field-input" type="text" id="socialInstagram" placeholder="@usuario">
+            </div>
+            <div class="field-group">
+              <div class="field-label">GitHub</div>
+              <input class="field-input" type="text" id="socialGithub" placeholder="github.com/usuario">
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="btnPublish" onclick="publishProject()">PUBLICAR PROJETO</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PROJECT MODAL ═══ -->
+  <div id="projectModal">
+    <div class="modal-header">
+      <div class="modal-project-name" id="modalTitle">Projeto</div>
+      <div class="modal-meta">
+        <span id="modalOwner" style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-dim)"></span>
+        <span id="modalPrice" class="modal-price"></span>
+        <span id="modalOpenTag"></span>
+      </div>
+      <button class="modal-close" onclick="closeModal()" title="Fechar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-iframe-container">
+        <iframe id="modalIframe" sandbox="allow-scripts allow-same-origin"></iframe>
+      </div>
+      <div class="modal-sidebar" id="modalSidebar"></div>
+    </div>
+  </div>
+
+</div>
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// NEXUS CLIENT — Sistema P2P via BroadcastChannel
+// ═══════════════════════════════════════════════════════
+
+const CHANNEL_NAME = 'nexus_p2p_channel';
+const STORAGE_PREFIX = 'nexus_';
+const RECONNECT_DELAY = 2000;
+const MAX_RECONNECT_LOG = 3;
+
+let channel;
+let hostOnline = false;
+let retryCount = 0;
+let retryTimer = null;
+let pendingRequests = {};
+let currentUser = null;
+let sessionToken = null;
+let projectsData = [];
+let reconnectAttempts = 0;
+
+// ═══ INICIALIZAÇÃO ═══
+function init() {
+  // Tenta restaurar sessão
+  const savedUser = sessionStorage.getItem(STORAGE_PREFIX + 'session_user');
+  const savedToken = sessionStorage.getItem(STORAGE_PREFIX + 'session_token');
+
+  if (savedUser && savedToken) {
+    currentUser = savedUser;
+    sessionToken = savedToken;
+  }
+
+  startConnection();
+}
+
+function startConnection() {
+  showScreen('connect');
+  updateStatus('connecting', 'Conectando ao host...');
+  retryCount = 0;
+  connectToHost();
+}
+
+function connectToHost() {
+  try {
+    if (channel) { try { channel.close(); } catch(e) {} }
+
+    channel = new BroadcastChannel(CHANNEL_NAME);
+    channel.onmessage = handleMessage;
+
+    // Testa se host responde
+    updateStatus('connecting', 'Procurando host NEXUS...');
+    pingHost();
+
+  } catch(e) {
+    scheduleReconnect();
+  }
+}
+
+function pingHost() {
+  if (!channel) return;
+  channel.postMessage({ type: 'CLIENT_PING', timestamp: Date.now() });
+
+  // Timeout: se não responder em 3s, tenta de novo
+  clearTimeout(retryTimer);
+  retryTimer = setTimeout(() => {
+    if (!hostOnline) scheduleReconnect();
+  }, 3000);
+}
+
+function scheduleReconnect() {
+  hostOnline = false;
+  reconnectAttempts++;
+  const delay = Math.min(RECONNECT_DELAY * Math.min(reconnectAttempts, 5), 10000);
+
+  updateStatus('connecting',
+    reconnectAttempts === 1 ? 'Host não encontrado...' :
+    reconnectAttempts < 5 ? `Reconectando (tentativa ${reconnectAttempts})...` :
+    `Aguardando host (${reconnectAttempts}ª tentativa)...`
+  );
+
+  document.getElementById('retryCounter').textContent =
+    reconnectAttempts > 1 ? `${reconnectAttempts} tentativas — próxima em ${Math.ceil(delay/1000)}s` : '';
+
+  document.getElementById('offlineBanner').style.display =
+    (reconnectAttempts > 1 && hostOnline === false && currentUser) ? 'block' : 'none';
+
+  retryTimer = setTimeout(connectToHost, delay);
+}
+
+function handleMessage(event) {
+  const msg = event.data;
+  if (!msg || !msg.type) return;
+
+  switch(msg.type) {
+    case 'HOST_ONLINE':
+    case 'HOST_PONG':
+      onHostConnected();
+      break;
+
+    case 'HOST_OFFLINE':
+      onHostDisconnected();
+      break;
+
+    case 'REGISTER_RESULT':
+      handleRegisterResult(msg);
+      break;
+
+    case 'LOGIN_RESULT':
+      handleLoginResult(msg);
+      break;
+
+    case 'PROJECTS_DATA':
+    case 'PROJECTS_UPDATE':
+      handleProjectsData(msg);
+      break;
+
+    case 'UPLOAD_RESULT':
+      handleUploadResult(msg);
+      break;
+
+    case 'ACCOUNT_DELETED':
+      if (msg.username === currentUser) {
+        doLogout(true);
+        showToast('Sua conta foi removida pelo administrador.', 'error');
+      }
+      break;
+
+    case 'ALL_ACCOUNTS_CLEARED':
+      doLogout(true);
+      showToast('Todas as contas foram removidas.', 'error');
+      break;
+  }
+}
+
+function onHostConnected() {
+  clearTimeout(retryTimer);
+  hostOnline = true;
+  reconnectAttempts = 0;
+
+  updateStatus('connected', 'Host conectado!');
+  document.getElementById('offlineBanner').style.display = 'none';
+
+  setTimeout(() => {
+    if (currentUser && sessionToken) {
+      showMainScreen();
+    } else {
+      showScreen('auth');
+    }
+
+    // Solicita projetos
+    requestProjects();
+  }, 600);
+}
+
+function onHostDisconnected() {
+  hostOnline = false;
+  reconnectAttempts = 0;
+
+  if (currentUser) {
+    document.getElementById('offlineBanner').style.display = 'block';
+  }
+
+  scheduleReconnect();
+}
+
+function updateStatus(state, text) {
+  const dot = document.getElementById('statusDot');
+  const statusText = document.getElementById('statusText');
+  dot.className = 'status-dot ' + state;
+  statusText.textContent = text;
+}
+
+// ═══ SCREENS ═══
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
+}
+
+function showMainScreen() {
+  showScreen('main');
+  document.getElementById('navUsername').textContent = currentUser;
+  requestProjects();
+}
+
+// ═══ AUTH ═══
+function switchTab(tab) {
+  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('tabLogin').className = 'tab-btn' + (tab === 'login' ? ' active' : '');
+  document.getElementById('tabRegister').className = 'tab-btn' + (tab === 'register' ? ' active' : '');
+  clearError();
+}
+
+function showError(msg) {
+  const el = document.getElementById('authError');
+  el.style.display = 'block';
+  el.textContent = msg;
+}
+
+function clearError() {
+  document.getElementById('authError').style.display = 'none';
+}
+
+function doLogin() {
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+
+  if (!username || !password) { showError('Preencha todos os campos.'); return; }
+
+  const btn = document.getElementById('btnLogin');
+  btn.disabled = true;
+  btn.textContent = 'AGUARDANDO...';
+
+  sendRequest('LOGIN', { username, password }, (result) => {
+    btn.disabled = false;
+    btn.textContent = 'ENTRAR';
+
+    if (result.success) {
+      currentUser = result.username;
+      sessionToken = result.sessionToken;
+      sessionStorage.setItem(STORAGE_PREFIX + 'session_user', currentUser);
+      sessionStorage.setItem(STORAGE_PREFIX + 'session_token', sessionToken);
+      showMainScreen();
+      showToast('Bem-vindo de volta, ' + currentUser + '!', 'success');
+    } else {
+      showError(result.error || 'Erro ao entrar.');
+    }
+  });
+}
+
+function doRegister() {
+  const username = document.getElementById('regUser').value.trim();
+  const password = document.getElementById('regPass').value;
+  const confirm = document.getElementById('regPassConfirm').value;
+
+  if (!username || !password) { showError('Preencha todos os campos.'); return; }
+  if (username.length < 3) { showError('Usuário deve ter pelo menos 3 caracteres.'); return; }
+  if (password.length < 4) { showError('Senha deve ter pelo menos 4 caracteres.'); return; }
+  if (password !== confirm) { showError('As senhas não coincidem.'); return; }
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) { showError('Usuário: apenas letras, números e _'); return; }
+
+  const btn = document.getElementById('btnRegister');
+  btn.disabled = true;
+  btn.textContent = 'CRIANDO...';
+
+  sendRequest('REGISTER', { username, password }, (result) => {
+    btn.disabled = false;
+    btn.textContent = 'CRIAR CONTA';
+
+    if (result.success) {
+      currentUser = result.username;
+      sessionToken = result.sessionToken;
+      sessionStorage.setItem(STORAGE_PREFIX + 'session_user', currentUser);
+      sessionStorage.setItem(STORAGE_PREFIX + 'session_token', sessionToken);
+      showMainScreen();
+      showToast('Conta criada! Bem-vindo, ' + currentUser + '!', 'success');
+    } else {
+      showError(result.error || 'Erro ao criar conta.');
+    }
+  });
+}
+
+function doLogout(forced) {
+  if (!forced && !confirm('Deseja sair da sua conta?')) return;
+
+  if (channel && currentUser) {
+    channel.postMessage({ type: 'LOGOUT', username: currentUser });
+  }
+
+  currentUser = null;
+  sessionToken = null;
+  sessionStorage.removeItem(STORAGE_PREFIX + 'session_user');
+  sessionStorage.removeItem(STORAGE_PREFIX + 'session_token');
+
+  showScreen('auth');
+  switchTab('login');
+  showToast('Sessão encerrada.', 'info');
+}
+
+// ═══ PROJETOS ═══
+function requestProjects() {
+  if (!channel || !hostOnline) return;
+  const requestId = 'req_' + Date.now();
+  channel.postMessage({ type: 'GET_PROJECTS', requestId });
+}
+
+function handleProjectsData(msg) {
+  projectsData = msg.projects || [];
+  renderProjects();
+}
+
+function renderProjects() {
+  const grid = document.getElementById('projectsGrid');
+  if (!projectsData.length) {
+    grid.innerHTML = `
+      <div class="empty-projects">
+        <div style="font-size:40px;opacity:0.2">◈</div>
+        <div>NENHUM PROJETO AINDA</div>
+        <div style="font-size:12px;opacity:0.5">Seja o primeiro a publicar</div>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = projectsData.map(p => `
+    <div class="project-card" onclick="openProject('${p.id}')">
+      <div class="card-preview">
+        ${p.htmlCode ? `<iframe sandbox="allow-scripts" srcdoc="${escapeAttr(p.htmlCode)}" scrolling="no"></iframe>` : `
+          <div class="card-preview-fallback">
+            <div class="preview-icon">◈</div>
+            <div>SEM PREVIEW</div>
+          </div>`}
+      </div>
+      <div class="card-body">
+        <div class="card-name">${escapeHtml(p.name)}</div>
+        <div class="card-owner">@${escapeHtml(p.owner)}</div>
+        <div class="card-tags">
+          ${p.openSource ? '<span class="ctag open">ABERTO</span>' : ''}
+          ${p.price > 0 ? `<span class="ctag paid">R$ ${parseFloat(p.price).toFixed(2)}</span>` : '<span class="ctag free">GRÁTIS</span>'}
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-price">${p.price > 0 ? 'R$ ' + parseFloat(p.price).toFixed(2) : 'Grátis'}</span>
+        <button class="btn-view">VER PROJETO</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openProject(id) {
+  const p = projectsData.find(x => x.id === id);
+  if (!p) return;
+
+  document.getElementById('modalTitle').textContent = p.name;
+  document.getElementById('modalOwner').textContent = '@' + p.owner + ' · ' + p.uploadedAt;
+  document.getElementById('modalPrice').textContent = p.price > 0 ? 'R$ ' + parseFloat(p.price).toFixed(2) : 'Grátis';
+  document.getElementById('modalOpenTag').innerHTML = p.openSource ? '<span class="ctag open">CÓDIGO ABERTO</span>' : '';
+
+  // Iframe do projeto
+  const iframe = document.getElementById('modalIframe');
+  if (p.htmlCode) {
+    iframe.srcdoc = p.htmlCode;
+  } else {
+    iframe.srcdoc = '<body style="background:#111;color:#555;display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace;font-size:14px;letter-spacing:2px">SEM PREVIEW</body>';
+  }
+
+  // Sidebar
+  let sidebarHTML = '';
+
+  // Código aberto
+  if (p.openSource && p.htmlCode) {
+    sidebarHTML += `
+      <div>
+        <div class="sidebar-section-title">Código Fonte</div>
+        <div class="code-viewer">${escapeHtml(p.htmlCode.substring(0, 2000))}${p.htmlCode.length > 2000 ? '\n... (truncado)' : ''}</div>
+        <button class="btn-copy" onclick="copyCode()" style="margin-top:8px;width:100%">COPIAR CÓDIGO</button>
+      </div>`;
+  }
+
+  // Redes sociais
+  const socials = [];
+  if (p.socialDiscord) socials.push({ name: 'Discord', val: p.socialDiscord, icon: '🎮' });
+  if (p.socialWhatsapp) socials.push({ name: 'WhatsApp', val: 'https://wa.me/' + p.socialWhatsapp.replace(/\D/g,''), icon: '💬', href: true });
+  if (p.socialInstagram) socials.push({ name: 'Instagram', val: 'https://instagram.com/' + p.socialInstagram.replace('@',''), icon: '📷', href: true });
+  if (p.socialGithub) socials.push({ name: 'GitHub', val: p.socialGithub.startsWith('http') ? p.socialGithub : 'https://' + p.socialGithub, icon: '⚙️', href: true });
+
+  if (socials.length) {
+    sidebarHTML += `<div><div class="sidebar-section-title">Contato / Redes</div>`;
+    socials.forEach(s => {
+      if (s.href) {
+        sidebarHTML += `<a class="social-link" href="${escapeHtml(s.val)}" target="_blank" rel="noopener">${s.icon} ${s.name}</a>`;
+      } else {
+        sidebarHTML += `<div class="social-link">${s.icon} ${s.name}: <span style="color:var(--text)">${escapeHtml(s.val)}</span></div>`;
+      }
+    });
+    sidebarHTML += '</div>';
+  }
+
+  // Pagamento
+  if (p.price > 0 && p.pixKey) {
+    sidebarHTML += `
+      <div>
+        <div class="sidebar-section-title">Pagamento — PIX</div>
+        <div class="pix-info">
+          <div style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;letter-spacing:1px">CHAVE PIX</div>
+          <div class="pix-key">${escapeHtml(p.pixKey)}</div>
+          <button class="btn-copy" onclick="navigator.clipboard.writeText('${escapeHtml(p.pixKey)}');showToast('Chave PIX copiada!','success')">COPIAR CHAVE</button>
+        </div>
+      </div>`;
+  }
+
+  if (!sidebarHTML) {
+    sidebarHTML = `<div style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-dim);text-align:center;padding:30px 10px;letter-spacing:2px">SEM INFORMAÇÕES EXTRAS</div>`;
+  }
+
+  document.getElementById('modalSidebar').innerHTML = sidebarHTML;
+  document.getElementById('projectModal').classList.add('open');
+
+  // Guarda ref do projeto atual para copyCode
+  document.getElementById('projectModal')._currentProject = p;
+}
+
+function copyCode() {
+  const modal = document.getElementById('projectModal');
+  const p = modal._currentProject;
+  if (p && p.htmlCode) {
+    navigator.clipboard.writeText(p.htmlCode);
+    showToast('Código copiado!', 'success');
+  }
+}
+
+function closeModal() {
+  document.getElementById('projectModal').classList.remove('open');
+  document.getElementById('modalIframe').srcdoc = '';
+}
+
+// ESC para fechar modal
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ═══ UPLOAD ═══
+function togglePriceField() {
+  const isFree = document.getElementById('projFree').checked;
+  document.getElementById('priceField').style.display = isFree ? 'none' : 'block';
+}
+
+function previewDraft() {
+  const code = document.getElementById('projHTML').value.trim();
+  if (!code) { showToast('Cole o código HTML primeiro!', 'error'); return; }
+
+  const win = window.open('', '_blank');
+  win.document.write(code);
+  win.document.close();
+}
+
+function publishProject() {
+  if (!hostOnline) { showToast('Host offline! Aguarde reconexão.', 'error'); return; }
+
+  const name = document.getElementById('projName').value.trim();
+  const htmlCode = document.getElementById('projHTML').value.trim();
+  const isFree = document.getElementById('projFree').checked;
+  const price = isFree ? 0 : parseFloat(document.getElementById('projPrice').value || 0);
+  const openSource = document.getElementById('projOpenSource').checked;
+  const pixKey = isFree ? '' : document.getElementById('projPixKey').value.trim();
+  const socialDiscord = document.getElementById('socialDiscord').value.trim();
+  const socialWhatsapp = document.getElementById('socialWhatsapp').value.trim();
+  const socialInstagram = document.getElementById('socialInstagram').value.trim();
+  const socialGithub = document.getElementById('socialGithub').value.trim();
+
+  if (!name) { showToast('Dê um nome ao projeto!', 'error'); return; }
+  if (!htmlCode) { showToast('Cole o código do projeto!', 'error'); return; }
+  if (!isFree && price <= 0) { showToast('Defina um preço válido!', 'error'); return; }
+
+  const btn = document.getElementById('btnPublish');
+  btn.disabled = true;
+  btn.textContent = 'PUBLICANDO...';
+
+  const project = {
+    name, htmlCode, price, openSource, pixKey,
+    socialDiscord, socialWhatsapp, socialInstagram, socialGithub,
+    owner: currentUser,
+    payment: isFree ? '' : 'pix'
+  };
+
+  sendRequest('UPLOAD_PROJECT', { project }, (result) => {
+    btn.disabled = false;
+    btn.textContent = 'PUBLICAR PROJETO';
+
+    if (result.success) {
+      showToast('Projeto publicado com sucesso!', 'success');
+      // Limpar form
+      document.getElementById('projName').value = '';
+      document.getElementById('projHTML').value = '';
+      document.getElementById('projPrice').value = '';
+      document.getElementById('projPixKey').value = '';
+      document.getElementById('projFree').checked = true;
+      document.getElementById('projOpenSource').checked = false;
+      document.getElementById('socialDiscord').value = '';
+      document.getElementById('socialWhatsapp').value = '';
+      document.getElementById('socialInstagram').value = '';
+      document.getElementById('socialGithub').value = '';
+      togglePriceField();
+      switchPage('discover');
+    } else {
+      showToast('Erro ao publicar: ' + (result.error || 'desconhecido'), 'error');
+    }
+  });
+}
+
+function handleUploadResult(msg) {
+  const cb = pendingRequests[msg.requestId];
+  if (cb) { cb(msg); delete pendingRequests[msg.requestId]; }
+}
+
+// ═══ PAGES ═══
+function switchPage(page) {
+  document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+  document.getElementById('page' + page.charAt(0).toUpperCase() + page.slice(1)).classList.add('active');
+
+  document.querySelectorAll('.nav-tab').forEach((t, i) => {
+    t.classList.toggle('active', (page === 'discover' && i === 0) || (page === 'upload' && i === 1));
+  });
+}
+
+// ═══ REQUEST SYSTEM ═══
+function sendRequest(type, data, callback) {
+  const requestId = 'req_' + Date.now() + '_' + Math.random().toString(36).substr(2,5);
+  pendingRequests[requestId] = callback;
+
+  channel.postMessage({ type, requestId, ...data });
+
+  // Timeout de 8 segundos
+  setTimeout(() => {
+    if (pendingRequests[requestId]) {
+      delete pendingRequests[requestId];
+      callback({ success: false, error: 'Tempo esgotado. Verifique se o host está online.' });
+    }
+  }, 8000);
+}
+
+// Respostas de registro/login
+function handleRegisterResult(msg) {
+  const cb = pendingRequests[msg.requestId];
+  if (cb) { cb(msg); delete pendingRequests[msg.requestId]; }
+}
+
+function handleLoginResult(msg) {
+  const cb = pendingRequests[msg.requestId];
+  if (cb) { cb(msg); delete pendingRequests[msg.requestId]; }
+}
+
+// ═══ UTILS ═══
+function showToast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+function escapeHtml(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+function escapeAttr(s) {
+  if (!s) return '';
+  return String(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// Notifica host ao fechar
+window.addEventListener('beforeunload', () => {
+  if (channel && currentUser) {
+    channel.postMessage({ type: 'CLIENT_DISCONNECT', username: currentUser });
+  }
+});
+
+// Reload periódico de projetos
+setInterval(() => {
+  if (hostOnline) requestProjects();
+}, 10000);
+
+// ═══ START ═══
+init();
+</script>
+</body>
+</html>
