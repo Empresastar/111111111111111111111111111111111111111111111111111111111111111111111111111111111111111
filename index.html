@@ -6,7 +6,6 @@
 <title>NEXUS — Plataforma de Projetos</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
-
   :root {
     --bg: #04060e;
     --surface: #080c18;
@@ -21,9 +20,7 @@
     --yellow: #fbbf24;
     --glow: 0 0 30px rgba(0,229,255,0.25);
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   body {
     background: var(--bg);
     color: var(--text);
@@ -31,15 +28,12 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
-
-  /* ANIMATED BG */
   .bg-layer {
     position: fixed;
     inset: 0;
     z-index: 0;
     overflow: hidden;
   }
-
   .bg-layer::before {
     content: '';
     position: absolute;
@@ -51,20 +45,14 @@
       linear-gradient(90deg, rgba(0,229,255,0.02) 1px, transparent 1px);
     background-size: auto, auto, 50px 50px, 50px 50px;
   }
-
   #app { position: relative; z-index: 1; }
-
-  /* ═══ SCREENS ═══ */
   .screen { display: none; min-height: 100vh; }
   .screen.active { display: flex; flex-direction: column; }
-
-  /* ═══ CONNECTION SCREEN ═══ */
   #screenConnect {
     align-items: center;
     justify-content: center;
     text-align: center;
   }
-
   .connect-box {
     padding: 60px;
     border: 1px solid var(--border);
@@ -73,7 +61,6 @@
     max-width: 500px;
     width: 90%;
   }
-
   .nexus-logo {
     font-family: 'Orbitron', monospace;
     font-size: clamp(36px, 8vw, 64px);
@@ -85,12 +72,10 @@
     margin-bottom: 8px;
     animation: logo-glow 3s ease-in-out infinite;
   }
-
   @keyframes logo-glow {
     0%, 100% { filter: drop-shadow(0 0 20px rgba(0,229,255,0.4)); }
     50% { filter: drop-shadow(0 0 40px rgba(0,229,255,0.8)); }
   }
-
   .nexus-tagline {
     font-family: 'Share Tech Mono', monospace;
     font-size: 12px;
@@ -98,7 +83,6 @@
     color: var(--text-dim);
     margin-bottom: 40px;
   }
-
   .status-indicator {
     display: flex;
     align-items: center;
@@ -108,33 +92,26 @@
     font-family: 'Share Tech Mono', monospace;
     font-size: 13px;
   }
-
   .status-dot {
     width: 10px; height: 10px;
     border-radius: 50%;
     background: var(--text-dim);
     transition: all 0.5s;
   }
-
   .status-dot.connecting { background: var(--yellow); animation: pulse 1s infinite; box-shadow: 0 0 10px var(--yellow); }
   .status-dot.connected { background: var(--green); box-shadow: 0 0 10px var(--green); }
   .status-dot.error { background: var(--accent2); box-shadow: 0 0 10px var(--accent2); }
-
   @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
-
   .retry-counter {
     font-family: 'Share Tech Mono', monospace;
     font-size: 11px;
     color: var(--text-dim);
     margin-top: 8px;
   }
-
-  /* ═══ AUTH SCREEN ═══ */
   #screenAuth {
     align-items: center;
     justify-content: center;
   }
-
   .auth-box {
     width: min(440px, 94vw);
     border: 1px solid var(--border);
@@ -143,7 +120,6 @@
     padding: 48px 40px;
     position: relative;
   }
-
   .auth-box::before, .auth-box::after {
     content: '';
     position: absolute;
@@ -151,7 +127,6 @@
   }
   .auth-box::before { top: -1px; left: -1px; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); }
   .auth-box::after { bottom: -1px; right: -1px; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent); }
-
   .auth-logo {
     font-family: 'Orbitron', monospace;
     font-size: 28px;
@@ -163,7 +138,6 @@
     text-align: center;
     margin-bottom: 6px;
   }
-
   .auth-sub {
     text-align: center;
     font-family: 'Share Tech Mono', monospace;
@@ -172,7 +146,6 @@
     letter-spacing: 3px;
     margin-bottom: 36px;
   }
-
   .tab-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -180,7 +153,6 @@
     margin-bottom: 32px;
     border: 1px solid var(--border);
   }
-
   .tab-btn {
     padding: 10px;
     background: transparent;
@@ -193,15 +165,12 @@
     transition: all 0.3s;
     text-transform: uppercase;
   }
-
   .tab-btn.active {
     background: rgba(0,229,255,0.1);
     color: var(--accent);
     border-bottom: 2px solid var(--accent);
   }
-
   .field-group { margin-bottom: 20px; }
-
   .field-label {
     font-family: 'Share Tech Mono', monospace;
     font-size: 10px;
@@ -210,7 +179,6 @@
     margin-bottom: 8px;
     text-transform: uppercase;
   }
-
   .field-input {
     width: 100%;
     padding: 12px 16px;
@@ -223,13 +191,11 @@
     outline: none;
     transition: all 0.3s;
   }
-
   .field-input:focus {
     border-color: var(--accent);
     background: rgba(0,229,255,0.04);
     box-shadow: 0 0 15px rgba(0,229,255,0.1);
   }
-
   .btn-primary {
     width: 100%;
     padding: 14px;
@@ -244,19 +210,16 @@
     transition: all 0.3s;
     margin-top: 8px;
   }
-
   .btn-primary:hover {
     background: linear-gradient(135deg, rgba(0,229,255,0.25), rgba(139,92,246,0.25));
     box-shadow: var(--glow);
     transform: translateY(-1px);
   }
-
   .btn-primary:disabled {
     opacity: 0.4;
     cursor: not-allowed;
     transform: none;
   }
-
   .auth-error {
     font-family: 'Share Tech Mono', monospace;
     font-size: 12px;
@@ -268,10 +231,7 @@
     margin-top: 16px;
     display: none;
   }
-
-  /* ═══ MAIN SCREEN ═══ */
   #screenMain { flex-direction: column; }
-
   .top-nav {
     display: flex;
     align-items: center;
@@ -285,7 +245,6 @@
     z-index: 50;
     gap: 16px;
   }
-
   .nav-logo {
     font-family: 'Orbitron', monospace;
     font-size: 20px;
@@ -296,7 +255,6 @@
     -webkit-text-fill-color: transparent;
     flex-shrink: 0;
   }
-
   .nav-center {
     display: flex;
     gap: 4px;
@@ -305,7 +263,6 @@
     padding: 4px;
     flex-wrap: wrap;
   }
-
   .nav-tab {
     padding: 6px 16px;
     background: transparent;
@@ -317,17 +274,14 @@
     cursor: pointer;
     transition: all 0.2s;
   }
-
   .nav-tab.active { background: rgba(0,229,255,0.1); color: var(--accent); }
   .nav-tab:hover { color: var(--text); }
-
   .nav-right {
     display: flex;
     align-items: center;
     gap: 14px;
     flex-shrink: 0;
   }
-
   .user-chip {
     display: flex;
     align-items: center;
@@ -339,7 +293,6 @@
     font-size: 12px;
     color: var(--accent);
   }
-
   .online-dot {
     width: 6px; height: 6px;
     border-radius: 50%;
@@ -347,9 +300,7 @@
     box-shadow: 0 0 6px var(--green);
     animation: blink 2s infinite;
   }
-
   @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
   .btn-logout {
     padding: 6px 14px;
     background: transparent;
@@ -361,28 +312,21 @@
     cursor: pointer;
     transition: all 0.2s;
   }
-
   .btn-logout:hover { background: rgba(255,45,107,0.1); }
-
-  /* PAGE VIEWS */
   .page-view { display: none; flex: 1; }
   .page-view.active { display: flex; flex-direction: column; }
-
-  /* ═══ DISCOVER PAGE ═══ */
   .discover-hero {
     padding: 60px 40px 40px;
     text-align: center;
     position: relative;
     overflow: hidden;
   }
-
   .discover-hero::before {
     content: '';
     position: absolute;
     inset: 0;
     background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,255,0.06) 0%, transparent 70%);
   }
-
   .hero-title {
     font-family: 'Orbitron', monospace;
     font-size: clamp(28px, 5vw, 52px);
@@ -395,7 +339,6 @@
     margin-bottom: 16px;
     position: relative;
   }
-
   .hero-sub {
     color: var(--text-dim);
     font-size: 16px;
@@ -403,8 +346,6 @@
     font-family: 'Share Tech Mono', monospace;
     position: relative;
   }
-
-  /* PROJECTS GRID */
   .projects-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -412,7 +353,6 @@
     padding: 20px 32px 40px;
     flex: 1;
   }
-
   .project-card {
     border: 1px solid var(--border);
     background: var(--surface);
@@ -423,13 +363,11 @@
     display: flex;
     flex-direction: column;
   }
-
   .project-card:hover {
     border-color: rgba(0,229,255,0.4);
     transform: translateY(-2px);
     box-shadow: 0 8px 30px rgba(0,229,255,0.08);
   }
-
   .project-card::before {
     content: '';
     position: absolute;
@@ -439,9 +377,7 @@
     transform: scaleX(0);
     transition: transform 0.3s;
   }
-
   .project-card:hover::before { transform: scaleX(1); }
-
   .card-preview {
     height: 180px;
     background: var(--surface2);
@@ -449,7 +385,6 @@
     overflow: hidden;
     position: relative;
   }
-
   .card-preview iframe {
     width: 100%;
     height: 100%;
@@ -460,7 +395,6 @@
     width: 200%;
     height: 200%;
   }
-
   .card-preview-fallback {
     display: flex;
     align-items: center;
@@ -473,12 +407,10 @@
     flex-direction: column;
     gap: 12px;
   }
-
   .preview-icon {
     font-size: 32px;
     opacity: 0.3;
   }
-
   .card-body {
     padding: 16px;
     flex: 1;
@@ -486,27 +418,23 @@
     flex-direction: column;
     gap: 8px;
   }
-
   .card-name {
     font-size: 16px;
     font-weight: 700;
     color: var(--text);
     line-height: 1.2;
   }
-
   .card-owner {
     font-family: 'Share Tech Mono', monospace;
     font-size: 11px;
     color: var(--text-dim);
   }
-
   .card-tags {
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
     margin-top: 4px;
   }
-
   .ctag {
     font-size: 10px;
     padding: 2px 8px;
@@ -514,11 +442,9 @@
     letter-spacing: 1px;
     border: 1px solid;
   }
-
   .ctag.open { border-color: var(--accent3); color: var(--accent3); }
   .ctag.paid { border-color: var(--green); color: var(--green); }
   .ctag.free { border-color: var(--text-dim); color: var(--text-dim); }
-
   .card-footer {
     display: flex;
     align-items: center;
@@ -527,14 +453,12 @@
     border-top: 1px solid var(--border);
     background: rgba(255,255,255,0.01);
   }
-
   .card-price {
     font-family: 'Orbitron', monospace;
     font-size: 14px;
     font-weight: 700;
     color: var(--green);
   }
-
   .btn-view {
     padding: 5px 14px;
     border: 1px solid var(--accent);
@@ -546,9 +470,7 @@
     cursor: pointer;
     transition: all 0.2s;
   }
-
   .btn-view:hover { background: rgba(0,229,255,0.1); }
-
   .empty-projects {
     grid-column: 1 / -1;
     display: flex;
@@ -563,15 +485,12 @@
     letter-spacing: 2px;
     text-align: center;
   }
-
-  /* ═══ UPLOAD PAGE ═══ */
   .upload-page {
     max-width: 700px;
     margin: 0 auto;
     padding: 40px 24px;
     width: 100%;
   }
-
   .upload-title {
     font-family: 'Orbitron', monospace;
     font-size: 20px;
@@ -581,7 +500,6 @@
     margin-bottom: 32px;
     text-align: center;
   }
-
   .upload-section {
     border: 1px solid var(--border);
     padding: 24px;
@@ -589,7 +507,6 @@
     background: var(--surface);
     position: relative;
   }
-
   .upload-section-title {
     font-family: 'Share Tech Mono', monospace;
     font-size: 11px;
@@ -600,7 +517,6 @@
     padding-bottom: 10px;
     border-bottom: 1px solid var(--border);
   }
-
   .code-area {
     width: 100%;
     min-height: 120px;
@@ -615,24 +531,19 @@
     line-height: 1.5;
     transition: border-color 0.3s;
   }
-
   .code-area:focus { border-color: var(--accent3); }
-
   .toggle-row {
     display: flex;
     align-items: center;
     gap: 12px;
     margin-bottom: 16px;
   }
-
   .toggle {
     position: relative;
     width: 44px; height: 24px;
     flex-shrink: 0;
   }
-
   .toggle input { opacity: 0; width: 0; height: 0; }
-
   .toggle-slider {
     position: absolute;
     inset: 0;
@@ -641,7 +552,6 @@
     cursor: pointer;
     transition: 0.3s;
   }
-
   .toggle-slider::before {
     content: '';
     position: absolute;
@@ -650,12 +560,9 @@
     background: var(--text-dim);
     transition: 0.3s;
   }
-
   .toggle input:checked + .toggle-slider { background: rgba(0,229,255,0.2); border: 1px solid var(--accent); }
   .toggle input:checked + .toggle-slider::before { transform: translateX(20px); background: var(--accent); }
-
   .toggle-label { font-size: 14px; color: var(--text); }
-
   .payment-select {
     width: 100%;
     padding: 12px 16px;
@@ -667,10 +574,8 @@
     outline: none;
     transition: border-color 0.3s;
   }
-
   .payment-select:focus { border-color: var(--accent); }
   .payment-select option { background: var(--surface2); }
-
   .preview-live-btn {
     width: 100%;
     padding: 12px;
@@ -684,10 +589,7 @@
     transition: all 0.3s;
     margin-bottom: 16px;
   }
-
   .preview-live-btn:hover { background: rgba(139,92,246,0.2); }
-
-  /* ═══ PROJECT MODAL ═══ */
   #projectModal {
     display: none;
     position: fixed;
@@ -696,9 +598,7 @@
     background: rgba(4,6,14,0.97);
     flex-direction: column;
   }
-
   #projectModal.open { display: flex; }
-
   .modal-header {
     display: flex;
     align-items: center;
@@ -710,7 +610,6 @@
     gap: 16px;
     flex-wrap: wrap;
   }
-
   .modal-project-name {
     font-family: 'Orbitron', monospace;
     font-size: 16px;
@@ -718,21 +617,18 @@
     color: var(--text);
     letter-spacing: 2px;
   }
-
   .modal-meta {
     display: flex;
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
   }
-
   .modal-price {
     font-family: 'Orbitron', monospace;
     font-size: 18px;
     font-weight: 700;
     color: var(--green);
   }
-
   .modal-close {
     width: 36px; height: 36px;
     border: 1px solid var(--border);
@@ -744,32 +640,26 @@
     transition: all 0.2s;
     flex-shrink: 0;
   }
-
   .modal-close:hover { border-color: var(--accent2); color: var(--accent2); background: rgba(255,45,107,0.1); }
-
   .modal-body {
     display: grid;
     grid-template-columns: 1fr 280px;
     flex: 1;
     overflow: hidden;
   }
-
   @media (max-width: 768px) {
     .modal-body { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
   }
-
   .modal-iframe-container {
     position: relative;
     overflow: hidden;
     background: #fff;
   }
-
   .modal-iframe-container iframe {
     width: 100%;
     height: 100%;
     border: none;
   }
-
   .modal-sidebar {
     border-left: 1px solid var(--border);
     background: var(--surface);
@@ -779,10 +669,8 @@
     flex-direction: column;
     gap: 20px;
   }
-
   .modal-sidebar::-webkit-scrollbar { width: 3px; }
   .modal-sidebar::-webkit-scrollbar-thumb { background: var(--border); }
-
   .sidebar-section-title {
     font-family: 'Share Tech Mono', monospace;
     font-size: 10px;
@@ -793,7 +681,6 @@
     padding-bottom: 8px;
     border-bottom: 1px solid var(--border);
   }
-
   .code-viewer {
     background: rgba(0,0,0,0.5);
     border: 1px solid var(--border);
@@ -807,7 +694,6 @@
     word-break: break-all;
     line-height: 1.5;
   }
-
   .social-link {
     display: flex;
     align-items: center;
@@ -821,9 +707,7 @@
     text-decoration: none;
     transition: all 0.2s;
   }
-
   .social-link:hover { background: rgba(0,229,255,0.05); border-color: var(--accent); }
-
   .pix-info {
     display: flex;
     flex-direction: column;
@@ -832,14 +716,12 @@
     border: 1px solid rgba(0,255,170,0.2);
     background: rgba(0,255,170,0.03);
   }
-
   .pix-key {
     font-family: 'Share Tech Mono', monospace;
     font-size: 13px;
     color: var(--green);
     word-break: break-all;
   }
-
   .btn-copy {
     padding: 6px 12px;
     border: 1px solid var(--green);
@@ -851,10 +733,7 @@
     cursor: pointer;
     transition: all 0.2s;
   }
-
   .btn-copy:hover { background: rgba(0,255,170,0.1); }
-
-  /* TOAST */
   #toast {
     position: fixed;
     bottom: 24px;
@@ -869,13 +748,10 @@
     transition: all 0.3s;
     border: 1px solid;
   }
-
   #toast.show { transform: translateY(0); opacity: 1; }
   #toast.success { background: rgba(0,255,170,0.1); color: var(--green); border-color: var(--green); }
   #toast.error { background: rgba(255,45,107,0.1); color: var(--accent2); border-color: var(--accent2); }
   #toast.info { background: rgba(0,229,255,0.1); color: var(--accent); border-color: var(--accent); }
-
-  /* CONNECTION OFFLINE BANNER */
   #offlineBanner {
     display: none;
     position: fixed;
@@ -892,8 +768,6 @@
     color: var(--accent2);
     letter-spacing: 2px;
   }
-
-  /* RESPONSIVE */
   @media (max-width: 600px) {
     .nav-center { display: none; }
     .mobile-nav {
@@ -909,15 +783,11 @@
     .upload-page { padding: 20px 12px; }
     .discover-hero { padding: 40px 20px 20px; }
   }
-
   @media (min-width: 601px) {
     .mobile-nav { display: none; }
   }
-
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   @media (max-width: 480px) { .grid2 { grid-template-columns: 1fr; } }
-
-  /* LOADING BAR */
   .loading-bar {
     height: 2px;
     background: linear-gradient(90deg, var(--accent), var(--accent3), var(--accent));
@@ -925,23 +795,18 @@
     animation: loading-move 1.5s linear infinite;
     width: 100%;
   }
-
   @keyframes loading-move { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 </style>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 <body>
 <div class="bg-layer"></div>
 <div id="app">
-
-  <!-- OFFLINE BANNER -->
   <div id="offlineBanner">⚠ HOST OFFLINE — RECONECTANDO AUTOMATICAMENTE...</div>
-
-  <!-- ═══ SCREEN: CONNECTING ═══ -->
   <div class="screen active" id="screenConnect">
     <div class="connect-box">
       <div class="nexus-logo">NEXUS</div>
       <div class="nexus-tagline">PLATAFORMA DE PROJETOS P2P</div>
-
       <div class="status-indicator">
         <div class="status-dot connecting" id="statusDot"></div>
         <span id="statusText">Conectando ao host...</span>
@@ -950,18 +815,14 @@
       <div class="retry-counter" id="retryCounter"></div>
     </div>
   </div>
-
-  <!-- ═══ SCREEN: AUTH ═══ -->
   <div class="screen" id="screenAuth">
     <div class="auth-box">
       <div class="auth-logo">NEXUS</div>
       <div class="auth-sub">PLATAFORMA DE PROJETOS</div>
-
       <div class="tab-row">
         <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">ENTRAR</button>
         <button class="tab-btn" id="tabRegister" onclick="switchTab('register')">CRIAR CONTA</button>
       </div>
-
       <div id="loginForm">
         <div class="field-group">
           <div class="field-label">Usuário</div>
@@ -973,7 +834,6 @@
         </div>
         <button class="btn-primary" id="btnLogin" onclick="doLogin()">ENTRAR</button>
       </div>
-
       <div id="registerForm" style="display:none">
         <div class="field-group">
           <div class="field-label">Usuário</div>
@@ -989,15 +849,10 @@
         </div>
         <button class="btn-primary" id="btnRegister" onclick="doRegister()">CRIAR CONTA</button>
       </div>
-
       <div class="auth-error" id="authError"></div>
     </div>
   </div>
-
-  <!-- ═══ SCREEN: MAIN ═══ -->
   <div class="screen" id="screenMain">
-
-    <!-- NAV -->
     <div class="top-nav">
       <div class="nav-logo">NEXUS</div>
       <div class="nav-center">
@@ -1012,14 +867,10 @@
         <button class="btn-logout" onclick="doLogout()">SAIR</button>
       </div>
     </div>
-
-    <!-- MOBILE NAV -->
     <div class="mobile-nav">
       <button class="nav-tab active" onclick="switchPage('discover')">DESCOBRIR</button>
       <button class="nav-tab" onclick="switchPage('upload')">ENVIAR</button>
     </div>
-
-    <!-- ═══ PAGE: DISCOVER ═══ -->
     <div class="page-view active" id="pageDiscover">
       <div class="discover-hero">
         <div class="hero-title">PROJETOS DA COMUNIDADE</div>
@@ -1033,12 +884,9 @@
         </div>
       </div>
     </div>
-
-    <!-- ═══ PAGE: UPLOAD ═══ -->
     <div class="page-view" id="pageUpload">
       <div class="upload-page">
         <div class="upload-title">PUBLICAR PROJETO</div>
-
         <div class="upload-section">
           <div class="upload-section-title">01 — Informações do Projeto</div>
           <div class="field-group">
@@ -1046,16 +894,14 @@
             <input class="field-input" type="text" id="projName" placeholder="Meu Projeto Incrível">
           </div>
         </div>
-
         <div class="upload-section">
           <div class="upload-section-title">02 — Código Fonte (HTML + CSS + JS em um arquivo)</div>
           <div style="font-size:13px;color:var(--text-dim);margin-bottom:12px">
             Cole todo o código HTML (pode incluir &lt;style&gt; e &lt;script&gt; inline) ou HTML completo
           </div>
-          <textarea class="code-area" id="projHTML" placeholder="<!DOCTYPE html>&#10;<html>&#10;  <head>...</head>&#10;  <body>...seu projeto aqui...</body>&#10;</html>" rows="10"></textarea>
+          <textarea class="code-area" id="projHTML" placeholder="<!DOCTYPE html>&#10;<html>&#10; <head>...</head>&#10; <body>...seu projeto aqui...</body>&#10;</html>" rows="10"></textarea>
           <button class="preview-live-btn" onclick="previewDraft()">👁 PRÉ-VISUALIZAR</button>
         </div>
-
         <div class="upload-section">
           <div class="upload-section-title">03 — Configurações de Venda</div>
           <div class="toggle-row">
@@ -1079,7 +925,6 @@
             </div>
           </div>
         </div>
-
         <div class="upload-section">
           <div class="upload-section-title">04 — Código Aberto?</div>
           <div class="toggle-row">
@@ -1087,7 +932,6 @@
             <span class="toggle-label">Deixar código visível para todos</span>
           </div>
         </div>
-
         <div class="upload-section">
           <div class="upload-section-title">05 — Redes Sociais (para contato)</div>
           <div class="grid2">
@@ -1109,13 +953,10 @@
             </div>
           </div>
         </div>
-
         <button class="btn-primary" id="btnPublish" onclick="publishProject()">PUBLICAR PROJETO</button>
       </div>
     </div>
   </div>
-
-  <!-- ═══ PROJECT MODAL ═══ -->
   <div id="projectModal">
     <div class="modal-header">
       <div class="modal-project-name" id="modalTitle">Projeto</div>
@@ -1133,21 +974,19 @@
       <div class="modal-sidebar" id="modalSidebar"></div>
     </div>
   </div>
-
 </div>
 <div id="toast"></div>
 
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+
 <script>
 // ═══════════════════════════════════════════════════════
-// NEXUS CLIENT — Sistema P2P via BroadcastChannel
+// NEXUS CLIENT — Conecta no host via PeerJS (só funciona se host ligado)
 // ═══════════════════════════════════════════════════════
+const HOST_PEER_ID = 'nexus-host-001';
 
-const CHANNEL_NAME = 'nexus_p2p_channel';
-const STORAGE_PREFIX = 'nexus_';
-const RECONNECT_DELAY = 2000;
-const MAX_RECONNECT_LOG = 3;
-
-let channel;
+let peer;
+let hostConn = null;
 let hostOnline = false;
 let retryCount = 0;
 let retryTimer = null;
@@ -1157,112 +996,105 @@ let sessionToken = null;
 let projectsData = [];
 let reconnectAttempts = 0;
 
-// ═══ INICIALIZAÇÃO ═══
 function init() {
-  // Tenta restaurar sessão
-  const savedUser = sessionStorage.getItem(STORAGE_PREFIX + 'session_user');
-  const savedToken = sessionStorage.getItem(STORAGE_PREFIX + 'session_token');
-
+  const savedUser = sessionStorage.getItem('nexus_session_user');
+  const savedToken = sessionStorage.getItem('nexus_session_token');
   if (savedUser && savedToken) {
     currentUser = savedUser;
     sessionToken = savedToken;
   }
-
-  startConnection();
+  initPeer();
 }
 
-function startConnection() {
-  showScreen('connect');
-  updateStatus('connecting', 'Conectando ao host...');
-  retryCount = 0;
-  connectToHost();
+function initPeer() {
+  peer = new Peer();
+
+  peer.on('open', () => {
+    connectToHost();
+  });
+
+  peer.on('error', (err) => {
+    if (err.type === 'peer-unavailable') {
+      updateStatus('error', 'Host offline ou não encontrado');
+      scheduleReconnect();
+    }
+  });
 }
 
 function connectToHost() {
-  try {
-    if (channel) { try { channel.close(); } catch(e) {} }
+  if (hostConn) hostConn.close();
+  hostConn = peer.connect(HOST_PEER_ID);
 
-    channel = new BroadcastChannel(CHANNEL_NAME);
-    channel.onmessage = handleMessage;
+  hostConn.on('open', () => {
+    hostOnline = true;
+    onHostConnected();
+  });
 
-    // Testa se host responde
-    updateStatus('connecting', 'Procurando host NEXUS...');
-    pingHost();
+  hostConn.on('data', (data) => {
+    handleMessage({ data });
+  });
 
-  } catch(e) {
-    scheduleReconnect();
+  hostConn.on('close', () => {
+    hostOnline = false;
+    onHostDisconnected();
+  });
+
+  hostConn.on('error', scheduleReconnect);
+}
+
+function sendToHost(msg) {
+  if (hostConn && hostConn.open) {
+    hostConn.send(msg);
+  } else {
+    updateStatus('error', 'Host offline');
   }
 }
 
-function pingHost() {
-  if (!channel) return;
-  channel.postMessage({ type: 'CLIENT_PING', timestamp: Date.now() });
-
-  // Timeout: se não responder em 3s, tenta de novo
-  clearTimeout(retryTimer);
-  retryTimer = setTimeout(() => {
-    if (!hostOnline) scheduleReconnect();
-  }, 3000);
+function sendRequest(type, data, callback) {
+  const requestId = 'req_' + Date.now() + '_' + Math.random().toString(36).substr(2,5);
+  pendingRequests[requestId] = callback;
+  sendToHost({ type, requestId, ...data });
+  setTimeout(() => {
+    if (pendingRequests[requestId]) {
+      delete pendingRequests[requestId];
+      callback({ success: false, error: 'Tempo esgotado. Host offline?' });
+    }
+  }, 8000);
 }
 
-function scheduleReconnect() {
-  hostOnline = false;
-  reconnectAttempts++;
-  const delay = Math.min(RECONNECT_DELAY * Math.min(reconnectAttempts, 5), 10000);
-
-  updateStatus('connecting',
-    reconnectAttempts === 1 ? 'Host não encontrado...' :
-    reconnectAttempts < 5 ? `Reconectando (tentativa ${reconnectAttempts})...` :
-    `Aguardando host (${reconnectAttempts}ª tentativa)...`
-  );
-
-  document.getElementById('retryCounter').textContent =
-    reconnectAttempts > 1 ? `${reconnectAttempts} tentativas — próxima em ${Math.ceil(delay/1000)}s` : '';
-
-  document.getElementById('offlineBanner').style.display =
-    (reconnectAttempts > 1 && hostOnline === false && currentUser) ? 'block' : 'none';
-
-  retryTimer = setTimeout(connectToHost, delay);
-}
-
+// ═══════════════════════════════════════════════════════
+// RESTO DO CÓDIGO ORIGINAL DO CLIENT (cole aqui embaixo)
+// ═══════════════════════════════════════════════════════
 function handleMessage(event) {
   const msg = event.data;
   if (!msg || !msg.type) return;
-
   switch(msg.type) {
     case 'HOST_ONLINE':
     case 'HOST_PONG':
       onHostConnected();
       break;
-
     case 'HOST_OFFLINE':
       onHostDisconnected();
       break;
-
     case 'REGISTER_RESULT':
       handleRegisterResult(msg);
       break;
-
     case 'LOGIN_RESULT':
       handleLoginResult(msg);
       break;
-
     case 'PROJECTS_DATA':
     case 'PROJECTS_UPDATE':
       handleProjectsData(msg);
       break;
-
     case 'UPLOAD_RESULT':
       handleUploadResult(msg);
       break;
-
     case 'ACCOUNT_DELETED':
       if (msg.username === currentUser) {
         doLogout(true);
         showToast('Sua conta foi removida pelo administrador.', 'error');
       }
       break;
-
     case 'ALL_ACCOUNTS_CLEARED':
       doLogout(true);
       showToast('Todas as contas foram removidas.', 'error');
@@ -1270,437 +1102,12 @@ function handleMessage(event) {
   }
 }
 
-function onHostConnected() {
-  clearTimeout(retryTimer);
-  hostOnline = true;
-  reconnectAttempts = 0;
+// ... cole aqui TODO o resto do seu código original do client (onHostConnected, onHostDisconnected, updateStatus, showScreen, showMainScreen, switchTab, showError, clearError, doLogin, doRegister, doLogout, publishProject, renderProjects, openProject, copyCode, closeModal, togglePriceField, previewDraft, switchPage, handleRegisterResult, handleLoginResult, handleUploadResult, showToast, escapeHtml, escapeAttr)
 
-  updateStatus('connected', 'Host conectado!');
-  document.getElementById('offlineBanner').style.display = 'none';
-
-  setTimeout(() => {
-    if (currentUser && sessionToken) {
-      showMainScreen();
-    } else {
-      showScreen('auth');
-    }
-
-    // Solicita projetos
-    requestProjects();
-  }, 600);
-}
-
-function onHostDisconnected() {
-  hostOnline = false;
-  reconnectAttempts = 0;
-
-  if (currentUser) {
-    document.getElementById('offlineBanner').style.display = 'block';
-  }
-
-  scheduleReconnect();
-}
-
-function updateStatus(state, text) {
-  const dot = document.getElementById('statusDot');
-  const statusText = document.getElementById('statusText');
-  dot.className = 'status-dot ' + state;
-  statusText.textContent = text;
-}
-
-// ═══ SCREENS ═══
-function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
-}
-
-function showMainScreen() {
-  showScreen('main');
-  document.getElementById('navUsername').textContent = currentUser;
-  requestProjects();
-}
-
-// ═══ AUTH ═══
-function switchTab(tab) {
-  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
-  document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
-  document.getElementById('tabLogin').className = 'tab-btn' + (tab === 'login' ? ' active' : '');
-  document.getElementById('tabRegister').className = 'tab-btn' + (tab === 'register' ? ' active' : '');
-  clearError();
-}
-
-function showError(msg) {
-  const el = document.getElementById('authError');
-  el.style.display = 'block';
-  el.textContent = msg;
-}
-
-function clearError() {
-  document.getElementById('authError').style.display = 'none';
-}
-
-function doLogin() {
-  const username = document.getElementById('loginUser').value.trim();
-  const password = document.getElementById('loginPass').value;
-
-  if (!username || !password) { showError('Preencha todos os campos.'); return; }
-
-  const btn = document.getElementById('btnLogin');
-  btn.disabled = true;
-  btn.textContent = 'AGUARDANDO...';
-
-  sendRequest('LOGIN', { username, password }, (result) => {
-    btn.disabled = false;
-    btn.textContent = 'ENTRAR';
-
-    if (result.success) {
-      currentUser = result.username;
-      sessionToken = result.sessionToken;
-      sessionStorage.setItem(STORAGE_PREFIX + 'session_user', currentUser);
-      sessionStorage.setItem(STORAGE_PREFIX + 'session_token', sessionToken);
-      showMainScreen();
-      showToast('Bem-vindo de volta, ' + currentUser + '!', 'success');
-    } else {
-      showError(result.error || 'Erro ao entrar.');
-    }
-  });
-}
-
-function doRegister() {
-  const username = document.getElementById('regUser').value.trim();
-  const password = document.getElementById('regPass').value;
-  const confirm = document.getElementById('regPassConfirm').value;
-
-  if (!username || !password) { showError('Preencha todos os campos.'); return; }
-  if (username.length < 3) { showError('Usuário deve ter pelo menos 3 caracteres.'); return; }
-  if (password.length < 4) { showError('Senha deve ter pelo menos 4 caracteres.'); return; }
-  if (password !== confirm) { showError('As senhas não coincidem.'); return; }
-  if (!/^[a-zA-Z0-9_]+$/.test(username)) { showError('Usuário: apenas letras, números e _'); return; }
-
-  const btn = document.getElementById('btnRegister');
-  btn.disabled = true;
-  btn.textContent = 'CRIANDO...';
-
-  sendRequest('REGISTER', { username, password }, (result) => {
-    btn.disabled = false;
-    btn.textContent = 'CRIAR CONTA';
-
-    if (result.success) {
-      currentUser = result.username;
-      sessionToken = result.sessionToken;
-      sessionStorage.setItem(STORAGE_PREFIX + 'session_user', currentUser);
-      sessionStorage.setItem(STORAGE_PREFIX + 'session_token', sessionToken);
-      showMainScreen();
-      showToast('Conta criada! Bem-vindo, ' + currentUser + '!', 'success');
-    } else {
-      showError(result.error || 'Erro ao criar conta.');
-    }
-  });
-}
-
-function doLogout(forced) {
-  if (!forced && !confirm('Deseja sair da sua conta?')) return;
-
-  if (channel && currentUser) {
-    channel.postMessage({ type: 'LOGOUT', username: currentUser });
-  }
-
-  currentUser = null;
-  sessionToken = null;
-  sessionStorage.removeItem(STORAGE_PREFIX + 'session_user');
-  sessionStorage.removeItem(STORAGE_PREFIX + 'session_token');
-
-  showScreen('auth');
-  switchTab('login');
-  showToast('Sessão encerrada.', 'info');
-}
-
-// ═══ PROJETOS ═══
 function requestProjects() {
-  if (!channel || !hostOnline) return;
-  const requestId = 'req_' + Date.now();
-  channel.postMessage({ type: 'GET_PROJECTS', requestId });
+  sendRequest('GET_PROJECTS', {}, () => {});
 }
 
-function handleProjectsData(msg) {
-  projectsData = msg.projects || [];
-  renderProjects();
-}
-
-function renderProjects() {
-  const grid = document.getElementById('projectsGrid');
-  if (!projectsData.length) {
-    grid.innerHTML = `
-      <div class="empty-projects">
-        <div style="font-size:40px;opacity:0.2">◈</div>
-        <div>NENHUM PROJETO AINDA</div>
-        <div style="font-size:12px;opacity:0.5">Seja o primeiro a publicar</div>
-      </div>`;
-    return;
-  }
-
-  grid.innerHTML = projectsData.map(p => `
-    <div class="project-card" onclick="openProject('${p.id}')">
-      <div class="card-preview">
-        ${p.htmlCode ? `<iframe sandbox="allow-scripts" srcdoc="${escapeAttr(p.htmlCode)}" scrolling="no"></iframe>` : `
-          <div class="card-preview-fallback">
-            <div class="preview-icon">◈</div>
-            <div>SEM PREVIEW</div>
-          </div>`}
-      </div>
-      <div class="card-body">
-        <div class="card-name">${escapeHtml(p.name)}</div>
-        <div class="card-owner">@${escapeHtml(p.owner)}</div>
-        <div class="card-tags">
-          ${p.openSource ? '<span class="ctag open">ABERTO</span>' : ''}
-          ${p.price > 0 ? `<span class="ctag paid">R$ ${parseFloat(p.price).toFixed(2)}</span>` : '<span class="ctag free">GRÁTIS</span>'}
-        </div>
-      </div>
-      <div class="card-footer">
-        <span class="card-price">${p.price > 0 ? 'R$ ' + parseFloat(p.price).toFixed(2) : 'Grátis'}</span>
-        <button class="btn-view">VER PROJETO</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-function openProject(id) {
-  const p = projectsData.find(x => x.id === id);
-  if (!p) return;
-
-  document.getElementById('modalTitle').textContent = p.name;
-  document.getElementById('modalOwner').textContent = '@' + p.owner + ' · ' + p.uploadedAt;
-  document.getElementById('modalPrice').textContent = p.price > 0 ? 'R$ ' + parseFloat(p.price).toFixed(2) : 'Grátis';
-  document.getElementById('modalOpenTag').innerHTML = p.openSource ? '<span class="ctag open">CÓDIGO ABERTO</span>' : '';
-
-  // Iframe do projeto
-  const iframe = document.getElementById('modalIframe');
-  if (p.htmlCode) {
-    iframe.srcdoc = p.htmlCode;
-  } else {
-    iframe.srcdoc = '<body style="background:#111;color:#555;display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace;font-size:14px;letter-spacing:2px">SEM PREVIEW</body>';
-  }
-
-  // Sidebar
-  let sidebarHTML = '';
-
-  // Código aberto
-  if (p.openSource && p.htmlCode) {
-    sidebarHTML += `
-      <div>
-        <div class="sidebar-section-title">Código Fonte</div>
-        <div class="code-viewer">${escapeHtml(p.htmlCode.substring(0, 2000))}${p.htmlCode.length > 2000 ? '\n... (truncado)' : ''}</div>
-        <button class="btn-copy" onclick="copyCode()" style="margin-top:8px;width:100%">COPIAR CÓDIGO</button>
-      </div>`;
-  }
-
-  // Redes sociais
-  const socials = [];
-  if (p.socialDiscord) socials.push({ name: 'Discord', val: p.socialDiscord, icon: '🎮' });
-  if (p.socialWhatsapp) socials.push({ name: 'WhatsApp', val: 'https://wa.me/' + p.socialWhatsapp.replace(/\D/g,''), icon: '💬', href: true });
-  if (p.socialInstagram) socials.push({ name: 'Instagram', val: 'https://instagram.com/' + p.socialInstagram.replace('@',''), icon: '📷', href: true });
-  if (p.socialGithub) socials.push({ name: 'GitHub', val: p.socialGithub.startsWith('http') ? p.socialGithub : 'https://' + p.socialGithub, icon: '⚙️', href: true });
-
-  if (socials.length) {
-    sidebarHTML += `<div><div class="sidebar-section-title">Contato / Redes</div>`;
-    socials.forEach(s => {
-      if (s.href) {
-        sidebarHTML += `<a class="social-link" href="${escapeHtml(s.val)}" target="_blank" rel="noopener">${s.icon} ${s.name}</a>`;
-      } else {
-        sidebarHTML += `<div class="social-link">${s.icon} ${s.name}: <span style="color:var(--text)">${escapeHtml(s.val)}</span></div>`;
-      }
-    });
-    sidebarHTML += '</div>';
-  }
-
-  // Pagamento
-  if (p.price > 0 && p.pixKey) {
-    sidebarHTML += `
-      <div>
-        <div class="sidebar-section-title">Pagamento — PIX</div>
-        <div class="pix-info">
-          <div style="font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;letter-spacing:1px">CHAVE PIX</div>
-          <div class="pix-key">${escapeHtml(p.pixKey)}</div>
-          <button class="btn-copy" onclick="navigator.clipboard.writeText('${escapeHtml(p.pixKey)}');showToast('Chave PIX copiada!','success')">COPIAR CHAVE</button>
-        </div>
-      </div>`;
-  }
-
-  if (!sidebarHTML) {
-    sidebarHTML = `<div style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-dim);text-align:center;padding:30px 10px;letter-spacing:2px">SEM INFORMAÇÕES EXTRAS</div>`;
-  }
-
-  document.getElementById('modalSidebar').innerHTML = sidebarHTML;
-  document.getElementById('projectModal').classList.add('open');
-
-  // Guarda ref do projeto atual para copyCode
-  document.getElementById('projectModal')._currentProject = p;
-}
-
-function copyCode() {
-  const modal = document.getElementById('projectModal');
-  const p = modal._currentProject;
-  if (p && p.htmlCode) {
-    navigator.clipboard.writeText(p.htmlCode);
-    showToast('Código copiado!', 'success');
-  }
-}
-
-function closeModal() {
-  document.getElementById('projectModal').classList.remove('open');
-  document.getElementById('modalIframe').srcdoc = '';
-}
-
-// ESC para fechar modal
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-// ═══ UPLOAD ═══
-function togglePriceField() {
-  const isFree = document.getElementById('projFree').checked;
-  document.getElementById('priceField').style.display = isFree ? 'none' : 'block';
-}
-
-function previewDraft() {
-  const code = document.getElementById('projHTML').value.trim();
-  if (!code) { showToast('Cole o código HTML primeiro!', 'error'); return; }
-
-  const win = window.open('', '_blank');
-  win.document.write(code);
-  win.document.close();
-}
-
-function publishProject() {
-  if (!hostOnline) { showToast('Host offline! Aguarde reconexão.', 'error'); return; }
-
-  const name = document.getElementById('projName').value.trim();
-  const htmlCode = document.getElementById('projHTML').value.trim();
-  const isFree = document.getElementById('projFree').checked;
-  const price = isFree ? 0 : parseFloat(document.getElementById('projPrice').value || 0);
-  const openSource = document.getElementById('projOpenSource').checked;
-  const pixKey = isFree ? '' : document.getElementById('projPixKey').value.trim();
-  const socialDiscord = document.getElementById('socialDiscord').value.trim();
-  const socialWhatsapp = document.getElementById('socialWhatsapp').value.trim();
-  const socialInstagram = document.getElementById('socialInstagram').value.trim();
-  const socialGithub = document.getElementById('socialGithub').value.trim();
-
-  if (!name) { showToast('Dê um nome ao projeto!', 'error'); return; }
-  if (!htmlCode) { showToast('Cole o código do projeto!', 'error'); return; }
-  if (!isFree && price <= 0) { showToast('Defina um preço válido!', 'error'); return; }
-
-  const btn = document.getElementById('btnPublish');
-  btn.disabled = true;
-  btn.textContent = 'PUBLICANDO...';
-
-  const project = {
-    name, htmlCode, price, openSource, pixKey,
-    socialDiscord, socialWhatsapp, socialInstagram, socialGithub,
-    owner: currentUser,
-    payment: isFree ? '' : 'pix'
-  };
-
-  sendRequest('UPLOAD_PROJECT', { project }, (result) => {
-    btn.disabled = false;
-    btn.textContent = 'PUBLICAR PROJETO';
-
-    if (result.success) {
-      showToast('Projeto publicado com sucesso!', 'success');
-      // Limpar form
-      document.getElementById('projName').value = '';
-      document.getElementById('projHTML').value = '';
-      document.getElementById('projPrice').value = '';
-      document.getElementById('projPixKey').value = '';
-      document.getElementById('projFree').checked = true;
-      document.getElementById('projOpenSource').checked = false;
-      document.getElementById('socialDiscord').value = '';
-      document.getElementById('socialWhatsapp').value = '';
-      document.getElementById('socialInstagram').value = '';
-      document.getElementById('socialGithub').value = '';
-      togglePriceField();
-      switchPage('discover');
-    } else {
-      showToast('Erro ao publicar: ' + (result.error || 'desconhecido'), 'error');
-    }
-  });
-}
-
-function handleUploadResult(msg) {
-  const cb = pendingRequests[msg.requestId];
-  if (cb) { cb(msg); delete pendingRequests[msg.requestId]; }
-}
-
-// ═══ PAGES ═══
-function switchPage(page) {
-  document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
-  document.getElementById('page' + page.charAt(0).toUpperCase() + page.slice(1)).classList.add('active');
-
-  document.querySelectorAll('.nav-tab').forEach((t, i) => {
-    t.classList.toggle('active', (page === 'discover' && i === 0) || (page === 'upload' && i === 1));
-  });
-}
-
-// ═══ REQUEST SYSTEM ═══
-function sendRequest(type, data, callback) {
-  const requestId = 'req_' + Date.now() + '_' + Math.random().toString(36).substr(2,5);
-  pendingRequests[requestId] = callback;
-
-  channel.postMessage({ type, requestId, ...data });
-
-  // Timeout de 8 segundos
-  setTimeout(() => {
-    if (pendingRequests[requestId]) {
-      delete pendingRequests[requestId];
-      callback({ success: false, error: 'Tempo esgotado. Verifique se o host está online.' });
-    }
-  }, 8000);
-}
-
-// Respostas de registro/login
-function handleRegisterResult(msg) {
-  const cb = pendingRequests[msg.requestId];
-  if (cb) { cb(msg); delete pendingRequests[msg.requestId]; }
-}
-
-function handleLoginResult(msg) {
-  const cb = pendingRequests[msg.requestId];
-  if (cb) { cb(msg); delete pendingRequests[msg.requestId]; }
-}
-
-// ═══ UTILS ═══
-function showToast(msg, type = 'info') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'show ' + type;
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 3500);
-}
-
-function escapeHtml(s) {
-  if (!s) return '';
-  return String(s)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
-}
-
-function escapeAttr(s) {
-  if (!s) return '';
-  return String(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
-
-// Notifica host ao fechar
-window.addEventListener('beforeunload', () => {
-  if (channel && currentUser) {
-    channel.postMessage({ type: 'CLIENT_DISCONNECT', username: currentUser });
-  }
-});
-
-// Reload periódico de projetos
-setInterval(() => {
-  if (hostOnline) requestProjects();
-}, 10000);
-
-// ═══ START ═══
 init();
 </script>
 </body>
