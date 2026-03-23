@@ -4,16 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NEXUS</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.2/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
-
-:root {
-  --bg:#04060e; --surface:#080c18; --surface2:#0e1525; --border:#172038;
-  --accent:#00e5ff; --accent2:#ff2d6b; --accent3:#8b5cf6;
-  --text:#cdd8f0; --dim:#3d4e6e; --green:#00ffaa; --yellow:#fbbf24;
-  --glow:0 0 30px rgba(0,229,255,.25);
-}
+:root{--bg:#04060e;--surface:#080c18;--surface2:#0e1525;--border:#172038;--accent:#00e5ff;--accent2:#ff2d6b;--accent3:#8b5cf6;--text:#cdd8f0;--dim:#3d4e6e;--green:#00ffaa;--yellow:#fbbf24;--glow:0 0 30px rgba(0,229,255,.25)}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.025) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
@@ -21,91 +15,72 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 #root{position:relative;z-index:1}
 
 /* ── SCREENS ── */
-.screen{display:none;min-height:100vh;align-items:center;justify-content:center}
+.screen{display:none;min-height:100vh}
 .screen.on{display:flex;flex-direction:column}
-#sConnect{align-items:center;justify-content:center}
+#sConn{align-items:center;justify-content:center}
 #sAuth{align-items:center;justify-content:center}
 
-/* ═══════════════════════════════
-   TELA DE CONEXÃO
-═══════════════════════════════ */
-.splash{text-align:center;padding:48px 40px;max-width:480px;width:94vw;position:relative}
-.splash::before{content:'';position:absolute;top:0;left:0;width:24px;height:24px;border-top:2px solid var(--accent);border-left:2px solid var(--accent)}
-.splash::after{content:'';position:absolute;bottom:0;right:0;width:24px;height:24px;border-bottom:2px solid var(--accent);border-right:2px solid var(--accent)}
+/* ── CONNECTING ── */
+.splash{text-align:center;padding:56px 48px;max-width:480px;width:94vw;position:relative;background:rgba(8,12,24,.85);backdrop-filter:blur(20px);border:1px solid var(--border)}
+.splash::before{content:'';position:absolute;top:-1px;left:-1px;width:24px;height:24px;border-top:2px solid var(--accent);border-left:2px solid var(--accent)}
+.splash::after{content:'';position:absolute;bottom:-1px;right:-1px;width:24px;height:24px;border-bottom:2px solid var(--accent);border-right:2px solid var(--accent)}
+.nxl{font-family:'Orbitron',monospace;font-size:clamp(44px,10vw,72px);font-weight:900;letter-spacing:12px;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;animation:glp 3s ease-in-out infinite}
+@keyframes glp{0%,100%{filter:drop-shadow(0 0 20px rgba(0,229,255,.4))}50%{filter:drop-shadow(0 0 50px rgba(0,229,255,.9))}}
+.nxs{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:5px;color:var(--dim);margin-bottom:44px}
+.cst{display:flex;align-items:center;justify-content:center;gap:12px;font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--dim);margin-bottom:16px}
+.cdot{width:11px;height:11px;border-radius:50%;background:var(--dim);flex-shrink:0;transition:all .4s}
+.cdot.spin{background:var(--yellow);box-shadow:0 0 12px var(--yellow);animation:dp 1s infinite}
+.cdot.ok{background:var(--green);box-shadow:0 0 12px var(--green)}
+.cdot.err{background:var(--accent2);box-shadow:0 0 12px var(--accent2)}
+@keyframes dp{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
+.cbar{height:2px;background:linear-gradient(90deg,var(--accent),var(--accent3),var(--accent));background-size:200%;animation:bf 1.5s linear infinite}
+@keyframes bf{0%{background-position:200%}100%{background-position:-200%}}
+.cret{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim);margin-top:10px;min-height:18px}
 
-.nxlogo{
-  font-family:'Orbitron',monospace;font-size:clamp(44px,10vw,72px);font-weight:900;letter-spacing:12px;
-  background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  margin-bottom:8px;animation:glowpulse 3s ease-in-out infinite;
-}
-@keyframes glowpulse{0%,100%{filter:drop-shadow(0 0 20px rgba(0,229,255,.4))}50%{filter:drop-shadow(0 0 50px rgba(0,229,255,.9))}}
-.nxsub{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:5px;color:var(--dim);margin-bottom:44px}
-
-.conn-status{display:flex;align-items:center;justify-content:center;gap:12px;font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--dim);margin-bottom:16px}
-.dot{width:11px;height:11px;border-radius:50%;background:var(--dim);flex-shrink:0;transition:all .4s}
-.dot.spin{background:var(--yellow);box-shadow:0 0 12px var(--yellow);animation:dotpulse 1s infinite}
-.dot.ok  {background:var(--green); box-shadow:0 0 12px var(--green)}
-.dot.err {background:var(--accent2);box-shadow:0 0 12px var(--accent2)}
-@keyframes dotpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
-
-.conn-bar{height:2px;background:linear-gradient(90deg,var(--accent),var(--accent3),var(--accent));background-size:200%;animation:barflow 1.5s linear infinite;border-radius:1px}
-@keyframes barflow{0%{background-position:200%}100%{background-position:-200%}}
-.conn-bar.hidden{visibility:hidden}
-
-.retry-txt{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim);margin-top:10px;min-height:18px}
-
-/* ═══════════════════════════════
-   TELA AUTH
-═══════════════════════════════ */
-.auth-card{width:min(440px,94vw);border:1px solid var(--border);background:rgba(8,12,24,.97);backdrop-filter:blur(32px);padding:48px 40px;position:relative}
-.auth-card::before{content:'';position:absolute;top:-1px;left:-1px;width:20px;height:20px;border-top:2px solid var(--accent);border-left:2px solid var(--accent)}
-.auth-card::after{content:'';position:absolute;bottom:-1px;right:-1px;width:20px;height:20px;border-bottom:2px solid var(--accent);border-right:2px solid var(--accent)}
-.auth-logo{font-family:'Orbitron',monospace;font-size:28px;font-weight:900;letter-spacing:8px;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:6px}
-.auth-sub{text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:3px;margin-bottom:36px}
+/* ── AUTH ── */
+.acard{width:min(440px,94vw);border:1px solid var(--border);background:rgba(8,12,24,.97);backdrop-filter:blur(32px);padding:48px 40px;position:relative}
+.acard::before{content:'';position:absolute;top:-1px;left:-1px;width:20px;height:20px;border-top:2px solid var(--accent);border-left:2px solid var(--accent)}
+.acard::after{content:'';position:absolute;bottom:-1px;right:-1px;width:20px;height:20px;border-bottom:2px solid var(--accent);border-right:2px solid var(--accent)}
+.alogo{font-family:'Orbitron',monospace;font-size:28px;font-weight:900;letter-spacing:8px;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:6px}
+.asub{text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:3px;margin-bottom:36px}
 .tabs{display:grid;grid-template-columns:1fr 1fr;margin-bottom:32px;border:1px solid var(--border)}
 .tab{padding:11px;background:transparent;border:none;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--dim);cursor:pointer;transition:all .3s;text-transform:uppercase}
 .tab.on{background:rgba(0,229,255,.1);color:var(--accent);border-bottom:2px solid var(--accent)}
-.fgroup{margin-bottom:20px}
-.flabel{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--dim);margin-bottom:8px;display:block;text-transform:uppercase}
-.finput{width:100%;padding:12px 16px;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;outline:none;transition:all .3s}
-.finput:focus{border-color:var(--accent);background:rgba(0,229,255,.04);box-shadow:0 0 15px rgba(0,229,255,.1)}
-.finput.mono{font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--accent);letter-spacing:1px}
+.fg{margin-bottom:20px}
+.fl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--dim);margin-bottom:8px;display:block;text-transform:uppercase}
+.fi{width:100%;padding:12px 16px;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;outline:none;transition:all .3s}
+.fi:focus{border-color:var(--accent);background:rgba(0,229,255,.04);box-shadow:0 0 15px rgba(0,229,255,.1)}
 .fbtn{width:100%;padding:14px;background:linear-gradient(135deg,rgba(0,229,255,.15),rgba(139,92,246,.15));border:1px solid var(--accent);color:var(--accent);font-family:'Orbitron',monospace;font-size:13px;font-weight:700;letter-spacing:4px;cursor:pointer;transition:all .3s;margin-top:8px}
 .fbtn:hover{background:linear-gradient(135deg,rgba(0,229,255,.25),rgba(139,92,246,.25));box-shadow:var(--glow);transform:translateY(-1px)}
 .fbtn:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.auth-err{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent2);text-align:center;padding:10px;border:1px solid rgba(255,45,107,.3);background:rgba(255,45,107,.05);margin-top:16px;display:none}
+.aerr{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent2);text-align:center;padding:10px;border:1px solid rgba(255,45,107,.3);background:rgba(255,45,107,.05);margin-top:16px;display:none}
 
-/* ═══════════════════════════════
-   TELA PRINCIPAL
-═══════════════════════════════ */
-#sMain{align-items:stretch;justify-content:flex-start;min-height:100vh}
-
-.topnav{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid var(--border);background:rgba(4,6,14,.96);backdrop-filter:blur(20px);position:sticky;top:0;z-index:50;gap:12px;flex-wrap:wrap}
-.nav-logo{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;letter-spacing:6px;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;flex-shrink:0}
-.navtabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);padding:4px}
+/* ── MAIN ── */
+#sMain{min-height:100vh;align-items:stretch;justify-content:flex-start}
+.tnav{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid var(--border);background:rgba(4,6,14,.96);backdrop-filter:blur(20px);position:sticky;top:0;z-index:50;gap:12px;flex-wrap:wrap}
+.nlogo{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;letter-spacing:6px;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;flex-shrink:0}
+.ntabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);padding:4px}
 .ntab{padding:6px 18px;background:transparent;border:none;color:var(--dim);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;cursor:pointer;transition:all .2s;white-space:nowrap}
 .ntab.on{background:rgba(0,229,255,.1);color:var(--accent)}
 .ntab:hover{color:var(--text)}
-.nav-r{display:flex;align-items:center;gap:12px;flex-shrink:0}
-.uchip{display:flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--border);background:var(--surface);font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent)}
-.udot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 2s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.btnout{padding:6px 14px;background:transparent;border:1px solid rgba(255,45,107,.4);color:var(--accent2);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s}
-.btnout:hover{background:rgba(255,45,107,.12)}
+.nr{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.uch{display:flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--border);background:var(--surface);font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent)}
+.ud{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:bl 2s infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.3}}
+.bout{padding:6px 14px;background:transparent;border:1px solid rgba(255,45,107,.4);color:var(--accent2);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.bout:hover{background:rgba(255,45,107,.12)}
 
-/* OFFLINE STRIP */
-#offlineStrip{display:none;background:rgba(255,45,107,.15);border-bottom:2px solid var(--accent2);padding:8px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent2);letter-spacing:2px}
+#offstrip{display:none;background:rgba(255,45,107,.15);border-bottom:2px solid var(--accent2);padding:8px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent2);letter-spacing:2px}
 
-/* PAGES */
-.page{display:none;flex:1;flex-direction:column}
-.page.on{display:flex}
+/* ── PAGES ── */
+.pg{display:none;flex:1;flex-direction:column}
+.pg.on{display:flex}
 
-/* ─── DISCOVER ─── */
+/* DISCOVER */
 .hero{padding:56px 40px 32px;text-align:center;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,229,255,.07) 0%,transparent 70%)}
-.hero-h{font-family:'Orbitron',monospace;font-size:clamp(26px,5vw,50px);font-weight:900;letter-spacing:4px;line-height:1.1;background:linear-gradient(135deg,#fff 0%,var(--accent) 50%,var(--accent3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:14px;position:relative}
-.hero-s{color:var(--dim);font-size:15px;letter-spacing:2px;font-family:'Share Tech Mono',monospace;position:relative}
-
+.hh{font-family:'Orbitron',monospace;font-size:clamp(26px,5vw,50px);font-weight:900;letter-spacing:4px;line-height:1.1;background:linear-gradient(135deg,#fff 0%,var(--accent) 50%,var(--accent3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:14px;position:relative}
+.hs{color:var(--dim);font-size:15px;letter-spacing:2px;font-family:'Share Tech Mono',monospace;position:relative}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;padding:20px 32px 48px;align-content:start}
 .pcard{border:1px solid var(--border);background:var(--surface);position:relative;overflow:hidden;transition:all .3s;cursor:pointer;display:flex;flex-direction:column}
 .pcard:hover{border-color:rgba(0,229,255,.4);transform:translateY(-3px);box-shadow:0 10px 36px rgba(0,229,255,.08)}
@@ -113,11 +88,11 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .pcard:hover::before{transform:scaleX(1)}
 .pthumb{height:180px;background:var(--surface2);border-bottom:1px solid var(--border);overflow:hidden;position:relative}
 .pthumb iframe{width:200%;height:200%;border:none;pointer-events:none;transform:scale(.5);transform-origin:top left}
-.pthumb-empty{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;height:100%;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--dim);letter-spacing:2px}
-.pbadge-priv{position:absolute;top:8px;right:8px;background:rgba(251,191,36,.15);border:1px solid var(--yellow);color:var(--yellow);font-family:'Share Tech Mono',monospace;font-size:10px;padding:2px 8px;letter-spacing:1px;z-index:2}
+.pte{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;height:100%;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--dim);letter-spacing:2px}
+.pbpriv{position:absolute;top:8px;right:8px;background:rgba(251,191,36,.15);border:1px solid var(--yellow);color:var(--yellow);font-family:'Share Tech Mono',monospace;font-size:10px;padding:2px 8px;letter-spacing:1px;z-index:2}
 .pbody{padding:16px;flex:1;display:flex;flex-direction:column;gap:8px}
 .pname{font-size:16px;font-weight:700;color:var(--text);line-height:1.2}
-.powner{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim)}
+.pown{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim)}
 .ptags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
 .ptag{font-size:10px;padding:2px 8px;font-family:'Share Tech Mono',monospace;letter-spacing:1px;border:1px solid}
 .ptag.open{border-color:var(--accent3);color:var(--accent3)}
@@ -126,73 +101,73 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 .ptag.priv{border-color:var(--yellow);color:var(--yellow)}
 .pfoot{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--border);background:rgba(255,255,255,.01)}
 .pprice{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--green)}
-.pactions{display:flex;gap:6px}
-.btnview{padding:5px 14px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s}
-.btnview:hover{background:rgba(0,229,255,.1)}
-.btnedit{padding:5px 10px;border:1px solid var(--accent3);background:transparent;color:var(--accent3);font-family:'Share Tech Mono',monospace;font-size:12px;cursor:pointer;transition:all .2s}
-.btnedit:hover{background:rgba(139,92,246,.15)}
-.btndel{padding:5px 10px;border:1px solid var(--accent2);background:transparent;color:var(--accent2);font-family:'Share Tech Mono',monospace;font-size:12px;cursor:pointer;transition:all .2s}
-.btndel:hover{background:rgba(255,45,107,.15)}
-.empty-g{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:16px;font-family:'Share Tech Mono',monospace;color:var(--dim);font-size:14px;letter-spacing:2px;text-align:center}
+.pact{display:flex;gap:6px}
+.bview{padding:5px 14px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.bview:hover{background:rgba(0,229,255,.1)}
+.bedit{padding:5px 10px;border:1px solid var(--accent3);background:transparent;color:var(--accent3);font-family:'Share Tech Mono',monospace;font-size:12px;cursor:pointer;transition:all .2s}
+.bedit:hover{background:rgba(139,92,246,.15)}
+.bdel{padding:5px 10px;border:1px solid var(--accent2);background:transparent;color:var(--accent2);font-family:'Share Tech Mono',monospace;font-size:12px;cursor:pointer;transition:all .2s}
+.bdel:hover{background:rgba(255,45,107,.15)}
+.emg{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:16px;font-family:'Share Tech Mono',monospace;color:var(--dim);font-size:14px;letter-spacing:2px;text-align:center}
 
-/* ─── UPLOAD ─── */
+/* UPLOAD */
 .upage{max-width:700px;margin:0 auto;padding:40px 24px;width:100%}
-.utitle{font-family:'Orbitron',monospace;font-size:20px;font-weight:700;letter-spacing:4px;color:var(--accent);margin-bottom:32px;text-align:center}
+.utit{font-family:'Orbitron',monospace;font-size:20px;font-weight:700;letter-spacing:4px;color:var(--accent);margin-bottom:32px;text-align:center}
 .usec{border:1px solid var(--border);padding:24px;margin-bottom:20px;background:var(--surface)}
-.usec-title{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--accent);margin-bottom:20px;text-transform:uppercase;padding-bottom:10px;border-bottom:1px solid var(--border)}
-.codearea{width:100%;min-height:120px;padding:14px;background:rgba(0,0,0,.5);border:1px solid var(--border);color:var(--green);font-family:'Share Tech Mono',monospace;font-size:13px;outline:none;resize:vertical;line-height:1.6;transition:border-color .3s}
-.codearea:focus{border-color:var(--accent3)}
-.trow{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.ust{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--accent);margin-bottom:20px;text-transform:uppercase;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.ca{width:100%;min-height:120px;padding:14px;background:rgba(0,0,0,.5);border:1px solid var(--border);color:var(--green);font-family:'Share Tech Mono',monospace;font-size:13px;outline:none;resize:vertical;line-height:1.6;transition:border-color .3s}
+.ca:focus{border-color:var(--accent3)}
+.tr{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .tog{position:relative;width:44px;height:24px;flex-shrink:0}
 .tog input{opacity:0;width:0;height:0}
-.tslider{position:absolute;inset:0;background:var(--border);cursor:pointer;transition:.3s}
-.tslider::before{content:'';position:absolute;width:18px;height:18px;top:3px;left:3px;background:var(--dim);transition:.3s}
-.tog input:checked+.tslider{background:rgba(0,229,255,.2);border:1px solid var(--accent)}
-.tog input:checked+.tslider::before{transform:translateX(20px);background:var(--accent)}
-.tlabel{font-size:14px;color:var(--text)}
+.tsl{position:absolute;inset:0;background:var(--border);cursor:pointer;transition:.3s}
+.tsl::before{content:'';position:absolute;width:18px;height:18px;top:3px;left:3px;background:var(--dim);transition:.3s}
+.tog input:checked+.tsl{background:rgba(0,229,255,.2);border:1px solid var(--accent)}
+.tog input:checked+.tsl::before{transform:translateX(20px);background:var(--accent)}
+.tl{font-size:14px;color:var(--text)}
 .sel{width:100%;padding:12px 16px;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;outline:none}
 .sel option{background:var(--surface2)}
-.btnprev{width:100%;padding:12px;background:rgba(139,92,246,.1);border:1px solid var(--accent3);color:var(--accent3);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;cursor:pointer;transition:all .3s;margin-top:12px}
-.btnprev:hover{background:rgba(139,92,246,.2)}
+.bprev{width:100%;padding:12px;background:rgba(139,92,246,.1);border:1px solid var(--accent3);color:var(--accent3);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;cursor:pointer;transition:all .3s;margin-top:12px}
+.bprev:hover{background:rgba(139,92,246,.2)}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 
-/* ─── PROJECT MODAL ─── */
-#projModal{display:none;position:fixed;inset:0;z-index:200;background:rgba(4,6,14,.98);flex-direction:column}
-#projModal.on{display:flex}
-.mhead{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);background:rgba(8,12,24,.99);flex-shrink:0;gap:12px;flex-wrap:wrap}
-.mtitle{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:var(--text);letter-spacing:2px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mmeta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0}
-.mprice{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:var(--green)}
-.mbtns{display:flex;gap:8px;align-items:center;flex-shrink:0}
-.mclose{width:36px;height:36px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.mclose:hover{border-color:var(--accent2);color:var(--accent2);background:rgba(255,45,107,.1)}
-.mbtn-edit{padding:6px 14px;border:1px solid var(--accent3);background:transparent;color:var(--accent3);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s}
-.mbtn-edit:hover{background:rgba(139,92,246,.15)}
-.mbtn-del{padding:6px 14px;border:1px solid var(--accent2);background:transparent;color:var(--accent2);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s}
-.mbtn-del:hover{background:rgba(255,45,107,.15)}
-.mbody{display:grid;grid-template-columns:1fr 300px;flex:1;overflow:hidden}
-.mpreview{overflow:hidden;background:#fff;position:relative}
-.mpreview iframe{width:100%;height:100%;border:none}
+/* MODAL PROJETO */
+#pmod{display:none;position:fixed;inset:0;z-index:200;background:rgba(4,6,14,.98);flex-direction:column}
+#pmod.on{display:flex}
+.mh{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);background:rgba(8,12,24,.99);flex-shrink:0;gap:12px;flex-wrap:wrap}
+.mt{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:var(--text);letter-spacing:2px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mm{display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0}
+.mpr{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:var(--green)}
+.mbs{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.mcl{width:36px;height:36px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.mcl:hover{border-color:var(--accent2);color:var(--accent2);background:rgba(255,45,107,.1)}
+.mbe{padding:6px 14px;border:1px solid var(--accent3);background:transparent;color:var(--accent3);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.mbe:hover{background:rgba(139,92,246,.15)}
+.mbd{padding:6px 14px;border:1px solid var(--accent2);background:transparent;color:var(--accent2);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.mbd:hover{background:rgba(255,45,107,.15)}
+.mb{display:grid;grid-template-columns:1fr 300px;flex:1;overflow:hidden}
+.mprev{overflow:hidden;background:#fff}
+.mprev iframe{width:100%;height:100%;border:none}
 .mside{border-left:1px solid var(--border);background:var(--surface);padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:18px}
 .mside::-webkit-scrollbar{width:3px}
 .mside::-webkit-scrollbar-thumb{background:var(--border)}
-.stitle{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
-.codeview{background:rgba(0,0,0,.6);border:1px solid var(--border);padding:12px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--green);max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;line-height:1.5}
-.slink{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);background:rgba(255,255,255,.02);font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent);text-decoration:none;transition:all .2s;margin-bottom:6px}
-.slink:hover{background:rgba(0,229,255,.05);border-color:var(--accent)}
-.pixbox{display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid rgba(0,255,170,.2);background:rgba(0,255,170,.03)}
-.pixkey{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--green);word-break:break-all}
-.btncopy{padding:6px 12px;border:1px solid var(--green);background:transparent;color:var(--green);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;transition:all .2s}
-.btncopy:hover{background:rgba(0,255,170,.1)}
+.stit{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.cv{background:rgba(0,0,0,.6);border:1px solid var(--border);padding:12px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--green);max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;line-height:1.5}
+.sl2{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);background:rgba(255,255,255,.02);font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent);text-decoration:none;transition:all .2s;margin-bottom:6px}
+.sl2:hover{background:rgba(0,229,255,.05);border-color:var(--accent)}
+.pb2{display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid rgba(0,255,170,.2);background:rgba(0,255,170,.03)}
+.pk{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--green);word-break:break-all}
+.bcp{padding:6px 12px;border:1px solid var(--green);background:transparent;color:var(--green);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.bcp:hover{background:rgba(0,255,170,.1)}
 
-/* ─── EDIT MODAL ─── */
-#editModal{display:none;position:fixed;inset:0;z-index:300;background:rgba(4,6,14,.97);align-items:center;justify-content:center;padding:16px}
-#editModal.on{display:flex}
+/* EDIT MODAL */
+#emod{display:none;position:fixed;inset:0;z-index:300;background:rgba(4,6,14,.97);align-items:center;justify-content:center;padding:16px}
+#emod.on{display:flex}
 .ebox{width:min(700px,100%);max-height:92vh;overflow-y:auto;background:var(--surface);border:1px solid var(--border)}
 .ebox::-webkit-scrollbar{width:4px}
 .ebox::-webkit-scrollbar-thumb{background:var(--border)}
-.ehead{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1}
-.ehead-t{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;letter-spacing:3px;color:var(--accent3)}
+.eh{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1}
+.eht{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;letter-spacing:3px;color:var(--accent3)}
 .ebody{padding:24px}
 
 /* TOAST */
@@ -202,792 +177,604 @@ body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse
 #toast.err{background:rgba(255,45,107,.1);color:var(--accent2);border-color:var(--accent2)}
 #toast.inf{background:rgba(0,229,255,.1);color:var(--accent);border-color:var(--accent)}
 
-/* RESPONSIVE */
-@media(max-width:768px){.mbody{grid-template-columns:1fr;grid-template-rows:55vh auto}.mside{max-height:260px}}
+/* MOBILE */
+.mnav{display:none}
+@media(max-width:768px){.mb{grid-template-columns:1fr;grid-template-rows:55vh auto}.mside{max-height:260px}}
 @media(max-width:600px){
-  .navtabs{display:none}
+  .ntabs{display:none}
   .mnav{display:flex;gap:4px;padding:8px 16px;border-bottom:1px solid var(--border);background:var(--surface);overflow-x:auto}
   .pgrid{grid-template-columns:1fr;padding:16px}
   .g2{grid-template-columns:1fr}
   .hero{padding:36px 16px 20px}
   .upage{padding:16px 12px}
-  .auth-card{padding:32px 20px}
+  .acard{padding:32px 20px}
 }
-.mnav{display:none}
 </style>
 </head>
 <body>
 <div id="root">
 
-<!-- ═══ TELA 1: CONECTANDO ═══ -->
-<div class="screen on" id="sConnect">
+<!-- TELA 1: CONECTANDO (automático, sem input) -->
+<div class="screen on" id="sConn">
   <div class="splash">
-    <div class="nxlogo">NEXUS</div>
-    <div class="nxsub">PLATAFORMA DE PROJETOS P2P</div>
-    <div class="conn-status">
-      <div class="dot spin" id="cDot"></div>
-      <span id="cTxt">Conectando ao servidor...</span>
+    <div class="nxl">NEXUS</div>
+    <div class="nxs">PLATAFORMA DE PROJETOS P2P</div>
+    <div class="cst">
+      <div class="cdot spin" id="cdot"></div>
+      <span id="ctxt">Conectando à rede...</span>
     </div>
-    <div class="conn-bar" id="cBar"></div>
-    <div class="retry-txt" id="cRetry"></div>
+    <div class="cbar"></div>
+    <div class="cret" id="cret"></div>
   </div>
 </div>
 
-<!-- ═══ TELA 2: AUTH ═══ -->
+<!-- TELA 2: AUTH -->
 <div class="screen" id="sAuth">
-  <div class="auth-card">
-    <div class="auth-logo">NEXUS</div>
-    <div class="auth-sub">PLATAFORMA DE PROJETOS</div>
+  <div class="acard">
+    <div class="alogo">NEXUS</div>
+    <div class="asub">PLATAFORMA DE PROJETOS</div>
     <div class="tabs">
-      <button class="tab on" id="tLogin" onclick="setTab('login')">ENTRAR</button>
-      <button class="tab"    id="tReg"   onclick="setTab('reg')">CRIAR CONTA</button>
+      <button class="tab on" id="tL" onclick="setTab('l')">ENTRAR</button>
+      <button class="tab"    id="tR" onclick="setTab('r')">CRIAR CONTA</button>
     </div>
-
-    <div id="fLogin">
-      <div class="fgroup"><label class="flabel">Usuário</label><input class="finput" type="text" id="lUser" placeholder="seu_usuario" autocomplete="username"></div>
-      <div class="fgroup"><label class="flabel">Senha</label><input class="finput" type="password" id="lPass" placeholder="••••••••" autocomplete="current-password"></div>
-      <button class="fbtn" id="btnLogin" onclick="doLogin()">ENTRAR</button>
+    <div id="fL">
+      <div class="fg"><label class="fl">Usuário</label><input class="fi" type="text" id="lU" placeholder="seu_usuario" autocomplete="username"></div>
+      <div class="fg"><label class="fl">Senha</label><input class="fi" type="password" id="lP" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="fbtn" id="bLogin" onclick="doLogin()">ENTRAR</button>
     </div>
-
-    <div id="fReg" style="display:none">
-      <div class="fgroup"><label class="flabel">Usuário</label><input class="finput" type="text" id="rUser" placeholder="escolha_um_usuario" autocomplete="username"></div>
-      <div class="fgroup"><label class="flabel">Senha</label><input class="finput" type="password" id="rPass" placeholder="••••••••" autocomplete="new-password"></div>
-      <div class="fgroup"><label class="flabel">Confirmar Senha</label><input class="finput" type="password" id="rPass2" placeholder="••••••••"></div>
-      <button class="fbtn" id="btnReg" onclick="doRegister()">CRIAR CONTA</button>
+    <div id="fR" style="display:none">
+      <div class="fg"><label class="fl">Usuário</label><input class="fi" type="text" id="rU" placeholder="escolha_um_usuario" autocomplete="username"></div>
+      <div class="fg"><label class="fl">Senha</label><input class="fi" type="password" id="rP" placeholder="••••••••" autocomplete="new-password"></div>
+      <div class="fg"><label class="fl">Confirmar Senha</label><input class="fi" type="password" id="rP2" placeholder="••••••••"></div>
+      <button class="fbtn" id="bReg" onclick="doReg()">CRIAR CONTA</button>
     </div>
-
-    <div class="auth-err" id="authErr"></div>
+    <div class="aerr" id="aerr"></div>
   </div>
 </div>
 
-<!-- ═══ TELA 3: PRINCIPAL ═══ -->
+<!-- TELA 3: PRINCIPAL -->
 <div class="screen" id="sMain">
-  <div id="offlineStrip">⚠ HOST OFFLINE — RECONECTANDO...</div>
-
-  <div class="topnav">
-    <div class="nav-logo">NEXUS</div>
-    <div class="navtabs">
-      <button class="ntab on" onclick="goPage('discover')">◈ DESCOBRIR</button>
-      <button class="ntab"    onclick="goPage('upload')">⬆ PUBLICAR</button>
+  <div id="offstrip">⚠ CONEXÃO PERDIDA — RECONECTANDO...</div>
+  <div class="tnav">
+    <div class="nlogo">NEXUS</div>
+    <div class="ntabs">
+      <button class="ntab on" onclick="goPage('D')">◈ DESCOBRIR</button>
+      <button class="ntab"    onclick="goPage('U')">⬆ PUBLICAR</button>
     </div>
-    <div class="nav-r">
-      <div class="uchip"><span class="udot"></span><span id="navUser">—</span></div>
-      <button class="btnout" onclick="doLogout()">SAIR</button>
+    <div class="nr">
+      <div class="uch"><span class="ud"></span><span id="nusr">—</span></div>
+      <button class="bout" onclick="doLogout()">SAIR</button>
     </div>
   </div>
-
   <div class="mnav">
-    <button class="ntab on" onclick="goPage('discover')">DESCOBRIR</button>
-    <button class="ntab"    onclick="goPage('upload')">PUBLICAR</button>
+    <button class="ntab on" onclick="goPage('D')">DESCOBRIR</button>
+    <button class="ntab"    onclick="goPage('U')">PUBLICAR</button>
   </div>
 
   <!-- PAGE DISCOVER -->
-  <div class="page on" id="pDiscover">
+  <div class="pg on" id="pgD">
     <div class="hero">
-      <div class="hero-h">PROJETOS DA COMUNIDADE</div>
-      <div class="hero-s">Explore · Compre · Colabore</div>
+      <div class="hh">PROJETOS DA COMUNIDADE</div>
+      <div class="hs">Explore · Compre · Colabore</div>
     </div>
-    <div class="pgrid" id="pGrid">
-      <div class="empty-g"><span style="font-size:42px;opacity:.2">◈</span><div>NENHUM PROJETO AINDA</div><div style="font-size:12px;opacity:.5">Seja o primeiro a publicar</div></div>
+    <div class="pgrid" id="pgrid">
+      <div class="emg"><span style="font-size:42px;opacity:.2">◈</span><div>NENHUM PROJETO AINDA</div><div style="font-size:12px;opacity:.5">Seja o primeiro a publicar</div></div>
     </div>
   </div>
 
   <!-- PAGE UPLOAD -->
-  <div class="page" id="pUpload">
+  <div class="pg" id="pgU">
     <div class="upage">
-      <div class="utitle">PUBLICAR PROJETO</div>
+      <div class="utit">PUBLICAR PROJETO</div>
 
-      <div class="usec">
-        <div class="usec-title">01 — Nome do Projeto</div>
-        <input class="finput" type="text" id="uName" placeholder="Meu Projeto Incrível">
+      <div class="usec"><div class="ust">01 — Nome do Projeto</div>
+        <input class="fi" type="text" id="uN" placeholder="Meu Projeto Incrível">
       </div>
 
-      <div class="usec">
-        <div class="usec-title">02 — Código HTML (CSS e JS inline)</div>
-        <div style="font-size:13px;color:var(--dim);margin-bottom:12px">Cole o HTML completo — inclua &lt;style&gt; e &lt;script&gt; no mesmo arquivo</div>
-        <textarea class="codearea" id="uHTML" rows="10" placeholder="<!DOCTYPE html>&#10;<html>&#10;  <body>seu projeto aqui</body>&#10;</html>"></textarea>
-        <button class="btnprev" onclick="prevDraft()">👁 PRÉ-VISUALIZAR</button>
+      <div class="usec"><div class="ust">02 — Código HTML (CSS e JS inline)</div>
+        <div style="font-size:13px;color:var(--dim);margin-bottom:12px">Cole o HTML completo com &lt;style&gt; e &lt;script&gt; no mesmo arquivo</div>
+        <textarea class="ca" id="uH" rows="10" placeholder="<!DOCTYPE html>&#10;<html>&#10;  <body>seu projeto</body>&#10;</html>"></textarea>
+        <button class="bprev" onclick="prevD()">👁 PRÉ-VISUALIZAR</button>
       </div>
 
-      <div class="usec">
-        <div class="usec-title">03 — Venda</div>
-        <div class="trow"><label class="tog"><input type="checkbox" id="uFree" checked onchange="togPrice()"><div class="tslider"></div></label><span class="tlabel">Projeto Gratuito</span></div>
-        <div id="uPriceBlock" style="display:none">
-          <div class="fgroup"><label class="flabel">Valor (R$)</label><input class="finput" type="number" id="uPrice" placeholder="0.00" min="0" step="0.01"></div>
-          <div class="fgroup"><label class="flabel">Forma de Pagamento</label><select class="sel" id="uPay"><option value="pix">PIX</option></select></div>
-          <div class="fgroup"><label class="flabel">Chave PIX</label><input class="finput" type="text" id="uPix" placeholder="email / CPF / telefone / chave aleatória"></div>
+      <div class="usec"><div class="ust">03 — Venda</div>
+        <div class="tr"><label class="tog"><input type="checkbox" id="uF" checked onchange="togP()"><div class="tsl"></div></label><span class="tl">Projeto Gratuito</span></div>
+        <div id="uPB" style="display:none">
+          <div class="fg" style="margin-top:8px"><label class="fl">Valor (R$)</label><input class="fi" type="number" id="uPR" placeholder="0.00" min="0" step="0.01"></div>
+          <div class="fg"><label class="fl">Forma de Pagamento</label><select class="sel"><option>PIX</option></select></div>
+          <div class="fg"><label class="fl">Chave PIX</label><input class="fi" type="text" id="uPX" placeholder="email / CPF / telefone"></div>
         </div>
       </div>
 
-      <div class="usec">
-        <div class="usec-title">04 — Visibilidade</div>
-        <div class="trow"><label class="tog"><input type="checkbox" id="uPriv"><div class="tslider"></div></label><span class="tlabel">Privado <span style="font-size:12px;color:var(--dim)">(só você vê)</span></span></div>
+      <div class="usec"><div class="ust">04 — Visibilidade</div>
+        <div class="tr"><label class="tog"><input type="checkbox" id="uPV"><div class="tsl"></div></label><span class="tl">Privado <span style="font-size:12px;color:var(--dim)">(só você vê)</span></span></div>
       </div>
 
-      <div class="usec">
-        <div class="usec-title">05 — Código Aberto?</div>
-        <div class="trow"><label class="tog"><input type="checkbox" id="uOpen"><div class="tslider"></div></label><span class="tlabel">Deixar código visível para todos</span></div>
+      <div class="usec"><div class="ust">05 — Código Aberto?</div>
+        <div class="tr"><label class="tog"><input type="checkbox" id="uO"><div class="tsl"></div></label><span class="tl">Deixar código visível para todos</span></div>
       </div>
 
-      <div class="usec">
-        <div class="usec-title">06 — Redes Sociais</div>
+      <div class="usec"><div class="ust">06 — Redes Sociais</div>
         <div class="g2">
-          <div class="fgroup"><label class="flabel">Discord</label><input class="finput" type="text" id="uDisc" placeholder="usuario#0000"></div>
-          <div class="fgroup"><label class="flabel">WhatsApp</label><input class="finput" type="text" id="uWA"   placeholder="+55 11 99999-9999"></div>
-          <div class="fgroup"><label class="flabel">Instagram</label><input class="finput" type="text" id="uIG"   placeholder="@usuario"></div>
-          <div class="fgroup"><label class="flabel">GitHub</label><input class="finput" type="text"   id="uGH"   placeholder="github.com/usuario"></div>
+          <div class="fg"><label class="fl">Discord</label><input class="fi" type="text" id="uDC" placeholder="usuario#0000"></div>
+          <div class="fg"><label class="fl">WhatsApp</label><input class="fi" type="text" id="uWA" placeholder="+55 11 99999-9999"></div>
+          <div class="fg"><label class="fl">Instagram</label><input class="fi" type="text" id="uIG" placeholder="@usuario"></div>
+          <div class="fg"><label class="fl">GitHub</label><input class="fi"   type="text" id="uGH" placeholder="github.com/usuario"></div>
         </div>
       </div>
 
-      <button class="fbtn" id="btnPub" onclick="publishProject()">PUBLICAR PROJETO</button>
+      <button class="fbtn" id="bPub" onclick="publishProj()">PUBLICAR PROJETO</button>
     </div>
-  </div>
-</div><!-- /sMain -->
-
-<!-- ═══ MODAL: PROJETO ═══ -->
-<div id="projModal">
-  <div class="mhead">
-    <div class="mtitle"  id="mTitle">—</div>
-    <div class="mmeta">
-      <span id="mOwner" style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--dim)"></span>
-      <span id="mPrice" class="mprice"></span>
-      <span id="mOpen"></span>
-      <span id="mPriv"></span>
-    </div>
-    <div class="mbtns">
-      <button class="mbtn-edit" id="mBtnEdit" onclick="openEdit()" style="display:none">✏ EDITAR</button>
-      <button class="mbtn-del"  id="mBtnDel"  onclick="delOwn()"   style="display:none">🗑 APAGAR</button>
-      <button class="mclose" onclick="closeProj()">✕</button>
-    </div>
-  </div>
-  <div class="mbody">
-    <div class="mpreview"><iframe id="mFrame" sandbox="allow-scripts allow-same-origin"></iframe></div>
-    <div class="mside" id="mSide"></div>
   </div>
 </div>
 
-<!-- ═══ MODAL: EDITAR ═══ -->
-<div id="editModal">
+<!-- MODAL PROJETO -->
+<div id="pmod">
+  <div class="mh">
+    <div class="mt" id="mTit">—</div>
+    <div class="mm">
+      <span id="mOwn" style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--dim)"></span>
+      <span id="mPrc" class="mpr"></span>
+      <span id="mOpn"></span><span id="mPrv"></span>
+    </div>
+    <div class="mbs">
+      <button class="mbe" id="mBE" onclick="openEdit()" style="display:none">✏ EDITAR</button>
+      <button class="mbd" id="mBD" onclick="delOwn()"   style="display:none">🗑 APAGAR</button>
+      <button class="mcl" onclick="closeP()">✕</button>
+    </div>
+  </div>
+  <div class="mb">
+    <div class="mprev"><iframe id="mFr" sandbox="allow-scripts allow-same-origin"></iframe></div>
+    <div class="mside" id="mSd"></div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR -->
+<div id="emod">
   <div class="ebox">
-    <div class="ehead"><div class="ehead-t">EDITAR PROJETO</div><button class="mclose" onclick="closeEdit()">✕</button></div>
+    <div class="eh"><div class="eht">EDITAR PROJETO</div><button class="mcl" onclick="closeE()">✕</button></div>
     <div class="ebody">
-      <div class="usec"><div class="usec-title">Nome</div><input class="finput" type="text" id="eName"></div>
-      <div class="usec">
-        <div class="usec-title">Código HTML</div>
-        <textarea class="codearea" id="eHTML" rows="10"></textarea>
-        <button class="btnprev" onclick="prevEdit()" style="margin-top:10px">👁 PRÉ-VISUALIZAR</button>
+      <div class="usec"><div class="ust">Nome</div><input class="fi" type="text" id="eN"></div>
+      <div class="usec"><div class="ust">Código HTML</div>
+        <textarea class="ca" id="eH" rows="10"></textarea>
+        <button class="bprev" onclick="prevE()" style="margin-top:10px">👁 PRÉ-VISUALIZAR</button>
       </div>
-      <div class="usec">
-        <div class="usec-title">Venda</div>
-        <div class="trow"><label class="tog"><input type="checkbox" id="eFree" onchange="togEditPrice()"><div class="tslider"></div></label><span class="tlabel">Gratuito</span></div>
-        <div id="ePriceBlock">
-          <div class="fgroup" style="margin-top:10px"><label class="flabel">Valor (R$)</label><input class="finput" type="number" id="ePrice" placeholder="0.00" min="0" step="0.01"></div>
-          <div class="fgroup"><label class="flabel">Chave PIX</label><input class="finput" type="text" id="ePix"></div>
+      <div class="usec"><div class="ust">Venda</div>
+        <div class="tr"><label class="tog"><input type="checkbox" id="eF" onchange="togEP()"><div class="tsl"></div></label><span class="tl">Gratuito</span></div>
+        <div id="ePB">
+          <div class="fg" style="margin-top:10px"><label class="fl">Valor (R$)</label><input class="fi" type="number" id="ePR" placeholder="0.00" min="0" step="0.01"></div>
+          <div class="fg"><label class="fl">Chave PIX</label><input class="fi" type="text" id="ePX"></div>
         </div>
       </div>
-      <div class="usec">
-        <div class="usec-title">Visibilidade</div>
-        <div class="trow"><label class="tog"><input type="checkbox" id="ePriv"><div class="tslider"></div></label><span class="tlabel">Privado <span style="font-size:12px;color:var(--dim)">(só você vê)</span></span></div>
+      <div class="usec"><div class="ust">Visibilidade</div>
+        <div class="tr"><label class="tog"><input type="checkbox" id="ePV"><div class="tsl"></div></label><span class="tl">Privado <span style="font-size:12px;color:var(--dim)">(só você vê)</span></span></div>
       </div>
-      <div class="usec">
-        <div class="usec-title">Código Aberto?</div>
-        <div class="trow"><label class="tog"><input type="checkbox" id="eOpen"><div class="tslider"></div></label><span class="tlabel">Visível para todos</span></div>
+      <div class="usec"><div class="ust">Código Aberto?</div>
+        <div class="tr"><label class="tog"><input type="checkbox" id="eO"><div class="tsl"></div></label><span class="tl">Visível para todos</span></div>
       </div>
-      <div class="usec">
-        <div class="usec-title">Redes Sociais</div>
+      <div class="usec"><div class="ust">Redes Sociais</div>
         <div class="g2">
-          <div class="fgroup"><label class="flabel">Discord</label><input class="finput" type="text" id="eDisc"></div>
-          <div class="fgroup"><label class="flabel">WhatsApp</label><input class="finput" type="text" id="eWA"></div>
-          <div class="fgroup"><label class="flabel">Instagram</label><input class="finput" type="text" id="eIG"></div>
-          <div class="fgroup"><label class="flabel">GitHub</label><input class="finput" type="text" id="eGH"></div>
+          <div class="fg"><label class="fl">Discord</label><input class="fi" type="text" id="eDC"></div>
+          <div class="fg"><label class="fl">WhatsApp</label><input class="fi" type="text" id="eWA"></div>
+          <div class="fg"><label class="fl">Instagram</label><input class="fi" type="text" id="eIG"></div>
+          <div class="fg"><label class="fl">GitHub</label><input class="fi" type="text" id="eGH"></div>
         </div>
       </div>
-      <button class="fbtn" id="btnSave" onclick="saveEdit()">SALVAR ALTERAÇÕES</button>
+      <button class="fbtn" id="bSave" onclick="saveEdit()">SALVAR ALTERAÇÕES</button>
     </div>
   </div>
 </div>
 
-</div><!-- /root -->
+</div>
 <div id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-//  NEXUS CLIENT  —  PeerJS  —  ID DO HOST FIXO
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+// NEXUS CLIENT — Gun.js — sem input de ID
+// ═══════════════════════════════════════════
 
-const HOST_ID   = 'nexus-host-001';   // ← mesmo ID configurado no host
-const NS        = 'nx_';
+const NS = 'nexus2025_';
+const PEERS = [
+  'https://gun-manhattan.herokuapp.com/gun',
+  'https://gunjs.herokuapp.com/gun',
+  'https://peer.wallie.io/gun'
+];
 
-let peer          = null;
-let conn          = null;
-let hostOnline    = false;
-let myId          = null;
-let currentUser   = null;
-let sessionToken  = null;
-let projects      = [];
-let pending       = {};
-let retryCount    = 0;
-let retryTimer    = null;
-let afterConnect  = null;   // função a chamar depois que conectar
+let gun, db;
+let ready       = false;
+let currentUser = null;
+let sessionToken= null;
+let projects    = [];
+let retryCount  = 0;
+let retryTimer  = null;
 
-// ─────────────────────────────────────
-//  BOOT
-// ─────────────────────────────────────
-(function boot() {
-  const u = sessionStorage.getItem(NS+'u');
-  const t = sessionStorage.getItem(NS+'t');
-  if (u && t) { currentUser = u; sessionToken = t; }
-  initPeer();
+// ─── BOOT ───
+(function boot(){
+  const u = sessionStorage.getItem('nx_u');
+  const t = sessionStorage.getItem('nx_t');
+  if (u && t) { currentUser=u; sessionToken=t; }
+  initGun();
 })();
 
-// ─────────────────────────────────────
-//  PEERJS — CRIAR PEER LOCAL
-// ─────────────────────────────────────
-function initPeer() {
-  setConn('spin', 'Iniciando conexão P2P...');
-
-  if (peer && !peer.destroyed) { try { peer.destroy(); } catch(e){} }
-  conn = null; hostOnline = false;
-
-  peer = new Peer(undefined, {
-    debug: 0,
-    config: { iceServers: [
-      { urls: 'stun:stun.l.google.com:19302' },
-      { urls: 'stun:stun1.l.google.com:19302' }
-    ]}
-  });
-
-  peer.on('open', id => {
-    myId = id;
-    retryCount = 0;
-    connectHost();
-  });
-
-  peer.on('error', err => {
-    if (err.type === 'peer-unavailable') {
-      retry('Host offline — reconectando...');
-    } else {
-      retry('Erro de rede (' + err.type + ') — tentando novamente...');
-    }
-  });
-
-  peer.on('disconnected', () => {
-    setConn('spin', 'Reconectando ao servidor PeerJS...');
-    setTimeout(() => { if (peer && !peer.destroyed) peer.reconnect(); }, 2000);
-  });
-
-  peer.on('close', () => {
-    retry('Peer encerrado — reiniciando...');
-  });
-}
-
-// ─────────────────────────────────────
-//  CONECTAR AO HOST
-// ─────────────────────────────────────
-function connectHost() {
-  setConn('spin', 'Conectando ao host NEXUS...');
-  setRetry(retryCount > 0 ? retryCount + 'ª tentativa' : '');
+function initGun() {
+  setC('spin','Conectando à rede Gun.js...');
 
   try {
-    if (conn) { try { conn.close(); } catch(e){} }
-    conn = peer.connect(HOST_ID, { reliable: true, serialization: 'json' });
+    gun = Gun({ peers: PEERS, localStorage: false });
+    db  = gun.get(NS);
 
-    // Se não abrir em 7s, tenta de novo
-    const tout = setTimeout(() => {
-      if (!hostOnline) retry('Host não respondeu — tentando novamente...');
-    }, 7000);
-
-    conn.on('open', () => {
-      clearTimeout(tout);
-      onConnected();
+    // Escuta respostas do host para este cliente
+    db.get('reply').map().on((data, rid) => {
+      if (!data || data._ts === undefined) return;
+      // Só processa replies recentes (menos de 20s)
+      if (Date.now() - (data._ts||0) > 20000) return;
+      resolveReply(rid, data);
     });
 
-    conn.on('data', msg => onMsg(msg));
-
-    conn.on('close', () => {
-      clearTimeout(tout);
-      if (hostOnline) onDisconnected();
+    // Escuta broadcast de projetos do host
+    db.get('broadcast').get('projects').on(data => {
+      if (!data || !data.list) return;
+      try {
+        const all = JSON.parse(data.list);
+        projects = all.filter(p => !p.isPrivate || p.owner === currentUser);
+        renderProjects();
+      } catch(e){}
     });
 
-    conn.on('error', () => {
-      clearTimeout(tout);
-      retry('Falha ao conectar — tentando novamente...');
+    // Escuta kick / clear
+    db.get('broadcast').get('kick_'+(currentUser||'')).on(data => {
+      if (data && data.username === currentUser) { doLogout(true); toast('Conta removida pelo administrador.','err'); }
     });
+    db.get('broadcast').get('clear_all').on(data => {
+      if (data && data._ts && Date.now()-data._ts < 5000) { doLogout(true); toast('Todas as contas foram removidas.','err'); }
+    });
+
+    // Considera conectado após 2s (Gun.js não tem evento "connected" confiável)
+    clearTimeout(retryTimer);
+    retryTimer = setTimeout(onReady, 2000);
 
   } catch(e) {
-    retry('Exceção: ' + e.message);
+    scheduleRetry('Erro ao iniciar Gun.js — tentando novamente...');
   }
 }
 
-function onConnected() {
-  hostOnline  = true;
-  retryCount  = 0;
-  clearTimeout(retryTimer);
+function onReady() {
+  ready = true;
+  retryCount = 0;
+  setC('ok','Conectado!');
+  document.getElementById('offstrip').style.display = 'none';
 
-  setConn('ok', 'Conectado!');
-  setRetry('');
-  document.getElementById('offlineStrip').style.display = 'none';
-
-  send({ type: 'PING' });
-
-  // Exibe a tela certa
-  setTimeout(() => {
-    if (currentUser && sessionToken) {
-      goMain();
-    } else {
-      goScreen('sAuth');
-    }
-    reqProjects();
-  }, 300);
-}
-
-function onDisconnected() {
-  hostOnline = false;
-  if (currentUser) {
-    document.getElementById('offlineStrip').style.display = 'block';
+  if (currentUser && sessionToken) {
+    goMain();
+  } else {
+    goScreen('sAuth');
   }
-  retry('Host desconectado — reconectando...');
+  reqProjects();
 }
 
-function retry(msg) {
-  hostOnline = false;
+function scheduleRetry(msg) {
+  ready = false;
   retryCount++;
   const delay = Math.min(2000 * Math.min(retryCount, 8), 18000);
-  setConn('spin', msg);
-  setRetry(retryCount + 'ª tentativa — aguardando ' + Math.ceil(delay/1000) + 's...');
+  setC('spin', msg || 'Reconectando...');
+  document.getElementById('cret').textContent = retryCount+'ª tentativa — próxima em '+Math.ceil(delay/1000)+'s';
+  if (currentUser) document.getElementById('offstrip').style.display = 'block';
   clearTimeout(retryTimer);
-  retryTimer = setTimeout(() => {
-    if (peer && !peer.destroyed && myId) connectHost();
-    else initPeer();
-  }, delay);
+  retryTimer = setTimeout(initGun, delay);
 }
 
-// ─────────────────────────────────────
-//  ENVIAR / RECEBER
-// ─────────────────────────────────────
-function send(data) {
-  try { if (conn && conn.open) conn.send(data); } catch(e){}
-}
+// ─── REQUESTS ───
+const pending = {};
 
 function request(type, payload, cb) {
-  const rid = 'r' + Date.now() + Math.random().toString(36).substr(2,4);
+  if (!gun) { scheduleRetry('Sem conexão...'); cb({success:false,error:'Sem conexão'}); return; }
+  const rid = 'c'+Date.now()+Math.random().toString(36).substr(2,4);
   pending[rid] = cb;
-  send({ type, requestId: rid, ...payload });
-  setTimeout(() => {
-    if (pending[rid]) { delete pending[rid]; cb({ success: false, error: 'Tempo esgotado.' }); }
-  }, 10000);
+
+  // Envia comando para o host
+  db.get('cmd').get(rid).put({ type, rid, ...payload, _ts: Date.now(), _handled: false });
+
+  // Timeout
+  setTimeout(()=>{ if(pending[rid]){ delete pending[rid]; cb({success:false,error:'Tempo esgotado — verifique se o host está online.'}); }}, 12000);
 }
 
-function onMsg(msg) {
-  if (!msg || !msg.type) return;
-  const rid = msg.requestId;
-
-  // Resolve requests pendentes
-  if (rid && pending[rid]) { pending[rid](msg); delete pending[rid]; return; }
-
-  switch (msg.type) {
-    case 'PROJECTS_UPDATE':
-      projects = msg.projects || [];
-      renderProjects();
-      break;
-    case 'ACCOUNT_DELETED':
-      if (msg.username === currentUser) { doLogout(true); toast('Conta removida pelo administrador.', 'err'); }
-      break;
-    case 'ALL_ACCOUNTS_CLEARED':
-      doLogout(true); toast('Todas as contas foram removidas.', 'err');
-      break;
-  }
+function resolveReply(rid, data) {
+  if (pending[rid]) { pending[rid](data); delete pending[rid]; }
 }
 
-// ─────────────────────────────────────
-//  NAVEGAÇÃO ENTRE TELAS
-// ─────────────────────────────────────
+// ─── SCREENS ───
 function goScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
   document.getElementById(id).classList.add('on');
 }
 
 function goMain() {
   goScreen('sMain');
-  document.getElementById('navUser').textContent = currentUser;
+  document.getElementById('nusr').textContent = currentUser;
+  // Reregistra listeners para kick deste usuário
+  if (currentUser) {
+    db.get('broadcast').get('kick_'+currentUser).on(data=>{
+      if(data&&data.username===currentUser){ doLogout(true); toast('Conta removida pelo administrador.','err'); }
+    });
+  }
   reqProjects();
 }
 
-// ─────────────────────────────────────
-//  AUTH
-// ─────────────────────────────────────
+// ─── AUTH ───
 function setTab(t) {
-  document.getElementById('fLogin').style.display = t === 'login' ? 'block' : 'none';
-  document.getElementById('fReg').style.display   = t === 'reg'   ? 'block' : 'none';
-  document.getElementById('tLogin').className = 'tab' + (t === 'login' ? ' on' : '');
-  document.getElementById('tReg').className   = 'tab' + (t === 'reg'   ? ' on' : '');
-  clearAErr();
+  document.getElementById('fL').style.display = t==='l'?'block':'none';
+  document.getElementById('fR').style.display = t==='r'?'block':'none';
+  document.getElementById('tL').className = 'tab'+(t==='l'?' on':'');
+  document.getElementById('tR').className = 'tab'+(t==='r'?' on':'');
+  clearAE();
 }
-
-function showAErr(m) { const e = document.getElementById('authErr'); e.textContent = m; e.style.display = 'block'; }
-function clearAErr()  { document.getElementById('authErr').style.display = 'none'; }
+function showAE(m){ const e=document.getElementById('aerr'); e.textContent=m; e.style.display='block'; }
+function clearAE(){ document.getElementById('aerr').style.display='none'; }
 
 function doLogin() {
-  const u = document.getElementById('lUser').value.trim();
-  const p = document.getElementById('lPass').value;
-  if (!u || !p) { showAErr('Preencha todos os campos.'); return; }
-  if (!hostOnline) { showAErr('Host offline. Aguarde reconexão.'); return; }
-
-  const btn = document.getElementById('btnLogin');
-  btn.disabled = true; btn.textContent = 'AGUARDANDO...';
-
-  request('LOGIN', { username: u, password: p }, r => {
-    btn.disabled = false; btn.textContent = 'ENTRAR';
-    if (r.success) {
-      currentUser = r.username; sessionToken = r.sessionToken;
-      sessionStorage.setItem(NS+'u', currentUser);
-      sessionStorage.setItem(NS+'t', sessionToken);
-      goMain(); toast('Bem-vindo de volta, ' + currentUser + '!', 'suc');
-    } else { showAErr(r.error || 'Erro ao entrar.'); }
+  const u=document.getElementById('lU').value.trim();
+  const p=document.getElementById('lP').value;
+  if(!u||!p){showAE('Preencha todos os campos.');return;}
+  const btn=document.getElementById('bLogin');
+  btn.disabled=true; btn.textContent='AGUARDANDO...';
+  request('LOGIN',{username:u,password:p},r=>{
+    btn.disabled=false; btn.textContent='ENTRAR';
+    if(r.success){
+      currentUser=r.username; sessionToken=r.token;
+      sessionStorage.setItem('nx_u',currentUser);
+      sessionStorage.setItem('nx_t',sessionToken);
+      goMain(); toast('Bem-vindo de volta, '+currentUser+'!','suc');
+    } else { showAE(r.error||'Erro ao entrar.'); }
   });
 }
 
-function doRegister() {
-  const u  = document.getElementById('rUser').value.trim();
-  const p  = document.getElementById('rPass').value;
-  const p2 = document.getElementById('rPass2').value;
-
-  if (!u || !p)                        { showAErr('Preencha todos os campos.'); return; }
-  if (u.length < 3)                    { showAErr('Usuário: mínimo 3 caracteres.'); return; }
-  if (!/^[a-zA-Z0-9_]+$/.test(u))     { showAErr('Usuário: apenas letras, números e _'); return; }
-  if (p.length < 4)                    { showAErr('Senha: mínimo 4 caracteres.'); return; }
-  if (p !== p2)                        { showAErr('As senhas não coincidem.'); return; }
-  if (!hostOnline)                     { showAErr('Host offline. Aguarde reconexão.'); return; }
-
-  const btn = document.getElementById('btnReg');
-  btn.disabled = true; btn.textContent = 'CRIANDO...';
-
-  request('REGISTER', { username: u, password: p }, r => {
-    btn.disabled = false; btn.textContent = 'CRIAR CONTA';
-    if (r.success) {
-      currentUser = r.username; sessionToken = r.sessionToken;
-      sessionStorage.setItem(NS+'u', currentUser);
-      sessionStorage.setItem(NS+'t', sessionToken);
-      goMain(); toast('Conta criada! Bem-vindo, ' + currentUser + '!', 'suc');
-    } else { showAErr(r.error || 'Erro ao criar conta.'); }
+function doReg() {
+  const u=document.getElementById('rU').value.trim();
+  const p=document.getElementById('rP').value;
+  const p2=document.getElementById('rP2').value;
+  if(!u||!p){showAE('Preencha todos os campos.');return;}
+  if(u.length<3){showAE('Usuário: mínimo 3 caracteres.');return;}
+  if(!/^[a-zA-Z0-9_]+$/.test(u)){showAE('Usuário: apenas letras, números e _');return;}
+  if(p.length<4){showAE('Senha: mínimo 4 caracteres.');return;}
+  if(p!==p2){showAE('As senhas não coincidem.');return;}
+  const btn=document.getElementById('bReg');
+  btn.disabled=true; btn.textContent='CRIANDO...';
+  request('REGISTER',{username:u,password:p},r=>{
+    btn.disabled=false; btn.textContent='CRIAR CONTA';
+    if(r.success){
+      currentUser=r.username; sessionToken=r.token;
+      sessionStorage.setItem('nx_u',currentUser);
+      sessionStorage.setItem('nx_t',sessionToken);
+      goMain(); toast('Conta criada! Bem-vindo, '+currentUser+'!','suc');
+    } else { showAE(r.error||'Erro ao criar conta.'); }
   });
 }
 
 function doLogout(forced) {
-  if (!forced && !confirm('Deseja sair?')) return;
-  try { send({ type: 'LOGOUT', username: currentUser }); } catch(e){}
-  currentUser = null; sessionToken = null; projects = [];
-  sessionStorage.removeItem(NS+'u');
-  sessionStorage.removeItem(NS+'t');
-  goScreen('sAuth'); setTab('login');
-  toast('Sessão encerrada.', 'inf');
+  if(!forced&&!confirm('Deseja sair?'))return;
+  try{db.get('cmd').get('logout_'+Date.now()).put({type:'LOGOUT',username:currentUser,rid:'_',_ts:Date.now(),_handled:false});}catch(e){}
+  currentUser=null; sessionToken=null; projects=[];
+  sessionStorage.removeItem('nx_u'); sessionStorage.removeItem('nx_t');
+  goScreen('sAuth'); setTab('l');
+  toast('Sessão encerrada.','inf');
 }
 
-// ─────────────────────────────────────
-//  PROJETOS — LISTAR
-// ─────────────────────────────────────
+// ─── PROJETOS ───
 function reqProjects() {
-  if (!hostOnline) return;
-  request('GET_PROJECTS', { username: currentUser }, r => {
-    if (r.projects !== undefined) { projects = r.projects; renderProjects(); }
+  if (!gun) return;
+  request('GET_PROJECTS',{username:currentUser},r=>{
+    if(r.projects){ projects=r.projects; renderProjects(); }
   });
 }
 
 function renderProjects() {
-  const g = document.getElementById('pGrid');
-  if (!projects.length) {
-    g.innerHTML = `<div class="empty-g"><span style="font-size:42px;opacity:.2">◈</span><div>NENHUM PROJETO AINDA</div><div style="font-size:12px;opacity:.5">Seja o primeiro a publicar</div></div>`;
+  const g=document.getElementById('pgrid');
+  if(!projects.length){
+    g.innerHTML=`<div class="emg"><span style="font-size:42px;opacity:.2">◈</span><div>NENHUM PROJETO AINDA</div><div style="font-size:12px;opacity:.5">Seja o primeiro a publicar</div></div>`;
     return;
   }
-  g.innerHTML = projects.map(p => {
-    const mine = p.owner === currentUser;
-    return `<div class="pcard" onclick="openProj('${p.id}')">
+  g.innerHTML=projects.map(p=>{
+    const mine=p.owner===currentUser;
+    return `<div class="pcard" onclick="openP('${p.id}')">
       <div class="pthumb">
-        ${p.isPrivate ? '<span class="pbadge-priv">🔒 PRIVADO</span>' : ''}
+        ${p.isPrivate?'<span class="pbpriv">🔒 PRIVADO</span>':''}
         ${p.htmlCode
-          ? `<iframe sandbox="allow-scripts" srcdoc="${xa(p.htmlCode)}" scrolling="no"></iframe>`
-          : `<div class="pthumb-empty"><span style="font-size:32px;opacity:.2">◈</span><div>SEM PREVIEW</div></div>`}
+          ?`<iframe sandbox="allow-scripts" srcdoc="${xa(p.htmlCode)}" scrolling="no"></iframe>`
+          :`<div class="pte"><span style="font-size:32px;opacity:.2">◈</span><div>SEM PREVIEW</div></div>`}
       </div>
       <div class="pbody">
         <div class="pname">${x(p.name)}</div>
-        <div class="powner">@${x(p.owner)}${mine?' <span style="color:var(--accent3);font-size:10px">(seu)</span>':''}</div>
+        <div class="pown">@${x(p.owner)}${mine?' <span style="color:var(--accent3);font-size:10px">(seu)</span>':''}</div>
         <div class="ptags">
-          ${p.openSource ? '<span class="ptag open">ABERTO</span>' : ''}
-          ${p.price>0 ? `<span class="ptag paid">R$ ${(+p.price).toFixed(2)}</span>` : '<span class="ptag free">GRÁTIS</span>'}
-          ${p.isPrivate ? '<span class="ptag priv">PRIVADO</span>' : ''}
+          ${p.openSource?'<span class="ptag open">ABERTO</span>':''}
+          ${p.price>0?`<span class="ptag paid">R$ ${(+p.price).toFixed(2)}</span>`:'<span class="ptag free">GRÁTIS</span>'}
+          ${p.isPrivate?'<span class="ptag priv">PRIVADO</span>':''}
         </div>
       </div>
       <div class="pfoot">
-        <span class="pprice">${p.price>0 ? 'R$ '+(+p.price).toFixed(2) : 'Grátis'}</span>
-        <div class="pactions">
-          ${mine ? `
-            <button class="btnedit" onclick="event.stopPropagation();quickEdit('${p.id}')" title="Editar">✏</button>
-            <button class="btndel"  onclick="event.stopPropagation();delById('${p.id}')"   title="Apagar">🗑</button>
-          ` : ''}
-          <button class="btnview">VER</button>
+        <span class="pprice">${p.price>0?'R$ '+(+p.price).toFixed(2):'Grátis'}</span>
+        <div class="pact">
+          ${mine?`
+            <button class="bedit" onclick="event.stopPropagation();qEdit('${p.id}')" title="Editar">✏</button>
+            <button class="bdel"  onclick="event.stopPropagation();delById('${p.id}')" title="Apagar">🗑</button>
+          `:''}
+          <button class="bview">VER</button>
         </div>
       </div>
     </div>`;
   }).join('');
 }
 
-// ─────────────────────────────────────
-//  MODAL — ABRIR PROJETO
-// ─────────────────────────────────────
-function openProj(id) {
-  const p = projects.find(q => q.id === id);
-  if (!p) return;
-  const mine = p.owner === currentUser;
+// ─── MODAL PROJETO ───
+function openP(id) {
+  const p=projects.find(q=>q.id===id); if(!p)return;
+  const mine=p.owner===currentUser;
+  document.getElementById('mTit').textContent=p.name;
+  document.getElementById('mOwn').textContent='@'+p.owner+' · '+(p.editedAt||p.uploadedAt);
+  document.getElementById('mPrc').textContent=p.price>0?'R$ '+(+p.price).toFixed(2):'Grátis';
+  document.getElementById('mOpn').innerHTML=p.openSource?'<span class="ptag open">CÓDIGO ABERTO</span>':'';
+  document.getElementById('mPrv').innerHTML=p.isPrivate?'<span class="ptag priv">🔒 PRIVADO</span>':'';
+  document.getElementById('mBE').style.display=mine?'':'none';
+  document.getElementById('mBD').style.display=mine?'':'none';
+  document.getElementById('mFr').srcdoc=p.htmlCode||'<body style="background:#111;color:#555;display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace;font-size:14px;letter-spacing:2px">SEM PREVIEW</body>';
 
-  document.getElementById('mTitle').textContent = p.name;
-  document.getElementById('mOwner').textContent = '@'+p.owner+' · '+(p.editedAt||p.uploadedAt);
-  document.getElementById('mPrice').textContent = p.price>0 ? 'R$ '+(+p.price).toFixed(2) : 'Grátis';
-  document.getElementById('mOpen').innerHTML    = p.openSource ? '<span class="ptag open">CÓDIGO ABERTO</span>' : '';
-  document.getElementById('mPriv').innerHTML    = p.isPrivate  ? '<span class="ptag priv">🔒 PRIVADO</span>'   : '';
-  document.getElementById('mBtnEdit').style.display = mine ? '' : 'none';
-  document.getElementById('mBtnDel').style.display  = mine ? '' : 'none';
-
-  document.getElementById('mFrame').srcdoc = p.htmlCode ||
-    '<body style="background:#111;color:#555;display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace;font-size:14px;letter-spacing:2px">SEM PREVIEW</body>';
-
-  // Sidebar
-  let sb = '';
-  if (p.openSource && p.htmlCode) {
-    sb += `<div><div class="stitle">Código Fonte</div>
-      <div class="codeview">${x(p.htmlCode.substr(0,2500))}${p.htmlCode.length>2500?'\n...(truncado)':''}</div>
-      <button class="btncopy" onclick="copyCd()" style="width:100%;margin-top:8px">COPIAR CÓDIGO</button></div>`;
+  let sb='';
+  if(p.openSource&&p.htmlCode){
+    sb+=`<div><div class="stit">Código Fonte</div><div class="cv">${x(p.htmlCode.substr(0,2500))}${p.htmlCode.length>2500?'\n...(truncado)':''}</div><button class="bcp" onclick="cpCd()" style="width:100%;margin-top:8px">COPIAR CÓDIGO</button></div>`;
   }
-  const soc = [];
-  if (p.socialDiscord)   soc.push({n:'Discord',   v:p.socialDiscord,   i:'🎮', href:false});
-  if (p.socialWhatsapp)  soc.push({n:'WhatsApp',  v:'https://wa.me/'+p.socialWhatsapp.replace(/\D/g,''), i:'💬', href:true});
-  if (p.socialInstagram) soc.push({n:'Instagram', v:'https://instagram.com/'+p.socialInstagram.replace('@',''), i:'📷', href:true});
-  if (p.socialGithub)    soc.push({n:'GitHub',    v:p.socialGithub.startsWith('http')?p.socialGithub:'https://'+p.socialGithub, i:'⚙️', href:true});
-  if (soc.length) {
-    sb += `<div><div class="stitle">Contato / Redes</div>`;
-    soc.forEach(s => { sb += s.href
-      ? `<a class="slink" href="${x(s.v)}" target="_blank" rel="noopener">${s.i} ${s.n}</a>`
-      : `<div class="slink">${s.i} ${s.n}: <span style="color:var(--text)">${x(s.v)}</span></div>`; });
-    sb += '</div>';
+  const soc=[];
+  if(p.socialDiscord)   soc.push({n:'Discord',v:p.socialDiscord,i:'🎮',h:false});
+  if(p.socialWhatsapp)  soc.push({n:'WhatsApp',v:'https://wa.me/'+p.socialWhatsapp.replace(/\D/g,''),i:'💬',h:true});
+  if(p.socialInstagram) soc.push({n:'Instagram',v:'https://instagram.com/'+p.socialInstagram.replace('@',''),i:'📷',h:true});
+  if(p.socialGithub)    soc.push({n:'GitHub',v:p.socialGithub.startsWith('http')?p.socialGithub:'https://'+p.socialGithub,i:'⚙️',h:true});
+  if(soc.length){
+    sb+=`<div><div class="stit">Contato / Redes</div>`;
+    soc.forEach(s=>{sb+=s.h?`<a class="sl2" href="${x(s.v)}" target="_blank" rel="noopener">${s.i} ${s.n}</a>`:`<div class="sl2">${s.i} ${s.n}: <span style="color:var(--text)">${x(s.v)}</span></div>`;});
+    sb+='</div>';
   }
-  if (p.price>0 && p.pixKey) {
-    sb += `<div><div class="stitle">Pagamento — PIX</div><div class="pixbox">
-      <div style="font-size:10px;color:var(--dim);font-family:'Share Tech Mono',monospace;letter-spacing:1px">CHAVE PIX</div>
-      <div class="pixkey">${x(p.pixKey)}</div>
-      <button class="btncopy" onclick="navigator.clipboard.writeText('${x(p.pixKey)}');toast('Chave copiada!','suc')">COPIAR CHAVE</button>
-    </div></div>`;
+  if(p.price>0&&p.pixKey){
+    sb+=`<div><div class="stit">Pagamento — PIX</div><div class="pb2"><div style="font-size:10px;color:var(--dim);font-family:'Share Tech Mono',monospace">CHAVE PIX</div><div class="pk">${x(p.pixKey)}</div><button class="bcp" onclick="navigator.clipboard.writeText('${x(p.pixKey)}');toast('Chave copiada!','suc')">COPIAR CHAVE</button></div></div>`;
   }
-  if (!sb) sb = `<div style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--dim);text-align:center;padding:30px 10px;letter-spacing:2px">SEM INFORMAÇÕES EXTRAS</div>`;
-
-  document.getElementById('mSide').innerHTML = sb;
-  document.getElementById('projModal').classList.add('on');
-  document.getElementById('projModal')._p = p;
+  if(!sb) sb=`<div style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--dim);text-align:center;padding:30px 10px;letter-spacing:2px">SEM INFORMAÇÕES EXTRAS</div>`;
+  document.getElementById('mSd').innerHTML=sb;
+  document.getElementById('pmod').classList.add('on');
+  document.getElementById('pmod')._p=p;
 }
+function cpCd(){const p=document.getElementById('pmod')._p;if(p?.htmlCode){navigator.clipboard.writeText(p.htmlCode);toast('Código copiado!','suc');}}
+function closeP(){document.getElementById('pmod').classList.remove('on');document.getElementById('mFr').srcdoc='';}
 
-function copyCd() {
-  const p = document.getElementById('projModal')._p;
-  if (p?.htmlCode) { navigator.clipboard.writeText(p.htmlCode); toast('Código copiado!','suc'); }
+// ─── EDITAR ───
+function qEdit(id){const p=projects.find(q=>q.id===id);if(!p)return;document.getElementById('pmod')._p=p;openEdit();}
+function openEdit(){
+  const p=document.getElementById('pmod')._p;
+  if(!p||p.owner!==currentUser)return;
+  const free=!p.price||+p.price===0;
+  document.getElementById('eN').value=p.name;
+  document.getElementById('eH').value=p.htmlCode||'';
+  document.getElementById('eF').checked=free;
+  document.getElementById('ePR').value=p.price||'';
+  document.getElementById('ePX').value=p.pixKey||'';
+  document.getElementById('ePV').checked=!!p.isPrivate;
+  document.getElementById('eO').checked=!!p.openSource;
+  document.getElementById('eDC').value=p.socialDiscord||'';
+  document.getElementById('eWA').value=p.socialWhatsapp||'';
+  document.getElementById('eIG').value=p.socialInstagram||'';
+  document.getElementById('eGH').value=p.socialGithub||'';
+  togEP();
+  document.getElementById('emod').classList.add('on');
 }
-function closeProj() {
-  document.getElementById('projModal').classList.remove('on');
-  document.getElementById('mFrame').srcdoc = '';
-}
-
-// ─────────────────────────────────────
-//  EDITAR PROJETO
-// ─────────────────────────────────────
-function quickEdit(id) {
-  const p = projects.find(q => q.id === id);
-  if (!p) return;
-  document.getElementById('projModal')._p = p;
-  openEdit();
-}
-
-function openEdit() {
-  const p = document.getElementById('projModal')._p;
-  if (!p || p.owner !== currentUser) return;
-  const free = !p.price || +p.price === 0;
-  document.getElementById('eName').value  = p.name;
-  document.getElementById('eHTML').value  = p.htmlCode || '';
-  document.getElementById('eFree').checked = free;
-  document.getElementById('ePrice').value = p.price || '';
-  document.getElementById('ePix').value   = p.pixKey || '';
-  document.getElementById('ePriv').checked = !!p.isPrivate;
-  document.getElementById('eOpen').checked = !!p.openSource;
-  document.getElementById('eDisc').value  = p.socialDiscord || '';
-  document.getElementById('eWA').value    = p.socialWhatsapp || '';
-  document.getElementById('eIG').value    = p.socialInstagram || '';
-  document.getElementById('eGH').value    = p.socialGithub || '';
-  togEditPrice();
-  document.getElementById('editModal').classList.add('on');
-}
-
-function closeEdit() { document.getElementById('editModal').classList.remove('on'); }
-
-function togEditPrice() {
-  document.getElementById('ePriceBlock').style.display = document.getElementById('eFree').checked ? 'none' : 'block';
-}
-
-function prevEdit() {
-  const c = document.getElementById('eHTML').value.trim();
-  if (!c) { toast('Sem código!','err'); return; }
-  const w = window.open('','_blank'); w.document.write(c); w.document.close();
-}
-
-function saveEdit() {
-  if (!hostOnline) { toast('Host offline!','err'); return; }
-  const p = document.getElementById('projModal')._p;
-  if (!p || p.owner !== currentUser) return;
-  const free = document.getElementById('eFree').checked;
-  const upd = {
-    name:           document.getElementById('eName').value.trim() || p.name,
-    htmlCode:       document.getElementById('eHTML').value.trim(),
-    price:          free ? 0 : parseFloat(document.getElementById('ePrice').value||0),
-    pixKey:         free ? '' : document.getElementById('ePix').value.trim(),
-    isPrivate:      document.getElementById('ePriv').checked,
-    openSource:     document.getElementById('eOpen').checked,
-    socialDiscord:  document.getElementById('eDisc').value.trim(),
-    socialWhatsapp: document.getElementById('eWA').value.trim(),
+function closeE(){document.getElementById('emod').classList.remove('on');}
+function togEP(){document.getElementById('ePB').style.display=document.getElementById('eF').checked?'none':'block';}
+function prevE(){const c=document.getElementById('eH').value.trim();if(!c){toast('Sem código!','err');return;}const w=window.open('','_blank');w.document.write(c);w.document.close();}
+function saveEdit(){
+  const p=document.getElementById('pmod')._p;
+  if(!p||p.owner!==currentUser)return;
+  const free=document.getElementById('eF').checked;
+  const upd={
+    name:document.getElementById('eN').value.trim()||p.name,
+    htmlCode:document.getElementById('eH').value.trim(),
+    price:free?0:parseFloat(document.getElementById('ePR').value||0),
+    pixKey:free?'':document.getElementById('ePX').value.trim(),
+    isPrivate:document.getElementById('ePV').checked,
+    openSource:document.getElementById('eO').checked,
+    socialDiscord:document.getElementById('eDC').value.trim(),
+    socialWhatsapp:document.getElementById('eWA').value.trim(),
     socialInstagram:document.getElementById('eIG').value.trim(),
-    socialGithub:   document.getElementById('eGH').value.trim(),
-    payment: free ? '' : 'pix'
+    socialGithub:document.getElementById('eGH').value.trim(),
+    payment:free?'':'pix'
   };
-  const btn = document.getElementById('btnSave');
-  btn.disabled = true; btn.textContent = 'SALVANDO...';
-  request('EDIT_PROJECT', { projectId: p.id, updates: upd, username: currentUser }, r => {
-    btn.disabled = false; btn.textContent = 'SALVAR ALTERAÇÕES';
-    if (r.success) { toast('Projeto atualizado!','suc'); closeEdit(); closeProj(); reqProjects(); }
-    else { toast(r.error||'Erro ao salvar.','err'); }
+  const btn=document.getElementById('bSave');
+  btn.disabled=true;btn.textContent='SALVANDO...';
+  request('EDIT_PROJECT',{projectId:p.id,updates:upd,username:currentUser},r=>{
+    btn.disabled=false;btn.textContent='SALVAR ALTERAÇÕES';
+    if(r.success){toast('Atualizado!','suc');closeE();closeP();reqProjects();}
+    else toast(r.error||'Erro.','err');
   });
 }
 
-// ─────────────────────────────────────
-//  APAGAR PROJETO
-// ─────────────────────────────────────
-function delOwn() {
-  const p = document.getElementById('projModal')._p;
-  if (p) delById(p.id);
-}
-
-function delById(id) {
-  const p = projects.find(q => q.id === id);
-  if (!p || p.owner !== currentUser) { toast('Sem permissão!','err'); return; }
-  if (!confirm('Apagar "'+p.name+'" permanentemente?')) return;
-  request('DELETE_BY_OWNER', { projectId: id, username: currentUser }, r => {
-    if (r.success) { toast('Projeto apagado.','suc'); closeProj(); reqProjects(); }
-    else { toast(r.error||'Erro ao apagar.','err'); }
+// ─── APAGAR ───
+function delOwn(){const p=document.getElementById('pmod')._p;if(p)delById(p.id);}
+function delById(id){
+  const p=projects.find(q=>q.id===id);
+  if(!p||p.owner!==currentUser){toast('Sem permissão!','err');return;}
+  if(!confirm('Apagar "'+p.name+'" permanentemente?'))return;
+  request('DELETE_BY_OWNER',{projectId:id,username:currentUser},r=>{
+    if(r.success){toast('Apagado.','suc');closeP();reqProjects();}
+    else toast(r.error||'Erro.','err');
   });
 }
 
-// ─────────────────────────────────────
-//  PUBLICAR PROJETO
-// ─────────────────────────────────────
-function togPrice() {
-  document.getElementById('uPriceBlock').style.display = document.getElementById('uFree').checked ? 'none' : 'block';
-}
-
-function prevDraft() {
-  const c = document.getElementById('uHTML').value.trim();
-  if (!c) { toast('Cole o código primeiro!','err'); return; }
-  const w = window.open('','_blank'); w.document.write(c); w.document.close();
-}
-
-function publishProject() {
-  if (!hostOnline) { toast('Host offline!','err'); return; }
-  const name = document.getElementById('uName').value.trim();
-  const html = document.getElementById('uHTML').value.trim();
-  const free = document.getElementById('uFree').checked;
-  const price = free ? 0 : parseFloat(document.getElementById('uPrice').value||0);
-  if (!name)                   { toast('Dê um nome ao projeto!','err'); return; }
-  if (!html)                   { toast('Cole o código HTML!','err'); return; }
-  if (!free && price <= 0)     { toast('Defina um preço válido!','err'); return; }
-
-  const proj = {
-    name, htmlCode: html, price,
-    pixKey:         free ? '' : document.getElementById('uPix').value.trim(),
-    isPrivate:      document.getElementById('uPriv').checked,
-    openSource:     document.getElementById('uOpen').checked,
-    socialDiscord:  document.getElementById('uDisc').value.trim(),
-    socialWhatsapp: document.getElementById('uWA').value.trim(),
+// ─── PUBLICAR ───
+function togP(){document.getElementById('uPB').style.display=document.getElementById('uF').checked?'none':'block';}
+function prevD(){const c=document.getElementById('uH').value.trim();if(!c){toast('Cole o código primeiro!','err');return;}const w=window.open('','_blank');w.document.write(c);w.document.close();}
+function publishProj(){
+  const name=document.getElementById('uN').value.trim();
+  const html=document.getElementById('uH').value.trim();
+  const free=document.getElementById('uF').checked;
+  const price=free?0:parseFloat(document.getElementById('uPR').value||0);
+  if(!name){toast('Dê um nome!','err');return;}
+  if(!html){toast('Cole o código HTML!','err');return;}
+  if(!free&&price<=0){toast('Defina um preço válido!','err');return;}
+  const proj={
+    name,htmlCode:html,price,
+    pixKey:free?'':document.getElementById('uPX').value.trim(),
+    isPrivate:document.getElementById('uPV').checked,
+    openSource:document.getElementById('uO').checked,
+    socialDiscord:document.getElementById('uDC').value.trim(),
+    socialWhatsapp:document.getElementById('uWA').value.trim(),
     socialInstagram:document.getElementById('uIG').value.trim(),
-    socialGithub:   document.getElementById('uGH').value.trim(),
-    owner: currentUser,
-    payment: free ? '' : 'pix'
+    socialGithub:document.getElementById('uGH').value.trim(),
+    owner:currentUser,payment:free?'':'pix'
   };
-
-  const btn = document.getElementById('btnPub');
-  btn.disabled = true; btn.textContent = 'PUBLICANDO...';
-
-  request('UPLOAD_PROJECT', { project: proj }, r => {
-    btn.disabled = false; btn.textContent = 'PUBLICAR PROJETO';
-    if (r.success) {
+  const btn=document.getElementById('bPub');
+  btn.disabled=true;btn.textContent='PUBLICANDO...';
+  request('UPLOAD_PROJECT',{project:proj},r=>{
+    btn.disabled=false;btn.textContent='PUBLICAR PROJETO';
+    if(r.success){
       toast('Projeto publicado!','suc');
-      ['uName','uHTML','uPrice','uPix','uDisc','uWA','uIG','uGH'].forEach(i => document.getElementById(i).value='');
-      document.getElementById('uFree').checked = true;
-      document.getElementById('uOpen').checked = false;
-      document.getElementById('uPriv').checked = false;
-      togPrice();
-      goPage('discover');
-    } else { toast('Erro: '+(r.error||'desconhecido'),'err'); }
+      ['uN','uH','uPR','uPX','uDC','uWA','uIG','uGH'].forEach(i=>document.getElementById(i).value='');
+      document.getElementById('uF').checked=true;
+      document.getElementById('uO').checked=false;
+      document.getElementById('uPV').checked=false;
+      togP(); goPage('D');
+    } else toast('Erro: '+(r.error||'desconhecido'),'err');
   });
 }
 
-// ─────────────────────────────────────
-//  NAVEGAÇÃO PÁGINAS
-// ─────────────────────────────────────
-function goPage(pg) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
-  document.getElementById('p'+pg.charAt(0).toUpperCase()+pg.slice(1)).classList.add('on');
-  document.querySelectorAll('.ntab').forEach((t,i) => {
-    t.classList.toggle('on',
-      (pg==='discover' && (i===0||i===2)) ||
-      (pg==='upload'   && (i===1||i===3))
-    );
+// ─── PAGES ───
+function goPage(p){
+  document.querySelectorAll('.pg').forEach(e=>e.classList.remove('on'));
+  document.getElementById('pg'+p).classList.add('on');
+  document.querySelectorAll('.ntab').forEach((t,i)=>{
+    t.classList.toggle('on',(p==='D'&&(i===0||i===2))||(p==='U'&&(i===1||i===3)));
   });
-  if (pg==='discover') reqProjects();
+  if(p==='D')reqProjects();
 }
 
-// ─────────────────────────────────────
-//  HELPERS UI
-// ─────────────────────────────────────
-function setConn(state, txt) {
-  const d = document.getElementById('cDot');
-  const t = document.getElementById('cTxt');
-  if (d) d.className = 'dot ' + state;
-  if (t) t.textContent = txt;
+// ─── UTILS ───
+function setC(st,txt){
+  const d=document.getElementById('cdot'),t=document.getElementById('ctxt');
+  if(d)d.className='cdot '+st; if(t)t.textContent=txt;
 }
-function setRetry(txt) { const e = document.getElementById('cRetry'); if (e) e.textContent = txt; }
-
-function toast(msg, type='inf') {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'on ' + type;
-  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('on'), 3500);
+function toast(msg,type='inf'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='on '+type;
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),3500);
 }
+function x(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function xa(s){if(!s)return'';return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
-// HTML escape
-function x(s)  { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function xa(s) { if (!s) return ''; return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
-
-// ESC fecha modais
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeEdit(); closeProj(); }
-  if (e.key === 'Enter') {
-    const sc = document.querySelector('.screen.on');
-    if (!sc) return;
-    if (sc.id === 'sAuth') {
-      if (document.getElementById('fLogin').style.display !== 'none') doLogin();
-      else doRegister();
-    }
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeE();closeP();}
+  if(e.key==='Enter'){
+    const sc=document.querySelector('.screen.on');
+    if(!sc||sc.id!=='sAuth')return;
+    if(document.getElementById('fL').style.display!=='none')doLogin();
+    else doReg();
   }
 });
 
-// Refresh periódico
-setInterval(() => { if (hostOnline && currentUser) reqProjects(); }, 15000);
-
-// Notifica host ao fechar
-window.addEventListener('beforeunload', () => {
-  if (conn && currentUser) try { conn.send({ type:'CLIENT_DISCONNECT', username:currentUser }); } catch(e){}
-  if (peer && !peer.destroyed) try { peer.destroy(); } catch(e){}
-});
+setInterval(()=>{if(gun&&currentUser)reqProjects();},15000);
 </script>
 </body>
 </html>
