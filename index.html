@@ -3,640 +3,451 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS — Plataforma de Projetos</title>
+<title>NEXUS</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.2/peerjs.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
 
 :root {
-  --bg: #04060e;
-  --surface: #080c18;
-  --surface2: #0e1525;
-  --border: #172038;
-  --accent: #00e5ff;
-  --accent2: #ff2d6b;
-  --accent3: #8b5cf6;
-  --text: #cdd8f0;
-  --text-dim: #3d4e6e;
-  --green: #00ffaa;
-  --yellow: #fbbf24;
-  --glow: 0 0 30px rgba(0,229,255,0.25);
+  --bg:#04060e; --surface:#080c18; --surface2:#0e1525; --border:#172038;
+  --accent:#00e5ff; --accent2:#ff2d6b; --accent3:#8b5cf6;
+  --text:#cdd8f0; --dim:#3d4e6e; --green:#00ffaa; --yellow:#fbbf24;
+  --glow:0 0 30px rgba(0,229,255,.25);
 }
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.025) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 20% 40%,rgba(0,229,255,.04) 0%,transparent 60%),radial-gradient(ellipse 60% 70% at 80% 20%,rgba(139,92,246,.04) 0%,transparent 60%);pointer-events:none;z-index:0}
+#root{position:relative;z-index:1}
 
-* { margin:0; padding:0; box-sizing:border-box; }
-body { background:var(--bg); color:var(--text); font-family:'Rajdhani',sans-serif; min-height:100vh; overflow-x:hidden; }
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh;align-items:center;justify-content:center}
+.screen.on{display:flex;flex-direction:column}
+#sConnect{align-items:center;justify-content:center}
+#sAuth{align-items:center;justify-content:center}
 
-/* BG */
-.bg-layer { position:fixed; inset:0; z-index:0; pointer-events:none; }
-.bg-layer::before {
-  content:''; position:absolute; inset:0;
-  background:
-    radial-gradient(ellipse 60% 40% at 20% 50%, rgba(0,229,255,.05) 0%, transparent 70%),
-    radial-gradient(ellipse 50% 60% at 80% 30%, rgba(139,92,246,.05) 0%, transparent 70%),
-    linear-gradient(rgba(0,229,255,.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,229,255,.025) 1px, transparent 1px);
-  background-size: auto, auto, 50px 50px, 50px 50px;
+/* ═══════════════════════════════
+   TELA DE CONEXÃO
+═══════════════════════════════ */
+.splash{text-align:center;padding:48px 40px;max-width:480px;width:94vw;position:relative}
+.splash::before{content:'';position:absolute;top:0;left:0;width:24px;height:24px;border-top:2px solid var(--accent);border-left:2px solid var(--accent)}
+.splash::after{content:'';position:absolute;bottom:0;right:0;width:24px;height:24px;border-bottom:2px solid var(--accent);border-right:2px solid var(--accent)}
+
+.nxlogo{
+  font-family:'Orbitron',monospace;font-size:clamp(44px,10vw,72px);font-weight:900;letter-spacing:12px;
+  background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:8px;animation:glowpulse 3s ease-in-out infinite;
 }
+@keyframes glowpulse{0%,100%{filter:drop-shadow(0 0 20px rgba(0,229,255,.4))}50%{filter:drop-shadow(0 0 50px rgba(0,229,255,.9))}}
+.nxsub{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:5px;color:var(--dim);margin-bottom:44px}
 
-#app { position:relative; z-index:1; }
+.conn-status{display:flex;align-items:center;justify-content:center;gap:12px;font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--dim);margin-bottom:16px}
+.dot{width:11px;height:11px;border-radius:50%;background:var(--dim);flex-shrink:0;transition:all .4s}
+.dot.spin{background:var(--yellow);box-shadow:0 0 12px var(--yellow);animation:dotpulse 1s infinite}
+.dot.ok  {background:var(--green); box-shadow:0 0 12px var(--green)}
+.dot.err {background:var(--accent2);box-shadow:0 0 12px var(--accent2)}
+@keyframes dotpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
 
-/* ═══ SCREENS ═══ */
-.screen { display:none; min-height:100vh; }
-.screen.active { display:flex; flex-direction:column; }
+.conn-bar{height:2px;background:linear-gradient(90deg,var(--accent),var(--accent3),var(--accent));background-size:200%;animation:barflow 1.5s linear infinite;border-radius:1px}
+@keyframes barflow{0%{background-position:200%}100%{background-position:-200%}}
+.conn-bar.hidden{visibility:hidden}
 
-/* ════════════════════════════════
-   TELA 1 — CONEXÃO AO HOST
-════════════════════════════════ */
-#screenConnect { align-items:center; justify-content:center; text-align:center; }
+.retry-txt{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim);margin-top:10px;min-height:18px}
 
-.connect-box {
-  width:min(480px, 94vw);
-  padding:56px 48px;
-  border:1px solid var(--border);
-  background:rgba(8,12,24,.95);
-  backdrop-filter:blur(24px);
-  position:relative;
-}
-.connect-box::before { content:''; position:absolute; top:-1px; left:-1px; width:24px; height:24px; border-top:2px solid var(--accent); border-left:2px solid var(--accent); }
-.connect-box::after  { content:''; position:absolute; bottom:-1px; right:-1px; width:24px; height:24px; border-bottom:2px solid var(--accent); border-right:2px solid var(--accent); }
+/* ═══════════════════════════════
+   TELA AUTH
+═══════════════════════════════ */
+.auth-card{width:min(440px,94vw);border:1px solid var(--border);background:rgba(8,12,24,.97);backdrop-filter:blur(32px);padding:48px 40px;position:relative}
+.auth-card::before{content:'';position:absolute;top:-1px;left:-1px;width:20px;height:20px;border-top:2px solid var(--accent);border-left:2px solid var(--accent)}
+.auth-card::after{content:'';position:absolute;bottom:-1px;right:-1px;width:20px;height:20px;border-bottom:2px solid var(--accent);border-right:2px solid var(--accent)}
+.auth-logo{font-family:'Orbitron',monospace;font-size:28px;font-weight:900;letter-spacing:8px;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:6px}
+.auth-sub{text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:3px;margin-bottom:36px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;margin-bottom:32px;border:1px solid var(--border)}
+.tab{padding:11px;background:transparent;border:none;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--dim);cursor:pointer;transition:all .3s;text-transform:uppercase}
+.tab.on{background:rgba(0,229,255,.1);color:var(--accent);border-bottom:2px solid var(--accent)}
+.fgroup{margin-bottom:20px}
+.flabel{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--dim);margin-bottom:8px;display:block;text-transform:uppercase}
+.finput{width:100%;padding:12px 16px;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;outline:none;transition:all .3s}
+.finput:focus{border-color:var(--accent);background:rgba(0,229,255,.04);box-shadow:0 0 15px rgba(0,229,255,.1)}
+.finput.mono{font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--accent);letter-spacing:1px}
+.fbtn{width:100%;padding:14px;background:linear-gradient(135deg,rgba(0,229,255,.15),rgba(139,92,246,.15));border:1px solid var(--accent);color:var(--accent);font-family:'Orbitron',monospace;font-size:13px;font-weight:700;letter-spacing:4px;cursor:pointer;transition:all .3s;margin-top:8px}
+.fbtn:hover{background:linear-gradient(135deg,rgba(0,229,255,.25),rgba(139,92,246,.25));box-shadow:var(--glow);transform:translateY(-1px)}
+.fbtn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.auth-err{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent2);text-align:center;padding:10px;border:1px solid rgba(255,45,107,.3);background:rgba(255,45,107,.05);margin-top:16px;display:none}
 
-.nexus-logo {
-  font-family:'Orbitron',monospace;
-  font-size:clamp(40px,9vw,68px);
-  font-weight:900;
-  letter-spacing:12px;
-  background:linear-gradient(135deg, var(--accent) 0%, var(--accent3) 100%);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  margin-bottom:8px;
-  animation:logo-glow 3s ease-in-out infinite;
-}
-@keyframes logo-glow {
-  0%,100% { filter:drop-shadow(0 0 20px rgba(0,229,255,.4)); }
-  50%      { filter:drop-shadow(0 0 45px rgba(0,229,255,.85)); }
-}
-.nexus-tagline { font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:4px; color:var(--text-dim); margin-bottom:36px; }
+/* ═══════════════════════════════
+   TELA PRINCIPAL
+═══════════════════════════════ */
+#sMain{align-items:stretch;justify-content:flex-start;min-height:100vh}
 
-.field-block { margin-bottom:20px; text-align:left; }
-.field-label { font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--text-dim); margin-bottom:8px; text-transform:uppercase; display:block; }
-.field-input {
-  width:100%; padding:12px 16px;
-  background:rgba(255,255,255,.03); border:1px solid var(--border);
-  color:var(--accent); font-family:'Share Tech Mono',monospace; font-size:14px; letter-spacing:2px;
-  outline:none; transition:all .3s;
-}
-.field-input:focus { border-color:var(--accent); background:rgba(0,229,255,.04); box-shadow:0 0 15px rgba(0,229,255,.1); }
-.field-input.normal { color:var(--text); font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:600; letter-spacing:0; }
-.field-input.normal:focus { border-color:var(--accent); }
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid var(--border);background:rgba(4,6,14,.96);backdrop-filter:blur(20px);position:sticky;top:0;z-index:50;gap:12px;flex-wrap:wrap}
+.nav-logo{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;letter-spacing:6px;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;flex-shrink:0}
+.navtabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);padding:4px}
+.ntab{padding:6px 18px;background:transparent;border:none;color:var(--dim);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.ntab.on{background:rgba(0,229,255,.1);color:var(--accent)}
+.ntab:hover{color:var(--text)}
+.nav-r{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.uchip{display:flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--border);background:var(--surface);font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent)}
+.udot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.btnout{padding:6px 14px;background:transparent;border:1px solid rgba(255,45,107,.4);color:var(--accent2);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.btnout:hover{background:rgba(255,45,107,.12)}
 
-.btn-primary {
-  width:100%; padding:14px;
-  background:linear-gradient(135deg, rgba(0,229,255,.15), rgba(139,92,246,.15));
-  border:1px solid var(--accent); color:var(--accent);
-  font-family:'Orbitron',monospace; font-size:13px; font-weight:700; letter-spacing:4px;
-  cursor:pointer; transition:all .3s; margin-top:4px;
-}
-.btn-primary:hover { background:linear-gradient(135deg, rgba(0,229,255,.25), rgba(139,92,246,.25)); box-shadow:var(--glow); transform:translateY(-1px); }
-.btn-primary:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+/* OFFLINE STRIP */
+#offlineStrip{display:none;background:rgba(255,45,107,.15);border-bottom:2px solid var(--accent2);padding:8px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent2);letter-spacing:2px}
 
-.status-row { display:flex; align-items:center; justify-content:center; gap:10px; margin-top:20px; font-family:'Share Tech Mono',monospace; font-size:13px; color:var(--text-dim); }
-.status-dot { width:10px; height:10px; border-radius:50%; background:var(--text-dim); flex-shrink:0; transition:all .4s; }
-.status-dot.connecting { background:var(--yellow); animation:sdpulse 1s infinite; box-shadow:0 0 10px var(--yellow); }
-.status-dot.connected  { background:var(--green);  box-shadow:0 0 10px var(--green); }
-.status-dot.error      { background:var(--accent2); box-shadow:0 0 10px var(--accent2); }
-@keyframes sdpulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.4)} }
-.retry-line { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--text-dim); margin-top:8px; min-height:16px; }
-.progress-bar { height:2px; background:linear-gradient(90deg,var(--accent),var(--accent3),var(--accent)); background-size:200%; animation:pbanim 1.5s linear infinite; margin-top:14px; display:none; }
-@keyframes pbanim { 0%{background-position:200%} 100%{background-position:-200%} }
+/* PAGES */
+.page{display:none;flex:1;flex-direction:column}
+.page.on{display:flex}
 
-/* ════════════════════════════════
-   TELA 2 — AUTH (LOGIN / REGISTRO)
-════════════════════════════════ */
-#screenAuth { align-items:center; justify-content:center; }
+/* ─── DISCOVER ─── */
+.hero{padding:56px 40px 32px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,229,255,.07) 0%,transparent 70%)}
+.hero-h{font-family:'Orbitron',monospace;font-size:clamp(26px,5vw,50px);font-weight:900;letter-spacing:4px;line-height:1.1;background:linear-gradient(135deg,#fff 0%,var(--accent) 50%,var(--accent3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:14px;position:relative}
+.hero-s{color:var(--dim);font-size:15px;letter-spacing:2px;font-family:'Share Tech Mono',monospace;position:relative}
 
-.auth-box {
-  width:min(440px,94vw);
-  border:1px solid var(--border);
-  background:rgba(8,12,24,.97);
-  backdrop-filter:blur(32px);
-  padding:48px 40px;
-  position:relative;
-}
-.auth-box::before { content:''; position:absolute; top:-1px; left:-1px; width:20px; height:20px; border-top:2px solid var(--accent); border-left:2px solid var(--accent); }
-.auth-box::after  { content:''; position:absolute; bottom:-1px; right:-1px; width:20px; height:20px; border-bottom:2px solid var(--accent); border-right:2px solid var(--accent); }
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;padding:20px 32px 48px;align-content:start}
+.pcard{border:1px solid var(--border);background:var(--surface);position:relative;overflow:hidden;transition:all .3s;cursor:pointer;display:flex;flex-direction:column}
+.pcard:hover{border-color:rgba(0,229,255,.4);transform:translateY(-3px);box-shadow:0 10px 36px rgba(0,229,255,.08)}
+.pcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent3));transform:scaleX(0);transition:transform .35s;transform-origin:left}
+.pcard:hover::before{transform:scaleX(1)}
+.pthumb{height:180px;background:var(--surface2);border-bottom:1px solid var(--border);overflow:hidden;position:relative}
+.pthumb iframe{width:200%;height:200%;border:none;pointer-events:none;transform:scale(.5);transform-origin:top left}
+.pthumb-empty{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;height:100%;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--dim);letter-spacing:2px}
+.pbadge-priv{position:absolute;top:8px;right:8px;background:rgba(251,191,36,.15);border:1px solid var(--yellow);color:var(--yellow);font-family:'Share Tech Mono',monospace;font-size:10px;padding:2px 8px;letter-spacing:1px;z-index:2}
+.pbody{padding:16px;flex:1;display:flex;flex-direction:column;gap:8px}
+.pname{font-size:16px;font-weight:700;color:var(--text);line-height:1.2}
+.powner{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--dim)}
+.ptags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.ptag{font-size:10px;padding:2px 8px;font-family:'Share Tech Mono',monospace;letter-spacing:1px;border:1px solid}
+.ptag.open{border-color:var(--accent3);color:var(--accent3)}
+.ptag.paid{border-color:var(--green);color:var(--green)}
+.ptag.free{border-color:var(--dim);color:var(--dim)}
+.ptag.priv{border-color:var(--yellow);color:var(--yellow)}
+.pfoot{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--border);background:rgba(255,255,255,.01)}
+.pprice{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--green)}
+.pactions{display:flex;gap:6px}
+.btnview{padding:5px 14px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.btnview:hover{background:rgba(0,229,255,.1)}
+.btnedit{padding:5px 10px;border:1px solid var(--accent3);background:transparent;color:var(--accent3);font-family:'Share Tech Mono',monospace;font-size:12px;cursor:pointer;transition:all .2s}
+.btnedit:hover{background:rgba(139,92,246,.15)}
+.btndel{padding:5px 10px;border:1px solid var(--accent2);background:transparent;color:var(--accent2);font-family:'Share Tech Mono',monospace;font-size:12px;cursor:pointer;transition:all .2s}
+.btndel:hover{background:rgba(255,45,107,.15)}
+.empty-g{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:16px;font-family:'Share Tech Mono',monospace;color:var(--dim);font-size:14px;letter-spacing:2px;text-align:center}
 
-.auth-logo { font-family:'Orbitron',monospace; font-size:28px; font-weight:900; letter-spacing:8px; background:linear-gradient(135deg,var(--accent),var(--accent3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-align:center; margin-bottom:6px; }
-.auth-sub  { text-align:center; font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--text-dim); letter-spacing:3px; margin-bottom:36px; }
+/* ─── UPLOAD ─── */
+.upage{max-width:700px;margin:0 auto;padding:40px 24px;width:100%}
+.utitle{font-family:'Orbitron',monospace;font-size:20px;font-weight:700;letter-spacing:4px;color:var(--accent);margin-bottom:32px;text-align:center}
+.usec{border:1px solid var(--border);padding:24px;margin-bottom:20px;background:var(--surface)}
+.usec-title{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--accent);margin-bottom:20px;text-transform:uppercase;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.codearea{width:100%;min-height:120px;padding:14px;background:rgba(0,0,0,.5);border:1px solid var(--border);color:var(--green);font-family:'Share Tech Mono',monospace;font-size:13px;outline:none;resize:vertical;line-height:1.6;transition:border-color .3s}
+.codearea:focus{border-color:var(--accent3)}
+.trow{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.tog{position:relative;width:44px;height:24px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.tslider{position:absolute;inset:0;background:var(--border);cursor:pointer;transition:.3s}
+.tslider::before{content:'';position:absolute;width:18px;height:18px;top:3px;left:3px;background:var(--dim);transition:.3s}
+.tog input:checked+.tslider{background:rgba(0,229,255,.2);border:1px solid var(--accent)}
+.tog input:checked+.tslider::before{transform:translateX(20px);background:var(--accent)}
+.tlabel{font-size:14px;color:var(--text)}
+.sel{width:100%;padding:12px 16px;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:15px;outline:none}
+.sel option{background:var(--surface2)}
+.btnprev{width:100%;padding:12px;background:rgba(139,92,246,.1);border:1px solid var(--accent3);color:var(--accent3);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;cursor:pointer;transition:all .3s;margin-top:12px}
+.btnprev:hover{background:rgba(139,92,246,.2)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 
-.tab-row { display:grid; grid-template-columns:1fr 1fr; margin-bottom:32px; border:1px solid var(--border); }
-.tab-btn { padding:10px; background:transparent; border:none; font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:2px; color:var(--text-dim); cursor:pointer; transition:all .3s; text-transform:uppercase; }
-.tab-btn.active { background:rgba(0,229,255,.1); color:var(--accent); border-bottom:2px solid var(--accent); }
+/* ─── PROJECT MODAL ─── */
+#projModal{display:none;position:fixed;inset:0;z-index:200;background:rgba(4,6,14,.98);flex-direction:column}
+#projModal.on{display:flex}
+.mhead{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);background:rgba(8,12,24,.99);flex-shrink:0;gap:12px;flex-wrap:wrap}
+.mtitle{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:var(--text);letter-spacing:2px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mmeta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0}
+.mprice{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:var(--green)}
+.mbtns{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.mclose{width:36px;height:36px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.mclose:hover{border-color:var(--accent2);color:var(--accent2);background:rgba(255,45,107,.1)}
+.mbtn-edit{padding:6px 14px;border:1px solid var(--accent3);background:transparent;color:var(--accent3);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.mbtn-edit:hover{background:rgba(139,92,246,.15)}
+.mbtn-del{padding:6px 14px;border:1px solid var(--accent2);background:transparent;color:var(--accent2);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.mbtn-del:hover{background:rgba(255,45,107,.15)}
+.mbody{display:grid;grid-template-columns:1fr 300px;flex:1;overflow:hidden}
+.mpreview{overflow:hidden;background:#fff;position:relative}
+.mpreview iframe{width:100%;height:100%;border:none}
+.mside{border-left:1px solid var(--border);background:var(--surface);padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:18px}
+.mside::-webkit-scrollbar{width:3px}
+.mside::-webkit-scrollbar-thumb{background:var(--border)}
+.stitle{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.codeview{background:rgba(0,0,0,.6);border:1px solid var(--border);padding:12px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--green);max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;line-height:1.5}
+.slink{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);background:rgba(255,255,255,.02);font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent);text-decoration:none;transition:all .2s;margin-bottom:6px}
+.slink:hover{background:rgba(0,229,255,.05);border-color:var(--accent)}
+.pixbox{display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid rgba(0,255,170,.2);background:rgba(0,255,170,.03)}
+.pixkey{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--green);word-break:break-all}
+.btncopy{padding:6px 12px;border:1px solid var(--green);background:transparent;color:var(--green);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.btncopy:hover{background:rgba(0,255,170,.1)}
 
-.field-group { margin-bottom:20px; }
-
-.auth-error { font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--accent2); text-align:center; padding:10px; border:1px solid rgba(255,45,107,.3); background:rgba(255,45,107,.05); margin-top:16px; display:none; }
-
-/* ════════════════════════════════
-   TELA 3 — PRINCIPAL
-════════════════════════════════ */
-#screenMain { flex-direction:column; }
-
-.top-nav {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:14px 28px; border-bottom:1px solid var(--border);
-  background:rgba(4,6,14,.96); backdrop-filter:blur(20px);
-  position:sticky; top:0; z-index:50; gap:12px; flex-wrap:wrap;
-}
-.nav-logo { font-family:'Orbitron',monospace; font-size:20px; font-weight:900; letter-spacing:6px; background:linear-gradient(135deg,var(--accent),var(--accent3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; flex-shrink:0; }
-.nav-tabs { display:flex; gap:4px; background:var(--surface); border:1px solid var(--border); padding:4px; }
-.nav-tab  { padding:6px 18px; background:transparent; border:none; color:var(--text-dim); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:1px; cursor:pointer; transition:all .2s; white-space:nowrap; }
-.nav-tab.active { background:rgba(0,229,255,.1); color:var(--accent); }
-.nav-tab:hover { color:var(--text); }
-.nav-right { display:flex; align-items:center; gap:12px; flex-shrink:0; }
-.user-chip { display:flex; align-items:center; gap:8px; padding:6px 14px; border:1px solid var(--border); background:var(--surface); font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--accent); }
-.chip-dot  { width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 6px var(--green); animation:blink 2s infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-.btn-logout { padding:6px 14px; background:transparent; border:1px solid rgba(255,45,107,.4); color:var(--accent2); font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:1px; cursor:pointer; transition:all .2s; }
-.btn-logout:hover { background:rgba(255,45,107,.12); }
-
-/* PAGE VIEWS */
-.page-view { display:none; flex:1; flex-direction:column; }
-.page-view.active { display:flex; }
-
-/* ════════ DISCOVER ════════ */
-.discover-hero {
-  padding:60px 40px 36px; text-align:center; position:relative; overflow:hidden;
-}
-.discover-hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,255,.07) 0%, transparent 70%); }
-.hero-title {
-  font-family:'Orbitron',monospace; font-size:clamp(26px,5vw,50px); font-weight:900; letter-spacing:4px; line-height:1.1;
-  background:linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent3) 100%);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  margin-bottom:14px; position:relative;
-}
-.hero-sub { color:var(--text-dim); font-size:15px; letter-spacing:2px; font-family:'Share Tech Mono',monospace; position:relative; }
-
-.projects-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:20px; padding:24px 32px 48px; flex:1; align-content:start; }
-
-/* CARDS */
-.project-card { border:1px solid var(--border); background:var(--surface); position:relative; overflow:hidden; transition:all .3s; cursor:pointer; display:flex; flex-direction:column; }
-.project-card:hover { border-color:rgba(0,229,255,.4); transform:translateY(-3px); box-shadow:0 10px 36px rgba(0,229,255,.08); }
-.project-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--accent),var(--accent3)); transform:scaleX(0); transition:transform .35s; transform-origin:left; }
-.project-card:hover::before { transform:scaleX(1); }
-
-.card-thumb { height:180px; background:var(--surface2); border-bottom:1px solid var(--border); overflow:hidden; position:relative; }
-.card-thumb iframe { width:200%; height:200%; border:none; pointer-events:none; transform:scale(.5); transform-origin:top left; }
-.card-thumb-empty { display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px; height:100%; font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--text-dim); letter-spacing:2px; }
-.card-thumb-empty span { font-size:34px; opacity:.2; }
-.private-badge { position:absolute; top:8px; right:8px; background:rgba(251,191,36,.15); border:1px solid var(--yellow); color:var(--yellow); font-family:'Share Tech Mono',monospace; font-size:10px; padding:2px 8px; letter-spacing:1px; z-index:2; }
-
-.card-body  { padding:16px; flex:1; display:flex; flex-direction:column; gap:8px; }
-.card-name  { font-size:16px; font-weight:700; color:var(--text); line-height:1.2; }
-.card-owner { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--text-dim); }
-.card-tags  { display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; }
-.ctag { font-size:10px; padding:2px 8px; font-family:'Share Tech Mono',monospace; letter-spacing:1px; border:1px solid; }
-.ctag.open { border-color:var(--accent3); color:var(--accent3); }
-.ctag.paid { border-color:var(--green);   color:var(--green); }
-.ctag.free { border-color:var(--text-dim); color:var(--text-dim); }
-.ctag.priv { border-color:var(--yellow);  color:var(--yellow); }
-
-.card-footer { display:flex; align-items:center; justify-content:space-between; padding:10px 16px; border-top:1px solid var(--border); background:rgba(255,255,255,.01); }
-.card-price  { font-family:'Orbitron',monospace; font-size:14px; font-weight:700; color:var(--green); }
-.card-actions { display:flex; gap:6px; }
-.btn-view { padding:5px 14px; border:1px solid var(--accent); background:transparent; color:var(--accent); font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:1px; cursor:pointer; transition:all .2s; }
-.btn-view:hover { background:rgba(0,229,255,.1); }
-.btn-card-edit { padding:5px 10px; border:1px solid var(--accent3); background:transparent; color:var(--accent3); font-family:'Share Tech Mono',monospace; font-size:12px; cursor:pointer; transition:all .2s; }
-.btn-card-edit:hover { background:rgba(139,92,246,.15); }
-.btn-card-del  { padding:5px 10px; border:1px solid var(--accent2); background:transparent; color:var(--accent2); font-family:'Share Tech Mono',monospace; font-size:12px; cursor:pointer; transition:all .2s; }
-.btn-card-del:hover  { background:rgba(255,45,107,.15); }
-
-.empty-grid { grid-column:1/-1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:80px 20px; gap:16px; font-family:'Share Tech Mono',monospace; color:var(--text-dim); font-size:14px; letter-spacing:2px; text-align:center; }
-
-/* ════════ UPLOAD PAGE ════════ */
-.upload-page { max-width:700px; margin:0 auto; padding:40px 24px; width:100%; }
-.upload-title { font-family:'Orbitron',monospace; font-size:20px; font-weight:700; letter-spacing:4px; color:var(--accent); margin-bottom:32px; text-align:center; }
-.section-card { border:1px solid var(--border); padding:24px; margin-bottom:20px; background:var(--surface); }
-.section-label { font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:3px; color:var(--accent); margin-bottom:20px; text-transform:uppercase; padding-bottom:10px; border-bottom:1px solid var(--border); }
-.code-area { width:100%; min-height:120px; padding:14px; background:rgba(0,0,0,.5); border:1px solid var(--border); color:var(--green); font-family:'Share Tech Mono',monospace; font-size:13px; outline:none; resize:vertical; line-height:1.6; transition:border-color .3s; }
-.code-area:focus { border-color:var(--accent3); }
-.toggle-row { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
-.toggle { position:relative; width:44px; height:24px; flex-shrink:0; }
-.toggle input { opacity:0; width:0; height:0; }
-.toggle-slider { position:absolute; inset:0; background:var(--border); cursor:pointer; transition:.3s; }
-.toggle-slider::before { content:''; position:absolute; width:18px; height:18px; top:3px; left:3px; background:var(--text-dim); transition:.3s; }
-.toggle input:checked + .toggle-slider { background:rgba(0,229,255,.2); border:1px solid var(--accent); }
-.toggle input:checked + .toggle-slider::before { transform:translateX(20px); background:var(--accent); }
-.toggle-label { font-size:14px; color:var(--text); }
-.select-field { width:100%; padding:12px 16px; background:rgba(255,255,255,.03); border:1px solid var(--border); color:var(--text); font-family:'Rajdhani',sans-serif; font-size:15px; outline:none; transition:border-color .3s; }
-.select-field:focus { border-color:var(--accent); }
-.select-field option { background:var(--surface2); }
-.btn-preview { width:100%; padding:12px; background:rgba(139,92,246,.1); border:1px solid var(--accent3); color:var(--accent3); font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:2px; cursor:pointer; transition:all .3s; margin-top:12px; }
-.btn-preview:hover { background:rgba(139,92,246,.2); }
-.grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-
-/* ════════ PROJECT MODAL (fullscreen) ════════ */
-#projectModal { display:none; position:fixed; inset:0; z-index:200; background:rgba(4,6,14,.98); flex-direction:column; }
-#projectModal.open { display:flex; }
-.modal-header { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid var(--border); background:rgba(8,12,24,.99); flex-shrink:0; gap:12px; flex-wrap:wrap; }
-.modal-title { font-family:'Orbitron',monospace; font-size:16px; font-weight:700; color:var(--text); letter-spacing:2px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.modal-meta  { display:flex; align-items:center; gap:10px; flex-wrap:wrap; flex-shrink:0; }
-.modal-price { font-family:'Orbitron',monospace; font-size:18px; font-weight:700; color:var(--green); }
-.modal-btns  { display:flex; gap:8px; align-items:center; flex-shrink:0; }
-.btn-close { width:36px; height:36px; border:1px solid var(--border); background:transparent; color:var(--text); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; }
-.btn-close:hover { border-color:var(--accent2); color:var(--accent2); background:rgba(255,45,107,.1); }
-.btn-owner-edit { padding:6px 14px; border:1px solid var(--accent3); background:transparent; color:var(--accent3); font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:1px; cursor:pointer; transition:all .2s; }
-.btn-owner-edit:hover { background:rgba(139,92,246,.15); }
-.btn-owner-del  { padding:6px 14px; border:1px solid var(--accent2); background:transparent; color:var(--accent2); font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:1px; cursor:pointer; transition:all .2s; }
-.btn-owner-del:hover  { background:rgba(255,45,107,.15); }
-
-.modal-body { display:grid; grid-template-columns:1fr 300px; flex:1; overflow:hidden; }
-.modal-preview { position:relative; overflow:hidden; background:#fff; }
-.modal-preview iframe { width:100%; height:100%; border:none; }
-.modal-sidebar { border-left:1px solid var(--border); background:var(--surface); padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:18px; }
-.modal-sidebar::-webkit-scrollbar { width:3px; }
-.modal-sidebar::-webkit-scrollbar-thumb { background:var(--border); }
-.sidebar-title { font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:3px; color:var(--text-dim); text-transform:uppercase; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--border); }
-.code-viewer { background:rgba(0,0,0,.6); border:1px solid var(--border); padding:12px; font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--green); max-height:200px; overflow-y:auto; white-space:pre-wrap; word-break:break-all; line-height:1.5; }
-.social-link { display:flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid var(--border); background:rgba(255,255,255,.02); font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--accent); text-decoration:none; transition:all .2s; margin-bottom:6px; }
-.social-link:hover { background:rgba(0,229,255,.05); border-color:var(--accent); }
-.pix-box { display:flex; flex-direction:column; gap:8px; padding:12px; border:1px solid rgba(0,255,170,.2); background:rgba(0,255,170,.03); }
-.pix-key { font-family:'Share Tech Mono',monospace; font-size:13px; color:var(--green); word-break:break-all; }
-.btn-copy { padding:6px 12px; border:1px solid var(--green); background:transparent; color:var(--green); font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:1px; cursor:pointer; transition:all .2s; }
-.btn-copy:hover { background:rgba(0,255,170,.1); }
-
-/* ════════ EDIT MODAL ════════ */
-#editModal { display:none; position:fixed; inset:0; z-index:300; background:rgba(4,6,14,.97); align-items:center; justify-content:center; padding:16px; }
-#editModal.open { display:flex; }
-.edit-box { width:min(700px,100%); max-height:92vh; overflow-y:auto; background:var(--surface); border:1px solid var(--border); }
-.edit-box::-webkit-scrollbar { width:4px; }
-.edit-box::-webkit-scrollbar-thumb { background:var(--border); }
-.edit-header { display:flex; align-items:center; justify-content:space-between; padding:16px 22px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--surface); z-index:1; }
-.edit-header-title { font-family:'Orbitron',monospace; font-size:14px; font-weight:700; letter-spacing:3px; color:var(--accent3); }
-.edit-body { padding:24px; }
+/* ─── EDIT MODAL ─── */
+#editModal{display:none;position:fixed;inset:0;z-index:300;background:rgba(4,6,14,.97);align-items:center;justify-content:center;padding:16px}
+#editModal.on{display:flex}
+.ebox{width:min(700px,100%);max-height:92vh;overflow-y:auto;background:var(--surface);border:1px solid var(--border)}
+.ebox::-webkit-scrollbar{width:4px}
+.ebox::-webkit-scrollbar-thumb{background:var(--border)}
+.ehead{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1}
+.ehead-t{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;letter-spacing:3px;color:var(--accent3)}
+.ebody{padding:24px}
 
 /* TOAST */
-#toast { position:fixed; bottom:24px; right:24px; padding:12px 20px; font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:2px; z-index:9999; transform:translateY(80px); opacity:0; transition:all .3s; border:1px solid; }
-#toast.show { transform:translateY(0); opacity:1; }
-#toast.success { background:rgba(0,255,170,.1); color:var(--green);  border-color:var(--green); }
-#toast.error   { background:rgba(255,45,107,.1); color:var(--accent2); border-color:var(--accent2); }
-#toast.info    { background:rgba(0,229,255,.1);  color:var(--accent);  border-color:var(--accent); }
+#toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;z-index:9999;transform:translateY(80px);opacity:0;transition:all .3s;border:1px solid}
+#toast.on{transform:translateY(0);opacity:1}
+#toast.suc{background:rgba(0,255,170,.1);color:var(--green);border-color:var(--green)}
+#toast.err{background:rgba(255,45,107,.1);color:var(--accent2);border-color:var(--accent2)}
+#toast.inf{background:rgba(0,229,255,.1);color:var(--accent);border-color:var(--accent)}
 
-/* OFFLINE BANNER */
-#offlineBanner { display:none; position:fixed; top:0; left:0; right:0; z-index:9997; background:rgba(255,45,107,.15); border-bottom:2px solid var(--accent2); padding:8px; text-align:center; font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--accent2); letter-spacing:2px; }
-
-/* MOBILE */
-.mobile-nav { display:none; }
-@media (max-width:768px) {
-  .modal-body { grid-template-columns:1fr; grid-template-rows:55vh auto; }
-  .modal-sidebar { max-height:260px; }
-  .modal-title { font-size:13px; }
+/* RESPONSIVE */
+@media(max-width:768px){.mbody{grid-template-columns:1fr;grid-template-rows:55vh auto}.mside{max-height:260px}}
+@media(max-width:600px){
+  .navtabs{display:none}
+  .mnav{display:flex;gap:4px;padding:8px 16px;border-bottom:1px solid var(--border);background:var(--surface);overflow-x:auto}
+  .pgrid{grid-template-columns:1fr;padding:16px}
+  .g2{grid-template-columns:1fr}
+  .hero{padding:36px 16px 20px}
+  .upage{padding:16px 12px}
+  .auth-card{padding:32px 20px}
 }
-@media (max-width:600px) {
-  .nav-tabs { display:none; }
-  .mobile-nav { display:flex; gap:4px; padding:8px 16px; border-bottom:1px solid var(--border); background:var(--surface); overflow-x:auto; flex-shrink:0; }
-  .projects-grid { grid-template-columns:1fr; padding:16px; }
-  .grid2 { grid-template-columns:1fr; }
-  .discover-hero { padding:36px 16px 20px; }
-  .upload-page { padding:20px 12px; }
-  .auth-box { padding:32px 20px; }
-  .connect-box { padding:40px 24px; }
-}
+.mnav{display:none}
 </style>
 </head>
 <body>
-<div class="bg-layer"></div>
-<div id="app">
+<div id="root">
 
-<!-- OFFLINE BANNER -->
-<div id="offlineBanner">⚠ HOST OFFLINE — RECONECTANDO AUTOMATICAMENTE...</div>
-
-<!-- ══════════════════════════════════════
-     TELA 1 — CONEXÃO
-══════════════════════════════════════ -->
-<div class="screen active" id="screenConnect">
-  <div class="connect-box">
-    <div class="nexus-logo">NEXUS</div>
-    <div class="nexus-tagline">PLATAFORMA DE PROJETOS P2P</div>
-
-    <div class="field-block">
-      <label class="field-label">ID do Host</label>
-      <input class="field-input" type="text" id="hostIdInput" placeholder="nexus-host-001" value="nexus-host-001">
+<!-- ═══ TELA 1: CONECTANDO ═══ -->
+<div class="screen on" id="sConnect">
+  <div class="splash">
+    <div class="nxlogo">NEXUS</div>
+    <div class="nxsub">PLATAFORMA DE PROJETOS P2P</div>
+    <div class="conn-status">
+      <div class="dot spin" id="cDot"></div>
+      <span id="cTxt">Conectando ao servidor...</span>
     </div>
-    <button class="btn-primary" onclick="startConnection()">⚡ CONECTAR AO HOST</button>
-
-    <div class="status-row">
-      <div class="status-dot" id="statusDot"></div>
-      <span id="statusText">Digite o ID do host e conecte</span>
-    </div>
-    <div class="progress-bar" id="progressBar"></div>
-    <div class="retry-line" id="retryLine"></div>
+    <div class="conn-bar" id="cBar"></div>
+    <div class="retry-txt" id="cRetry"></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     TELA 2 — AUTH
-══════════════════════════════════════ -->
-<div class="screen" id="screenAuth">
-  <div class="auth-box">
+<!-- ═══ TELA 2: AUTH ═══ -->
+<div class="screen" id="sAuth">
+  <div class="auth-card">
     <div class="auth-logo">NEXUS</div>
     <div class="auth-sub">PLATAFORMA DE PROJETOS</div>
-
-    <div class="tab-row">
-      <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">ENTRAR</button>
-      <button class="tab-btn" id="tabRegister" onclick="switchTab('register')">CRIAR CONTA</button>
+    <div class="tabs">
+      <button class="tab on" id="tLogin" onclick="setTab('login')">ENTRAR</button>
+      <button class="tab"    id="tReg"   onclick="setTab('reg')">CRIAR CONTA</button>
     </div>
 
-    <!-- LOGIN -->
-    <div id="loginForm">
-      <div class="field-group">
-        <label class="field-label">Usuário</label>
-        <input class="field-input normal" type="text" id="loginUser" placeholder="seu_usuario" autocomplete="username">
-      </div>
-      <div class="field-group">
-        <label class="field-label">Senha</label>
-        <input class="field-input normal" type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
-      </div>
-      <button class="btn-primary" id="btnLogin" onclick="doLogin()">ENTRAR</button>
+    <div id="fLogin">
+      <div class="fgroup"><label class="flabel">Usuário</label><input class="finput" type="text" id="lUser" placeholder="seu_usuario" autocomplete="username"></div>
+      <div class="fgroup"><label class="flabel">Senha</label><input class="finput" type="password" id="lPass" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="fbtn" id="btnLogin" onclick="doLogin()">ENTRAR</button>
     </div>
 
-    <!-- REGISTRO -->
-    <div id="registerForm" style="display:none">
-      <div class="field-group">
-        <label class="field-label">Usuário</label>
-        <input class="field-input normal" type="text" id="regUser" placeholder="escolha_um_usuario" autocomplete="username">
-      </div>
-      <div class="field-group">
-        <label class="field-label">Senha</label>
-        <input class="field-input normal" type="password" id="regPass" placeholder="••••••••" autocomplete="new-password">
-      </div>
-      <div class="field-group">
-        <label class="field-label">Confirmar Senha</label>
-        <input class="field-input normal" type="password" id="regPassConfirm" placeholder="••••••••">
-      </div>
-      <button class="btn-primary" id="btnRegister" onclick="doRegister()">CRIAR CONTA</button>
+    <div id="fReg" style="display:none">
+      <div class="fgroup"><label class="flabel">Usuário</label><input class="finput" type="text" id="rUser" placeholder="escolha_um_usuario" autocomplete="username"></div>
+      <div class="fgroup"><label class="flabel">Senha</label><input class="finput" type="password" id="rPass" placeholder="••••••••" autocomplete="new-password"></div>
+      <div class="fgroup"><label class="flabel">Confirmar Senha</label><input class="finput" type="password" id="rPass2" placeholder="••••••••"></div>
+      <button class="fbtn" id="btnReg" onclick="doRegister()">CRIAR CONTA</button>
     </div>
 
-    <div class="auth-error" id="authError"></div>
+    <div class="auth-err" id="authErr"></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     TELA 3 — PRINCIPAL
-══════════════════════════════════════ -->
-<div class="screen" id="screenMain">
+<!-- ═══ TELA 3: PRINCIPAL ═══ -->
+<div class="screen" id="sMain">
+  <div id="offlineStrip">⚠ HOST OFFLINE — RECONECTANDO...</div>
 
-  <!-- NAV -->
-  <div class="top-nav">
+  <div class="topnav">
     <div class="nav-logo">NEXUS</div>
-    <div class="nav-tabs">
-      <button class="nav-tab active" onclick="switchPage('discover')">◈ DESCOBRIR</button>
-      <button class="nav-tab" onclick="switchPage('upload')">⬆ PUBLICAR</button>
+    <div class="navtabs">
+      <button class="ntab on" onclick="goPage('discover')">◈ DESCOBRIR</button>
+      <button class="ntab"    onclick="goPage('upload')">⬆ PUBLICAR</button>
     </div>
-    <div class="nav-right">
-      <div class="user-chip"><span class="chip-dot"></span><span id="navUsername">—</span></div>
-      <button class="btn-logout" onclick="doLogout()">SAIR</button>
-    </div>
-  </div>
-
-  <!-- MOBILE NAV -->
-  <div class="mobile-nav">
-    <button class="nav-tab active" onclick="switchPage('discover')">DESCOBRIR</button>
-    <button class="nav-tab" onclick="switchPage('upload')">PUBLICAR</button>
-  </div>
-
-  <!-- ───── PAGE: DISCOVER ───── -->
-  <div class="page-view active" id="pageDiscover">
-    <div class="discover-hero">
-      <div class="hero-title">PROJETOS DA COMUNIDADE</div>
-      <div class="hero-sub">Explore · Compre · Colabore</div>
-    </div>
-    <div class="projects-grid" id="projectsGrid">
-      <div class="empty-grid">
-        <span style="font-size:42px;opacity:.2">◈</span>
-        <div>NENHUM PROJETO AINDA</div>
-        <div style="font-size:12px;opacity:.5">Seja o primeiro a publicar</div>
-      </div>
+    <div class="nav-r">
+      <div class="uchip"><span class="udot"></span><span id="navUser">—</span></div>
+      <button class="btnout" onclick="doLogout()">SAIR</button>
     </div>
   </div>
 
-  <!-- ───── PAGE: UPLOAD ───── -->
-  <div class="page-view" id="pageUpload">
-    <div class="upload-page">
-      <div class="upload-title">PUBLICAR PROJETO</div>
+  <div class="mnav">
+    <button class="ntab on" onclick="goPage('discover')">DESCOBRIR</button>
+    <button class="ntab"    onclick="goPage('upload')">PUBLICAR</button>
+  </div>
 
-      <div class="section-card">
-        <div class="section-label">01 — Nome do Projeto</div>
-        <input class="field-input normal" type="text" id="projName" placeholder="Meu Projeto Incrível">
-      </div>
-
-      <div class="section-card">
-        <div class="section-label">02 — Código HTML (CSS e JS inline)</div>
-        <div style="font-size:13px;color:var(--text-dim);margin-bottom:12px">Cole o HTML completo — inclua &lt;style&gt; e &lt;script&gt; dentro do arquivo</div>
-        <textarea class="code-area" id="projHTML" rows="10" placeholder="<!DOCTYPE html>&#10;<html>&#10;  <body>...seu projeto...</body>&#10;</html>"></textarea>
-        <button class="btn-preview" onclick="previewDraft()">👁 PRÉ-VISUALIZAR ANTES DE PUBLICAR</button>
-      </div>
-
-      <div class="section-card">
-        <div class="section-label">03 — Venda</div>
-        <div class="toggle-row">
-          <label class="toggle"><input type="checkbox" id="projFree" checked onchange="togglePriceField()"><div class="toggle-slider"></div></label>
-          <span class="toggle-label">Projeto Gratuito</span>
-        </div>
-        <div id="priceField" style="display:none">
-          <div class="field-group" style="margin-top:8px">
-            <label class="field-label">Valor (R$)</label>
-            <input class="field-input normal" type="number" id="projPrice" placeholder="0.00" min="0" step="0.01">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Forma de Pagamento</label>
-            <select class="select-field" id="projPayment"><option value="pix">PIX</option></select>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Chave PIX</label>
-            <input class="field-input normal" type="text" id="projPixKey" placeholder="email / CPF / telefone / chave aleatória">
-          </div>
-        </div>
-      </div>
-
-      <div class="section-card">
-        <div class="section-label">04 — Visibilidade</div>
-        <div class="toggle-row">
-          <label class="toggle"><input type="checkbox" id="projPrivate"><div class="toggle-slider"></div></label>
-          <span class="toggle-label">Privado <span style="font-size:12px;color:var(--text-dim)">(só você consegue ver)</span></span>
-        </div>
-      </div>
-
-      <div class="section-card">
-        <div class="section-label">05 — Código Aberto?</div>
-        <div class="toggle-row">
-          <label class="toggle"><input type="checkbox" id="projOpenSource"><div class="toggle-slider"></div></label>
-          <span class="toggle-label">Deixar código visível para todos</span>
-        </div>
-      </div>
-
-      <div class="section-card">
-        <div class="section-label">06 — Redes Sociais (contato)</div>
-        <div class="grid2">
-          <div class="field-group"><label class="field-label">Discord</label><input class="field-input normal" type="text" id="socialDiscord" placeholder="usuario#0000 ou link"></div>
-          <div class="field-group"><label class="field-label">WhatsApp</label><input class="field-input normal" type="text" id="socialWhatsapp" placeholder="+55 11 99999-9999"></div>
-          <div class="field-group"><label class="field-label">Instagram</label><input class="field-input normal" type="text" id="socialInstagram" placeholder="@usuario"></div>
-          <div class="field-group"><label class="field-label">GitHub</label><input class="field-input normal" type="text" id="socialGithub" placeholder="github.com/usuario"></div>
-        </div>
-      </div>
-
-      <button class="btn-primary" id="btnPublish" onclick="publishProject()">PUBLICAR PROJETO</button>
+  <!-- PAGE DISCOVER -->
+  <div class="page on" id="pDiscover">
+    <div class="hero">
+      <div class="hero-h">PROJETOS DA COMUNIDADE</div>
+      <div class="hero-s">Explore · Compre · Colabore</div>
+    </div>
+    <div class="pgrid" id="pGrid">
+      <div class="empty-g"><span style="font-size:42px;opacity:.2">◈</span><div>NENHUM PROJETO AINDA</div><div style="font-size:12px;opacity:.5">Seja o primeiro a publicar</div></div>
     </div>
   </div>
 
-</div><!-- /screenMain -->
+  <!-- PAGE UPLOAD -->
+  <div class="page" id="pUpload">
+    <div class="upage">
+      <div class="utitle">PUBLICAR PROJETO</div>
 
-<!-- ══════════════════════════════════════
-     MODAL — VISUALIZAR PROJETO
-══════════════════════════════════════ -->
-<div id="projectModal">
-  <div class="modal-header">
-    <div class="modal-title" id="modalTitle">Projeto</div>
-    <div class="modal-meta">
-      <span id="modalOwnerSpan" style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-dim)"></span>
-      <span id="modalPriceSpan" class="modal-price"></span>
-      <span id="modalOpenSpan"></span>
-      <span id="modalPrivSpan"></span>
-    </div>
-    <div class="modal-btns">
-      <button class="btn-owner-edit" id="btnModalEdit" onclick="openEditModal()" style="display:none">✏ EDITAR</button>
-      <button class="btn-owner-del"  id="btnModalDel"  onclick="deleteOwnProject()" style="display:none">🗑 APAGAR</button>
-      <button class="btn-close" onclick="closeModal()" title="Fechar (ESC)">✕</button>
+      <div class="usec">
+        <div class="usec-title">01 — Nome do Projeto</div>
+        <input class="finput" type="text" id="uName" placeholder="Meu Projeto Incrível">
+      </div>
+
+      <div class="usec">
+        <div class="usec-title">02 — Código HTML (CSS e JS inline)</div>
+        <div style="font-size:13px;color:var(--dim);margin-bottom:12px">Cole o HTML completo — inclua &lt;style&gt; e &lt;script&gt; no mesmo arquivo</div>
+        <textarea class="codearea" id="uHTML" rows="10" placeholder="<!DOCTYPE html>&#10;<html>&#10;  <body>seu projeto aqui</body>&#10;</html>"></textarea>
+        <button class="btnprev" onclick="prevDraft()">👁 PRÉ-VISUALIZAR</button>
+      </div>
+
+      <div class="usec">
+        <div class="usec-title">03 — Venda</div>
+        <div class="trow"><label class="tog"><input type="checkbox" id="uFree" checked onchange="togPrice()"><div class="tslider"></div></label><span class="tlabel">Projeto Gratuito</span></div>
+        <div id="uPriceBlock" style="display:none">
+          <div class="fgroup"><label class="flabel">Valor (R$)</label><input class="finput" type="number" id="uPrice" placeholder="0.00" min="0" step="0.01"></div>
+          <div class="fgroup"><label class="flabel">Forma de Pagamento</label><select class="sel" id="uPay"><option value="pix">PIX</option></select></div>
+          <div class="fgroup"><label class="flabel">Chave PIX</label><input class="finput" type="text" id="uPix" placeholder="email / CPF / telefone / chave aleatória"></div>
+        </div>
+      </div>
+
+      <div class="usec">
+        <div class="usec-title">04 — Visibilidade</div>
+        <div class="trow"><label class="tog"><input type="checkbox" id="uPriv"><div class="tslider"></div></label><span class="tlabel">Privado <span style="font-size:12px;color:var(--dim)">(só você vê)</span></span></div>
+      </div>
+
+      <div class="usec">
+        <div class="usec-title">05 — Código Aberto?</div>
+        <div class="trow"><label class="tog"><input type="checkbox" id="uOpen"><div class="tslider"></div></label><span class="tlabel">Deixar código visível para todos</span></div>
+      </div>
+
+      <div class="usec">
+        <div class="usec-title">06 — Redes Sociais</div>
+        <div class="g2">
+          <div class="fgroup"><label class="flabel">Discord</label><input class="finput" type="text" id="uDisc" placeholder="usuario#0000"></div>
+          <div class="fgroup"><label class="flabel">WhatsApp</label><input class="finput" type="text" id="uWA"   placeholder="+55 11 99999-9999"></div>
+          <div class="fgroup"><label class="flabel">Instagram</label><input class="finput" type="text" id="uIG"   placeholder="@usuario"></div>
+          <div class="fgroup"><label class="flabel">GitHub</label><input class="finput" type="text"   id="uGH"   placeholder="github.com/usuario"></div>
+        </div>
+      </div>
+
+      <button class="fbtn" id="btnPub" onclick="publishProject()">PUBLICAR PROJETO</button>
     </div>
   </div>
-  <div class="modal-body">
-    <div class="modal-preview">
-      <iframe id="modalIframe" sandbox="allow-scripts allow-same-origin"></iframe>
+</div><!-- /sMain -->
+
+<!-- ═══ MODAL: PROJETO ═══ -->
+<div id="projModal">
+  <div class="mhead">
+    <div class="mtitle"  id="mTitle">—</div>
+    <div class="mmeta">
+      <span id="mOwner" style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--dim)"></span>
+      <span id="mPrice" class="mprice"></span>
+      <span id="mOpen"></span>
+      <span id="mPriv"></span>
     </div>
-    <div class="modal-sidebar" id="modalSidebar"></div>
+    <div class="mbtns">
+      <button class="mbtn-edit" id="mBtnEdit" onclick="openEdit()" style="display:none">✏ EDITAR</button>
+      <button class="mbtn-del"  id="mBtnDel"  onclick="delOwn()"   style="display:none">🗑 APAGAR</button>
+      <button class="mclose" onclick="closeProj()">✕</button>
+    </div>
+  </div>
+  <div class="mbody">
+    <div class="mpreview"><iframe id="mFrame" sandbox="allow-scripts allow-same-origin"></iframe></div>
+    <div class="mside" id="mSide"></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     MODAL — EDITAR PROJETO
-══════════════════════════════════════ -->
+<!-- ═══ MODAL: EDITAR ═══ -->
 <div id="editModal">
-  <div class="edit-box">
-    <div class="edit-header">
-      <div class="edit-header-title">EDITAR PROJETO</div>
-      <button class="btn-close" onclick="closeEditModal()">✕</button>
-    </div>
-    <div class="edit-body">
-
-      <div class="section-card">
-        <div class="section-label">Nome do Projeto</div>
-        <input class="field-input normal" type="text" id="editName">
+  <div class="ebox">
+    <div class="ehead"><div class="ehead-t">EDITAR PROJETO</div><button class="mclose" onclick="closeEdit()">✕</button></div>
+    <div class="ebody">
+      <div class="usec"><div class="usec-title">Nome</div><input class="finput" type="text" id="eName"></div>
+      <div class="usec">
+        <div class="usec-title">Código HTML</div>
+        <textarea class="codearea" id="eHTML" rows="10"></textarea>
+        <button class="btnprev" onclick="prevEdit()" style="margin-top:10px">👁 PRÉ-VISUALIZAR</button>
       </div>
-
-      <div class="section-card">
-        <div class="section-label">Código HTML</div>
-        <textarea class="code-area" id="editHTML" rows="10"></textarea>
-        <button class="btn-preview" onclick="previewEdit()" style="margin-top:10px">👁 PRÉ-VISUALIZAR</button>
-      </div>
-
-      <div class="section-card">
-        <div class="section-label">Venda</div>
-        <div class="toggle-row">
-          <label class="toggle"><input type="checkbox" id="editFree" onchange="toggleEditPrice()"><div class="toggle-slider"></div></label>
-          <span class="toggle-label">Gratuito</span>
-        </div>
-        <div id="editPriceBlock">
-          <div class="field-group" style="margin-top:10px"><label class="field-label">Valor (R$)</label><input class="field-input normal" type="number" id="editPrice" placeholder="0.00" min="0" step="0.01"></div>
-          <div class="field-group"><label class="field-label">Chave PIX</label><input class="field-input normal" type="text" id="editPixKey"></div>
+      <div class="usec">
+        <div class="usec-title">Venda</div>
+        <div class="trow"><label class="tog"><input type="checkbox" id="eFree" onchange="togEditPrice()"><div class="tslider"></div></label><span class="tlabel">Gratuito</span></div>
+        <div id="ePriceBlock">
+          <div class="fgroup" style="margin-top:10px"><label class="flabel">Valor (R$)</label><input class="finput" type="number" id="ePrice" placeholder="0.00" min="0" step="0.01"></div>
+          <div class="fgroup"><label class="flabel">Chave PIX</label><input class="finput" type="text" id="ePix"></div>
         </div>
       </div>
-
-      <div class="section-card">
-        <div class="section-label">Visibilidade</div>
-        <div class="toggle-row">
-          <label class="toggle"><input type="checkbox" id="editPrivate"><div class="toggle-slider"></div></label>
-          <span class="toggle-label">Privado <span style="font-size:12px;color:var(--text-dim)">(só você vê)</span></span>
+      <div class="usec">
+        <div class="usec-title">Visibilidade</div>
+        <div class="trow"><label class="tog"><input type="checkbox" id="ePriv"><div class="tslider"></div></label><span class="tlabel">Privado <span style="font-size:12px;color:var(--dim)">(só você vê)</span></span></div>
+      </div>
+      <div class="usec">
+        <div class="usec-title">Código Aberto?</div>
+        <div class="trow"><label class="tog"><input type="checkbox" id="eOpen"><div class="tslider"></div></label><span class="tlabel">Visível para todos</span></div>
+      </div>
+      <div class="usec">
+        <div class="usec-title">Redes Sociais</div>
+        <div class="g2">
+          <div class="fgroup"><label class="flabel">Discord</label><input class="finput" type="text" id="eDisc"></div>
+          <div class="fgroup"><label class="flabel">WhatsApp</label><input class="finput" type="text" id="eWA"></div>
+          <div class="fgroup"><label class="flabel">Instagram</label><input class="finput" type="text" id="eIG"></div>
+          <div class="fgroup"><label class="flabel">GitHub</label><input class="finput" type="text" id="eGH"></div>
         </div>
       </div>
-
-      <div class="section-card">
-        <div class="section-label">Código Aberto?</div>
-        <div class="toggle-row">
-          <label class="toggle"><input type="checkbox" id="editOpenSource"><div class="toggle-slider"></div></label>
-          <span class="toggle-label">Visível para todos</span>
-        </div>
-      </div>
-
-      <div class="section-card">
-        <div class="section-label">Redes Sociais</div>
-        <div class="grid2">
-          <div class="field-group"><label class="field-label">Discord</label><input class="field-input normal" type="text" id="editDiscord"></div>
-          <div class="field-group"><label class="field-label">WhatsApp</label><input class="field-input normal" type="text" id="editWhatsapp"></div>
-          <div class="field-group"><label class="field-label">Instagram</label><input class="field-input normal" type="text" id="editInstagram"></div>
-          <div class="field-group"><label class="field-label">GitHub</label><input class="field-input normal" type="text" id="editGithub"></div>
-        </div>
-      </div>
-
-      <button class="btn-primary" id="btnSaveEdit" onclick="saveEdit()">SALVAR ALTERAÇÕES</button>
+      <button class="fbtn" id="btnSave" onclick="saveEdit()">SALVAR ALTERAÇÕES</button>
     </div>
   </div>
 </div>
 
-</div><!-- /app -->
+</div><!-- /root -->
 <div id="toast"></div>
 
-<!-- ══════════════════════════════════════
-     JAVASCRIPT
-══════════════════════════════════════ -->
 <script>
-const STORAGE_PREFIX = 'nexus_';
+// ═══════════════════════════════════════════════════════
+//  NEXUS CLIENT  —  PeerJS  —  ID DO HOST FIXO
+// ═══════════════════════════════════════════════════════
 
-// ─── Estado ───
-let peer = null;
-let hostConn = null;
-let hostId = '';
-let hostOnline = false;
-let myPeerId = null;
-let currentUser = null;
-let sessionToken = null;
-let projectsData = [];
-let pendingRequests = {};
-let reconnectAttempts = 0;
-let reconnectTimer = null;
+const HOST_ID   = 'nexus-host-001';   // ← mesmo ID configurado no host
+const NS        = 'nx_';
 
-// ════════════════════════════════
-// INICIALIZAÇÃO
-// ════════════════════════════════
-function init() {
-  // Restaurar sessão
-  const savedUser  = sessionStorage.getItem(STORAGE_PREFIX + 'user');
-  const savedToken = sessionStorage.getItem(STORAGE_PREFIX + 'token');
-  const savedHost  = localStorage.getItem(STORAGE_PREFIX + 'host_id');
+let peer          = null;
+let conn          = null;
+let hostOnline    = false;
+let myId          = null;
+let currentUser   = null;
+let sessionToken  = null;
+let projects      = [];
+let pending       = {};
+let retryCount    = 0;
+let retryTimer    = null;
+let afterConnect  = null;   // função a chamar depois que conectar
 
-  if (savedHost) document.getElementById('hostIdInput').value = savedHost;
-
-  if (savedUser && savedToken) {
-    currentUser  = savedUser;
-    sessionToken = savedToken;
-  }
-}
-
-// ════════════════════════════════
-// CONEXÃO PEERJS
-// ════════════════════════════════
-function startConnection() {
-  const val = document.getElementById('hostIdInput').value.trim();
-  if (!val) { setStatus('error', 'Digite o ID do host!'); return; }
-  hostId = val;
-  localStorage.setItem(STORAGE_PREFIX + 'host_id', hostId);
-  reconnectAttempts = 0;
+// ─────────────────────────────────────
+//  BOOT
+// ─────────────────────────────────────
+(function boot() {
+  const u = sessionStorage.getItem(NS+'u');
+  const t = sessionStorage.getItem(NS+'t');
+  if (u && t) { currentUser = u; sessionToken = t; }
   initPeer();
-}
+})();
 
+// ─────────────────────────────────────
+//  PEERJS — CRIAR PEER LOCAL
+// ─────────────────────────────────────
 function initPeer() {
-  if (peer && !peer.destroyed) { try { peer.destroy(); } catch(e){} }
-  hostConn = null; hostOnline = false;
+  setConn('spin', 'Iniciando conexão P2P...');
 
-  setStatus('connecting', 'Criando peer P2P...');
-  document.getElementById('progressBar').style.display = 'block';
+  if (peer && !peer.destroyed) { try { peer.destroy(); } catch(e){} }
+  conn = null; hostOnline = false;
 
   peer = new Peer(undefined, {
     debug: 0,
@@ -647,600 +458,536 @@ function initPeer() {
   });
 
   peer.on('open', id => {
-    myPeerId = id;
-    connectToHost();
+    myId = id;
+    retryCount = 0;
+    connectHost();
   });
 
   peer.on('error', err => {
     if (err.type === 'peer-unavailable') {
-      scheduleReconnect('Host não encontrado — aguardando...');
+      retry('Host offline — reconectando...');
     } else {
-      scheduleReconnect('Erro P2P (' + err.type + ') — tentando novamente...');
+      retry('Erro de rede (' + err.type + ') — tentando novamente...');
     }
   });
 
   peer.on('disconnected', () => {
-    setStatus('connecting', 'Servidor PeerJS desconectado — reconectando...');
+    setConn('spin', 'Reconectando ao servidor PeerJS...');
     setTimeout(() => { if (peer && !peer.destroyed) peer.reconnect(); }, 2000);
   });
 
   peer.on('close', () => {
-    setStatus('error', 'Peer encerrado');
-    document.getElementById('progressBar').style.display = 'none';
+    retry('Peer encerrado — reiniciando...');
   });
 }
 
-function connectToHost() {
-  setStatus('connecting', 'Conectando ao host ' + hostId + '...');
-  setRetry('Tentativa ' + (reconnectAttempts + 1));
+// ─────────────────────────────────────
+//  CONECTAR AO HOST
+// ─────────────────────────────────────
+function connectHost() {
+  setConn('spin', 'Conectando ao host NEXUS...');
+  setRetry(retryCount > 0 ? retryCount + 'ª tentativa' : '');
 
   try {
-    if (hostConn) { try { hostConn.close(); } catch(e){} }
-    hostConn = peer.connect(hostId, { reliable: true, serialization: 'json' });
+    if (conn) { try { conn.close(); } catch(e){} }
+    conn = peer.connect(HOST_ID, { reliable: true, serialization: 'json' });
 
-    // Timeout se não abrir em 8s
-    const tOut = setTimeout(() => {
-      if (!hostOnline) scheduleReconnect('Host não respondeu — tentando novamente...');
-    }, 8000);
+    // Se não abrir em 7s, tenta de novo
+    const tout = setTimeout(() => {
+      if (!hostOnline) retry('Host não respondeu — tentando novamente...');
+    }, 7000);
 
-    hostConn.on('open', () => {
-      clearTimeout(tOut);
-      onHostConnected();
+    conn.on('open', () => {
+      clearTimeout(tout);
+      onConnected();
     });
 
-    hostConn.on('data', msg => handleMsg(msg));
+    conn.on('data', msg => onMsg(msg));
 
-    hostConn.on('close', () => {
-      clearTimeout(tOut);
-      if (hostOnline) onHostDisconnected();
+    conn.on('close', () => {
+      clearTimeout(tout);
+      if (hostOnline) onDisconnected();
     });
 
-    hostConn.on('error', () => {
-      clearTimeout(tOut);
-      scheduleReconnect('Erro na conexão com o host...');
+    conn.on('error', () => {
+      clearTimeout(tout);
+      retry('Falha ao conectar — tentando novamente...');
     });
 
   } catch(e) {
-    scheduleReconnect('Exceção: ' + e.message);
+    retry('Exceção: ' + e.message);
   }
 }
 
-function onHostConnected() {
-  hostOnline = true;
-  reconnectAttempts = 0;
-  clearTimeout(reconnectTimer);
+function onConnected() {
+  hostOnline  = true;
+  retryCount  = 0;
+  clearTimeout(retryTimer);
 
-  document.getElementById('progressBar').style.display = 'none';
-  document.getElementById('offlineBanner').style.display = 'none';
-  setStatus('connected', 'Conectado!');
+  setConn('ok', 'Conectado!');
   setRetry('');
+  document.getElementById('offlineStrip').style.display = 'none';
 
   send({ type: 'PING' });
 
+  // Exibe a tela certa
   setTimeout(() => {
     if (currentUser && sessionToken) {
-      showMainScreen();
+      goMain();
     } else {
-      showScreen('auth');
+      goScreen('sAuth');
     }
-    requestProjects();
+    reqProjects();
   }, 300);
 }
 
-function onHostDisconnected() {
+function onDisconnected() {
   hostOnline = false;
-  if (currentUser) document.getElementById('offlineBanner').style.display = 'block';
-  scheduleReconnect('Host desconectado — reconectando...');
+  if (currentUser) {
+    document.getElementById('offlineStrip').style.display = 'block';
+  }
+  retry('Host desconectado — reconectando...');
 }
 
-function scheduleReconnect(msg) {
+function retry(msg) {
   hostOnline = false;
-  reconnectAttempts++;
-  const delay = Math.min(2000 * Math.min(reconnectAttempts, 7), 16000);
-
-  setStatus('connecting', msg);
-  setRetry(reconnectAttempts + 'ª tentativa — próxima em ' + Math.ceil(delay/1000) + 's');
-  document.getElementById('progressBar').style.display = 'block';
-
-  clearTimeout(reconnectTimer);
-  reconnectTimer = setTimeout(() => {
-    if (peer && !peer.destroyed && myPeerId) connectToHost();
+  retryCount++;
+  const delay = Math.min(2000 * Math.min(retryCount, 8), 18000);
+  setConn('spin', msg);
+  setRetry(retryCount + 'ª tentativa — aguardando ' + Math.ceil(delay/1000) + 's...');
+  clearTimeout(retryTimer);
+  retryTimer = setTimeout(() => {
+    if (peer && !peer.destroyed && myId) connectHost();
     else initPeer();
   }, delay);
 }
 
+// ─────────────────────────────────────
+//  ENVIAR / RECEBER
+// ─────────────────────────────────────
 function send(data) {
-  try { if (hostConn && hostConn.open) hostConn.send(data); } catch(e){}
+  try { if (conn && conn.open) conn.send(data); } catch(e){}
 }
 
-function sendRequest(type, payload, cb) {
-  const rid = 'r_' + Date.now() + '_' + Math.random().toString(36).substr(2,5);
-  pendingRequests[rid] = cb;
+function request(type, payload, cb) {
+  const rid = 'r' + Date.now() + Math.random().toString(36).substr(2,4);
+  pending[rid] = cb;
   send({ type, requestId: rid, ...payload });
   setTimeout(() => {
-    if (pendingRequests[rid]) {
-      delete pendingRequests[rid];
-      cb({ success: false, error: 'Tempo esgotado — host offline?' });
-    }
+    if (pending[rid]) { delete pending[rid]; cb({ success: false, error: 'Tempo esgotado.' }); }
   }, 10000);
 }
 
-// ════════════════════════════════
-// HANDLER DE MENSAGENS
-// ════════════════════════════════
-function handleMsg(msg) {
+function onMsg(msg) {
   if (!msg || !msg.type) return;
   const rid = msg.requestId;
 
+  // Resolve requests pendentes
+  if (rid && pending[rid]) { pending[rid](msg); delete pending[rid]; return; }
+
   switch (msg.type) {
-    case 'PONG': case 'HOST_WELCOME': break;
-
-    case 'REGISTER_RESULT':
-    case 'LOGIN_RESULT':
-    case 'UPLOAD_RESULT':
-    case 'EDIT_RESULT':
-    case 'DELETE_RESULT':
-      if (rid && pendingRequests[rid]) { pendingRequests[rid](msg); delete pendingRequests[rid]; }
-      break;
-
-    case 'PROJECTS_DATA':
-      if (rid && pendingRequests[rid]) { pendingRequests[rid](msg); delete pendingRequests[rid]; }
-      break;
-
     case 'PROJECTS_UPDATE':
-      projectsData = msg.projects || [];
+      projects = msg.projects || [];
       renderProjects();
       break;
-
     case 'ACCOUNT_DELETED':
-      if (msg.username === currentUser) {
-        doLogout(true);
-        showToast('Sua conta foi removida pelo administrador.', 'error');
-      }
+      if (msg.username === currentUser) { doLogout(true); toast('Conta removida pelo administrador.', 'err'); }
       break;
-
     case 'ALL_ACCOUNTS_CLEARED':
-      doLogout(true);
-      showToast('Todas as contas foram removidas.', 'error');
+      doLogout(true); toast('Todas as contas foram removidas.', 'err');
       break;
   }
 }
 
-// ════════════════════════════════
-// TELAS
-// ════════════════════════════════
-function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
+// ─────────────────────────────────────
+//  NAVEGAÇÃO ENTRE TELAS
+// ─────────────────────────────────────
+function goScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
 }
 
-function showMainScreen() {
-  showScreen('main');
-  document.getElementById('navUsername').textContent = currentUser;
-  requestProjects();
+function goMain() {
+  goScreen('sMain');
+  document.getElementById('navUser').textContent = currentUser;
+  reqProjects();
 }
 
-// ════════════════════════════════
-// AUTH
-// ════════════════════════════════
-function switchTab(tab) {
-  document.getElementById('loginForm').style.display    = tab === 'login'    ? 'block' : 'none';
-  document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
-  document.getElementById('tabLogin').className    = 'tab-btn' + (tab === 'login'    ? ' active' : '');
-  document.getElementById('tabRegister').className = 'tab-btn' + (tab === 'register' ? ' active' : '');
-  clearAuthError();
+// ─────────────────────────────────────
+//  AUTH
+// ─────────────────────────────────────
+function setTab(t) {
+  document.getElementById('fLogin').style.display = t === 'login' ? 'block' : 'none';
+  document.getElementById('fReg').style.display   = t === 'reg'   ? 'block' : 'none';
+  document.getElementById('tLogin').className = 'tab' + (t === 'login' ? ' on' : '');
+  document.getElementById('tReg').className   = 'tab' + (t === 'reg'   ? ' on' : '');
+  clearAErr();
 }
 
-function showAuthError(msg) {
-  const el = document.getElementById('authError');
-  el.textContent = msg; el.style.display = 'block';
-}
-function clearAuthError() { document.getElementById('authError').style.display = 'none'; }
+function showAErr(m) { const e = document.getElementById('authErr'); e.textContent = m; e.style.display = 'block'; }
+function clearAErr()  { document.getElementById('authErr').style.display = 'none'; }
 
 function doLogin() {
-  const username = document.getElementById('loginUser').value.trim();
-  const password = document.getElementById('loginPass').value;
-  if (!username || !password) { showAuthError('Preencha todos os campos.'); return; }
-  if (!hostOnline) { showAuthError('Host offline. Aguarde reconexão.'); return; }
+  const u = document.getElementById('lUser').value.trim();
+  const p = document.getElementById('lPass').value;
+  if (!u || !p) { showAErr('Preencha todos os campos.'); return; }
+  if (!hostOnline) { showAErr('Host offline. Aguarde reconexão.'); return; }
 
   const btn = document.getElementById('btnLogin');
   btn.disabled = true; btn.textContent = 'AGUARDANDO...';
 
-  sendRequest('LOGIN', { username, password }, res => {
+  request('LOGIN', { username: u, password: p }, r => {
     btn.disabled = false; btn.textContent = 'ENTRAR';
-    if (res.success) {
-      currentUser = res.username; sessionToken = res.sessionToken;
-      sessionStorage.setItem(STORAGE_PREFIX + 'user', currentUser);
-      sessionStorage.setItem(STORAGE_PREFIX + 'token', sessionToken);
-      showMainScreen();
-      showToast('Bem-vindo de volta, ' + currentUser + '!', 'success');
-    } else { showAuthError(res.error || 'Erro ao entrar.'); }
+    if (r.success) {
+      currentUser = r.username; sessionToken = r.sessionToken;
+      sessionStorage.setItem(NS+'u', currentUser);
+      sessionStorage.setItem(NS+'t', sessionToken);
+      goMain(); toast('Bem-vindo de volta, ' + currentUser + '!', 'suc');
+    } else { showAErr(r.error || 'Erro ao entrar.'); }
   });
 }
 
 function doRegister() {
-  const username = document.getElementById('regUser').value.trim();
-  const password = document.getElementById('regPass').value;
-  const confirm  = document.getElementById('regPassConfirm').value;
+  const u  = document.getElementById('rUser').value.trim();
+  const p  = document.getElementById('rPass').value;
+  const p2 = document.getElementById('rPass2').value;
 
-  if (!username || !password) { showAuthError('Preencha todos os campos.'); return; }
-  if (username.length < 3)    { showAuthError('Usuário: mínimo 3 caracteres.'); return; }
-  if (!/^[a-zA-Z0-9_]+$/.test(username)) { showAuthError('Usuário: apenas letras, números e _'); return; }
-  if (password.length < 4)    { showAuthError('Senha: mínimo 4 caracteres.'); return; }
-  if (password !== confirm)   { showAuthError('As senhas não coincidem.'); return; }
-  if (!hostOnline)            { showAuthError('Host offline. Aguarde reconexão.'); return; }
+  if (!u || !p)                        { showAErr('Preencha todos os campos.'); return; }
+  if (u.length < 3)                    { showAErr('Usuário: mínimo 3 caracteres.'); return; }
+  if (!/^[a-zA-Z0-9_]+$/.test(u))     { showAErr('Usuário: apenas letras, números e _'); return; }
+  if (p.length < 4)                    { showAErr('Senha: mínimo 4 caracteres.'); return; }
+  if (p !== p2)                        { showAErr('As senhas não coincidem.'); return; }
+  if (!hostOnline)                     { showAErr('Host offline. Aguarde reconexão.'); return; }
 
-  const btn = document.getElementById('btnRegister');
+  const btn = document.getElementById('btnReg');
   btn.disabled = true; btn.textContent = 'CRIANDO...';
 
-  sendRequest('REGISTER', { username, password }, res => {
+  request('REGISTER', { username: u, password: p }, r => {
     btn.disabled = false; btn.textContent = 'CRIAR CONTA';
-    if (res.success) {
-      currentUser = res.username; sessionToken = res.sessionToken;
-      sessionStorage.setItem(STORAGE_PREFIX + 'user', currentUser);
-      sessionStorage.setItem(STORAGE_PREFIX + 'token', sessionToken);
-      showMainScreen();
-      showToast('Conta criada! Bem-vindo, ' + currentUser + '!', 'success');
-    } else { showAuthError(res.error || 'Erro ao criar conta.'); }
+    if (r.success) {
+      currentUser = r.username; sessionToken = r.sessionToken;
+      sessionStorage.setItem(NS+'u', currentUser);
+      sessionStorage.setItem(NS+'t', sessionToken);
+      goMain(); toast('Conta criada! Bem-vindo, ' + currentUser + '!', 'suc');
+    } else { showAErr(r.error || 'Erro ao criar conta.'); }
   });
 }
 
 function doLogout(forced) {
-  if (!forced && !confirm('Deseja sair da conta?')) return;
+  if (!forced && !confirm('Deseja sair?')) return;
   try { send({ type: 'LOGOUT', username: currentUser }); } catch(e){}
-  currentUser = null; sessionToken = null; projectsData = [];
-  sessionStorage.removeItem(STORAGE_PREFIX + 'user');
-  sessionStorage.removeItem(STORAGE_PREFIX + 'token');
-  showScreen('auth');
-  switchTab('login');
-  showToast('Sessão encerrada.', 'info');
+  currentUser = null; sessionToken = null; projects = [];
+  sessionStorage.removeItem(NS+'u');
+  sessionStorage.removeItem(NS+'t');
+  goScreen('sAuth'); setTab('login');
+  toast('Sessão encerrada.', 'inf');
 }
 
-// ════════════════════════════════
-// PROJETOS
-// ════════════════════════════════
-function requestProjects() {
+// ─────────────────────────────────────
+//  PROJETOS — LISTAR
+// ─────────────────────────────────────
+function reqProjects() {
   if (!hostOnline) return;
-  sendRequest('GET_PROJECTS', { username: currentUser }, res => {
-    if (res.projects !== undefined) { projectsData = res.projects; renderProjects(); }
+  request('GET_PROJECTS', { username: currentUser }, r => {
+    if (r.projects !== undefined) { projects = r.projects; renderProjects(); }
   });
 }
 
 function renderProjects() {
-  const grid = document.getElementById('projectsGrid');
-  if (!projectsData.length) {
-    grid.innerHTML = `<div class="empty-grid"><span style="font-size:42px;opacity:.2">◈</span><div>NENHUM PROJETO AINDA</div><div style="font-size:12px;opacity:.5">Seja o primeiro a publicar</div></div>`;
+  const g = document.getElementById('pGrid');
+  if (!projects.length) {
+    g.innerHTML = `<div class="empty-g"><span style="font-size:42px;opacity:.2">◈</span><div>NENHUM PROJETO AINDA</div><div style="font-size:12px;opacity:.5">Seja o primeiro a publicar</div></div>`;
     return;
   }
-
-  grid.innerHTML = projectsData.map(p => {
-    const isOwner = p.owner === currentUser;
-    return `
-    <div class="project-card" onclick="openProject('${p.id}')">
-      <div class="card-thumb">
-        ${p.isPrivate ? '<span class="private-badge">🔒 PRIVADO</span>' : ''}
+  g.innerHTML = projects.map(p => {
+    const mine = p.owner === currentUser;
+    return `<div class="pcard" onclick="openProj('${p.id}')">
+      <div class="pthumb">
+        ${p.isPrivate ? '<span class="pbadge-priv">🔒 PRIVADO</span>' : ''}
         ${p.htmlCode
-          ? `<iframe sandbox="allow-scripts" srcdoc="${escAttr(p.htmlCode)}" scrolling="no"></iframe>`
-          : `<div class="card-thumb-empty"><span>◈</span><div>SEM PREVIEW</div></div>`}
+          ? `<iframe sandbox="allow-scripts" srcdoc="${xa(p.htmlCode)}" scrolling="no"></iframe>`
+          : `<div class="pthumb-empty"><span style="font-size:32px;opacity:.2">◈</span><div>SEM PREVIEW</div></div>`}
       </div>
-      <div class="card-body">
-        <div class="card-name">${esc(p.name)}</div>
-        <div class="card-owner">@${esc(p.owner)}${isOwner ? ' <span style="color:var(--accent3);font-size:10px">(seu)</span>' : ''}</div>
-        <div class="card-tags">
-          ${p.openSource ? '<span class="ctag open">ABERTO</span>' : ''}
-          ${p.price > 0  ? `<span class="ctag paid">R$ ${Number(p.price).toFixed(2)}</span>` : '<span class="ctag free">GRÁTIS</span>'}
-          ${p.isPrivate  ? '<span class="ctag priv">PRIVADO</span>' : ''}
+      <div class="pbody">
+        <div class="pname">${x(p.name)}</div>
+        <div class="powner">@${x(p.owner)}${mine?' <span style="color:var(--accent3);font-size:10px">(seu)</span>':''}</div>
+        <div class="ptags">
+          ${p.openSource ? '<span class="ptag open">ABERTO</span>' : ''}
+          ${p.price>0 ? `<span class="ptag paid">R$ ${(+p.price).toFixed(2)}</span>` : '<span class="ptag free">GRÁTIS</span>'}
+          ${p.isPrivate ? '<span class="ptag priv">PRIVADO</span>' : ''}
         </div>
       </div>
-      <div class="card-footer">
-        <span class="card-price">${p.price > 0 ? 'R$ ' + Number(p.price).toFixed(2) : 'Grátis'}</span>
-        <div class="card-actions">
-          ${isOwner ? `
-            <button class="btn-card-edit" onclick="event.stopPropagation();quickEdit('${p.id}')" title="Editar">✏</button>
-            <button class="btn-card-del"  onclick="event.stopPropagation();deleteOwnById('${p.id}')" title="Apagar">🗑</button>
+      <div class="pfoot">
+        <span class="pprice">${p.price>0 ? 'R$ '+(+p.price).toFixed(2) : 'Grátis'}</span>
+        <div class="pactions">
+          ${mine ? `
+            <button class="btnedit" onclick="event.stopPropagation();quickEdit('${p.id}')" title="Editar">✏</button>
+            <button class="btndel"  onclick="event.stopPropagation();delById('${p.id}')"   title="Apagar">🗑</button>
           ` : ''}
-          <button class="btn-view">VER</button>
+          <button class="btnview">VER</button>
         </div>
       </div>
     </div>`;
   }).join('');
 }
 
-// Abrir modal do projeto
-function openProject(id) {
-  const p = projectsData.find(x => x.id === id);
+// ─────────────────────────────────────
+//  MODAL — ABRIR PROJETO
+// ─────────────────────────────────────
+function openProj(id) {
+  const p = projects.find(q => q.id === id);
   if (!p) return;
-  const isOwner = p.owner === currentUser;
+  const mine = p.owner === currentUser;
 
-  document.getElementById('modalTitle').textContent     = p.name;
-  document.getElementById('modalOwnerSpan').textContent = '@' + p.owner + ' · ' + (p.editedAt || p.uploadedAt);
-  document.getElementById('modalPriceSpan').textContent = p.price > 0 ? 'R$ ' + Number(p.price).toFixed(2) : 'Grátis';
-  document.getElementById('modalOpenSpan').innerHTML    = p.openSource ? '<span class="ctag open">CÓDIGO ABERTO</span>' : '';
-  document.getElementById('modalPrivSpan').innerHTML    = p.isPrivate  ? '<span class="ctag priv">🔒 PRIVADO</span>' : '';
+  document.getElementById('mTitle').textContent = p.name;
+  document.getElementById('mOwner').textContent = '@'+p.owner+' · '+(p.editedAt||p.uploadedAt);
+  document.getElementById('mPrice').textContent = p.price>0 ? 'R$ '+(+p.price).toFixed(2) : 'Grátis';
+  document.getElementById('mOpen').innerHTML    = p.openSource ? '<span class="ptag open">CÓDIGO ABERTO</span>' : '';
+  document.getElementById('mPriv').innerHTML    = p.isPrivate  ? '<span class="ptag priv">🔒 PRIVADO</span>'   : '';
+  document.getElementById('mBtnEdit').style.display = mine ? '' : 'none';
+  document.getElementById('mBtnDel').style.display  = mine ? '' : 'none';
 
-  document.getElementById('btnModalEdit').style.display = isOwner ? '' : 'none';
-  document.getElementById('btnModalDel').style.display  = isOwner ? '' : 'none';
-
-  // Preview
-  const iframe = document.getElementById('modalIframe');
-  iframe.srcdoc = p.htmlCode || '<body style="background:#111;color:#555;display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace;font-size:14px;letter-spacing:2px">SEM PREVIEW</body>';
+  document.getElementById('mFrame').srcdoc = p.htmlCode ||
+    '<body style="background:#111;color:#555;display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace;font-size:14px;letter-spacing:2px">SEM PREVIEW</body>';
 
   // Sidebar
   let sb = '';
-
   if (p.openSource && p.htmlCode) {
-    sb += `<div>
-      <div class="sidebar-title">Código Fonte</div>
-      <div class="code-viewer">${esc(p.htmlCode.substring(0,2500))}${p.htmlCode.length>2500?'\n...(truncado)':''}</div>
-      <button class="btn-copy" onclick="copyCode()" style="width:100%;margin-top:8px">COPIAR CÓDIGO</button>
-    </div>`;
+    sb += `<div><div class="stitle">Código Fonte</div>
+      <div class="codeview">${x(p.htmlCode.substr(0,2500))}${p.htmlCode.length>2500?'\n...(truncado)':''}</div>
+      <button class="btncopy" onclick="copyCd()" style="width:100%;margin-top:8px">COPIAR CÓDIGO</button></div>`;
   }
-
-  const socials = [];
-  if (p.socialDiscord)   socials.push({ n:'Discord',   v:p.socialDiscord,   i:'🎮', href:false });
-  if (p.socialWhatsapp)  socials.push({ n:'WhatsApp',  v:'https://wa.me/'+p.socialWhatsapp.replace(/\D/g,''), i:'💬', href:true });
-  if (p.socialInstagram) socials.push({ n:'Instagram', v:'https://instagram.com/'+p.socialInstagram.replace('@',''), i:'📷', href:true });
-  if (p.socialGithub)    socials.push({ n:'GitHub',    v:p.socialGithub.startsWith('http')?p.socialGithub:'https://'+p.socialGithub, i:'⚙️', href:true });
-
-  if (socials.length) {
-    sb += `<div><div class="sidebar-title">Contato / Redes</div>`;
-    socials.forEach(s => {
-      sb += s.href
-        ? `<a class="social-link" href="${esc(s.v)}" target="_blank" rel="noopener">${s.i} ${s.n}</a>`
-        : `<div class="social-link">${s.i} ${s.n}: <span style="color:var(--text)">${esc(s.v)}</span></div>`;
-    });
+  const soc = [];
+  if (p.socialDiscord)   soc.push({n:'Discord',   v:p.socialDiscord,   i:'🎮', href:false});
+  if (p.socialWhatsapp)  soc.push({n:'WhatsApp',  v:'https://wa.me/'+p.socialWhatsapp.replace(/\D/g,''), i:'💬', href:true});
+  if (p.socialInstagram) soc.push({n:'Instagram', v:'https://instagram.com/'+p.socialInstagram.replace('@',''), i:'📷', href:true});
+  if (p.socialGithub)    soc.push({n:'GitHub',    v:p.socialGithub.startsWith('http')?p.socialGithub:'https://'+p.socialGithub, i:'⚙️', href:true});
+  if (soc.length) {
+    sb += `<div><div class="stitle">Contato / Redes</div>`;
+    soc.forEach(s => { sb += s.href
+      ? `<a class="slink" href="${x(s.v)}" target="_blank" rel="noopener">${s.i} ${s.n}</a>`
+      : `<div class="slink">${s.i} ${s.n}: <span style="color:var(--text)">${x(s.v)}</span></div>`; });
     sb += '</div>';
   }
-
-  if (p.price > 0 && p.pixKey) {
-    sb += `<div>
-      <div class="sidebar-title">Pagamento — PIX</div>
-      <div class="pix-box">
-        <div style="font-size:10px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;letter-spacing:1px">CHAVE PIX</div>
-        <div class="pix-key">${esc(p.pixKey)}</div>
-        <button class="btn-copy" onclick="navigator.clipboard.writeText('${esc(p.pixKey)}');showToast('Chave copiada!','success')">COPIAR CHAVE</button>
-      </div>
-    </div>`;
+  if (p.price>0 && p.pixKey) {
+    sb += `<div><div class="stitle">Pagamento — PIX</div><div class="pixbox">
+      <div style="font-size:10px;color:var(--dim);font-family:'Share Tech Mono',monospace;letter-spacing:1px">CHAVE PIX</div>
+      <div class="pixkey">${x(p.pixKey)}</div>
+      <button class="btncopy" onclick="navigator.clipboard.writeText('${x(p.pixKey)}');toast('Chave copiada!','suc')">COPIAR CHAVE</button>
+    </div></div>`;
   }
+  if (!sb) sb = `<div style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--dim);text-align:center;padding:30px 10px;letter-spacing:2px">SEM INFORMAÇÕES EXTRAS</div>`;
 
-  if (!sb) sb = `<div style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-dim);text-align:center;padding:30px 10px;letter-spacing:2px">SEM INFORMAÇÕES EXTRAS</div>`;
-
-  document.getElementById('modalSidebar').innerHTML = sb;
-  document.getElementById('projectModal').classList.add('open');
-  document.getElementById('projectModal')._proj = p;
+  document.getElementById('mSide').innerHTML = sb;
+  document.getElementById('projModal').classList.add('on');
+  document.getElementById('projModal')._p = p;
 }
 
-function copyCode() {
-  const p = document.getElementById('projectModal')._proj;
-  if (p && p.htmlCode) { navigator.clipboard.writeText(p.htmlCode); showToast('Código copiado!', 'success'); }
+function copyCd() {
+  const p = document.getElementById('projModal')._p;
+  if (p?.htmlCode) { navigator.clipboard.writeText(p.htmlCode); toast('Código copiado!','suc'); }
+}
+function closeProj() {
+  document.getElementById('projModal').classList.remove('on');
+  document.getElementById('mFrame').srcdoc = '';
 }
 
-function closeModal() {
-  document.getElementById('projectModal').classList.remove('open');
-  document.getElementById('modalIframe').srcdoc = '';
-}
-
-// ════════════════════════════════
-// EDITAR PROJETO
-// ════════════════════════════════
+// ─────────────────────────────────────
+//  EDITAR PROJETO
+// ─────────────────────────────────────
 function quickEdit(id) {
-  const p = projectsData.find(x => x.id === id);
+  const p = projects.find(q => q.id === id);
   if (!p) return;
-  document.getElementById('projectModal')._proj = p;
-  openEditModal();
+  document.getElementById('projModal')._p = p;
+  openEdit();
 }
 
-function openEditModal() {
-  const p = document.getElementById('projectModal')._proj;
+function openEdit() {
+  const p = document.getElementById('projModal')._p;
   if (!p || p.owner !== currentUser) return;
-
-  const isFree = !p.price || Number(p.price) === 0;
-  document.getElementById('editName').value      = p.name;
-  document.getElementById('editHTML').value      = p.htmlCode || '';
-  document.getElementById('editFree').checked    = isFree;
-  document.getElementById('editPrice').value     = p.price || '';
-  document.getElementById('editPixKey').value    = p.pixKey || '';
-  document.getElementById('editPrivate').checked = !!p.isPrivate;
-  document.getElementById('editOpenSource').checked = !!p.openSource;
-  document.getElementById('editDiscord').value   = p.socialDiscord || '';
-  document.getElementById('editWhatsapp').value  = p.socialWhatsapp || '';
-  document.getElementById('editInstagram').value = p.socialInstagram || '';
-  document.getElementById('editGithub').value    = p.socialGithub || '';
-  toggleEditPrice();
-  document.getElementById('editModal').classList.add('open');
+  const free = !p.price || +p.price === 0;
+  document.getElementById('eName').value  = p.name;
+  document.getElementById('eHTML').value  = p.htmlCode || '';
+  document.getElementById('eFree').checked = free;
+  document.getElementById('ePrice').value = p.price || '';
+  document.getElementById('ePix').value   = p.pixKey || '';
+  document.getElementById('ePriv').checked = !!p.isPrivate;
+  document.getElementById('eOpen').checked = !!p.openSource;
+  document.getElementById('eDisc').value  = p.socialDiscord || '';
+  document.getElementById('eWA').value    = p.socialWhatsapp || '';
+  document.getElementById('eIG').value    = p.socialInstagram || '';
+  document.getElementById('eGH').value    = p.socialGithub || '';
+  togEditPrice();
+  document.getElementById('editModal').classList.add('on');
 }
 
-function closeEditModal() { document.getElementById('editModal').classList.remove('open'); }
+function closeEdit() { document.getElementById('editModal').classList.remove('on'); }
 
-function toggleEditPrice() {
-  document.getElementById('editPriceBlock').style.display = document.getElementById('editFree').checked ? 'none' : 'block';
+function togEditPrice() {
+  document.getElementById('ePriceBlock').style.display = document.getElementById('eFree').checked ? 'none' : 'block';
 }
 
-function previewEdit() {
-  const code = document.getElementById('editHTML').value.trim();
-  if (!code) { showToast('Sem código para visualizar!', 'error'); return; }
-  const w = window.open('','_blank'); w.document.write(code); w.document.close();
+function prevEdit() {
+  const c = document.getElementById('eHTML').value.trim();
+  if (!c) { toast('Sem código!','err'); return; }
+  const w = window.open('','_blank'); w.document.write(c); w.document.close();
 }
 
 function saveEdit() {
-  if (!hostOnline) { showToast('Host offline!', 'error'); return; }
-  const p = document.getElementById('projectModal')._proj;
+  if (!hostOnline) { toast('Host offline!','err'); return; }
+  const p = document.getElementById('projModal')._p;
   if (!p || p.owner !== currentUser) return;
-
-  const isFree = document.getElementById('editFree').checked;
-  const updates = {
-    name:          document.getElementById('editName').value.trim() || p.name,
-    htmlCode:      document.getElementById('editHTML').value.trim(),
-    price:         isFree ? 0 : parseFloat(document.getElementById('editPrice').value || 0),
-    pixKey:        isFree ? '' : document.getElementById('editPixKey').value.trim(),
-    isPrivate:     document.getElementById('editPrivate').checked,
-    openSource:    document.getElementById('editOpenSource').checked,
-    socialDiscord: document.getElementById('editDiscord').value.trim(),
-    socialWhatsapp:document.getElementById('editWhatsapp').value.trim(),
-    socialInstagram:document.getElementById('editInstagram').value.trim(),
-    socialGithub:  document.getElementById('editGithub').value.trim(),
-    payment:       isFree ? '' : 'pix'
+  const free = document.getElementById('eFree').checked;
+  const upd = {
+    name:           document.getElementById('eName').value.trim() || p.name,
+    htmlCode:       document.getElementById('eHTML').value.trim(),
+    price:          free ? 0 : parseFloat(document.getElementById('ePrice').value||0),
+    pixKey:         free ? '' : document.getElementById('ePix').value.trim(),
+    isPrivate:      document.getElementById('ePriv').checked,
+    openSource:     document.getElementById('eOpen').checked,
+    socialDiscord:  document.getElementById('eDisc').value.trim(),
+    socialWhatsapp: document.getElementById('eWA').value.trim(),
+    socialInstagram:document.getElementById('eIG').value.trim(),
+    socialGithub:   document.getElementById('eGH').value.trim(),
+    payment: free ? '' : 'pix'
   };
-
-  const btn = document.getElementById('btnSaveEdit');
+  const btn = document.getElementById('btnSave');
   btn.disabled = true; btn.textContent = 'SALVANDO...';
-
-  sendRequest('EDIT_PROJECT', { projectId: p.id, updates, username: currentUser }, res => {
+  request('EDIT_PROJECT', { projectId: p.id, updates: upd, username: currentUser }, r => {
     btn.disabled = false; btn.textContent = 'SALVAR ALTERAÇÕES';
-    if (res.success) {
-      showToast('Projeto atualizado!', 'success');
-      closeEditModal(); closeModal();
-      requestProjects();
-    } else { showToast(res.error || 'Erro ao salvar.', 'error'); }
+    if (r.success) { toast('Projeto atualizado!','suc'); closeEdit(); closeProj(); reqProjects(); }
+    else { toast(r.error||'Erro ao salvar.','err'); }
   });
 }
 
-// ════════════════════════════════
-// APAGAR PROJETO
-// ════════════════════════════════
-function deleteOwnProject() {
-  const p = document.getElementById('projectModal')._proj;
-  if (p) deleteOwnById(p.id);
+// ─────────────────────────────────────
+//  APAGAR PROJETO
+// ─────────────────────────────────────
+function delOwn() {
+  const p = document.getElementById('projModal')._p;
+  if (p) delById(p.id);
 }
 
-function deleteOwnById(id) {
-  const p = projectsData.find(x => x.id === id);
-  if (!p || p.owner !== currentUser) { showToast('Sem permissão!', 'error'); return; }
-  if (!confirm('Apagar "' + p.name + '" permanentemente?')) return;
-  sendRequest('DELETE_BY_OWNER', { projectId: id, username: currentUser }, res => {
-    if (res.success) { showToast('Projeto apagado.', 'success'); closeModal(); requestProjects(); }
-    else { showToast(res.error || 'Erro ao apagar.', 'error'); }
+function delById(id) {
+  const p = projects.find(q => q.id === id);
+  if (!p || p.owner !== currentUser) { toast('Sem permissão!','err'); return; }
+  if (!confirm('Apagar "'+p.name+'" permanentemente?')) return;
+  request('DELETE_BY_OWNER', { projectId: id, username: currentUser }, r => {
+    if (r.success) { toast('Projeto apagado.','suc'); closeProj(); reqProjects(); }
+    else { toast(r.error||'Erro ao apagar.','err'); }
   });
 }
 
-// ════════════════════════════════
-// PUBLICAR PROJETO
-// ════════════════════════════════
-function togglePriceField() {
-  document.getElementById('priceField').style.display = document.getElementById('projFree').checked ? 'none' : 'block';
+// ─────────────────────────────────────
+//  PUBLICAR PROJETO
+// ─────────────────────────────────────
+function togPrice() {
+  document.getElementById('uPriceBlock').style.display = document.getElementById('uFree').checked ? 'none' : 'block';
 }
 
-function previewDraft() {
-  const code = document.getElementById('projHTML').value.trim();
-  if (!code) { showToast('Cole o código HTML primeiro!', 'error'); return; }
-  const w = window.open('','_blank'); w.document.write(code); w.document.close();
+function prevDraft() {
+  const c = document.getElementById('uHTML').value.trim();
+  if (!c) { toast('Cole o código primeiro!','err'); return; }
+  const w = window.open('','_blank'); w.document.write(c); w.document.close();
 }
 
 function publishProject() {
-  if (!hostOnline) { showToast('Host offline! Aguarde reconexão.', 'error'); return; }
+  if (!hostOnline) { toast('Host offline!','err'); return; }
+  const name = document.getElementById('uName').value.trim();
+  const html = document.getElementById('uHTML').value.trim();
+  const free = document.getElementById('uFree').checked;
+  const price = free ? 0 : parseFloat(document.getElementById('uPrice').value||0);
+  if (!name)                   { toast('Dê um nome ao projeto!','err'); return; }
+  if (!html)                   { toast('Cole o código HTML!','err'); return; }
+  if (!free && price <= 0)     { toast('Defina um preço válido!','err'); return; }
 
-  const name    = document.getElementById('projName').value.trim();
-  const htmlCode= document.getElementById('projHTML').value.trim();
-  const isFree  = document.getElementById('projFree').checked;
-  const price   = isFree ? 0 : parseFloat(document.getElementById('projPrice').value || 0);
-
-  if (!name)                      { showToast('Dê um nome ao projeto!', 'error'); return; }
-  if (!htmlCode)                  { showToast('Cole o código do projeto!', 'error'); return; }
-  if (!isFree && price <= 0)      { showToast('Defina um preço válido!', 'error'); return; }
-
-  const project = {
-    name, htmlCode, price,
-    pixKey:         isFree ? '' : document.getElementById('projPixKey').value.trim(),
-    isPrivate:      document.getElementById('projPrivate').checked,
-    openSource:     document.getElementById('projOpenSource').checked,
-    socialDiscord:  document.getElementById('socialDiscord').value.trim(),
-    socialWhatsapp: document.getElementById('socialWhatsapp').value.trim(),
-    socialInstagram:document.getElementById('socialInstagram').value.trim(),
-    socialGithub:   document.getElementById('socialGithub').value.trim(),
-    owner:   currentUser,
-    payment: isFree ? '' : 'pix'
+  const proj = {
+    name, htmlCode: html, price,
+    pixKey:         free ? '' : document.getElementById('uPix').value.trim(),
+    isPrivate:      document.getElementById('uPriv').checked,
+    openSource:     document.getElementById('uOpen').checked,
+    socialDiscord:  document.getElementById('uDisc').value.trim(),
+    socialWhatsapp: document.getElementById('uWA').value.trim(),
+    socialInstagram:document.getElementById('uIG').value.trim(),
+    socialGithub:   document.getElementById('uGH').value.trim(),
+    owner: currentUser,
+    payment: free ? '' : 'pix'
   };
 
-  const btn = document.getElementById('btnPublish');
+  const btn = document.getElementById('btnPub');
   btn.disabled = true; btn.textContent = 'PUBLICANDO...';
 
-  sendRequest('UPLOAD_PROJECT', { project }, res => {
+  request('UPLOAD_PROJECT', { project: proj }, r => {
     btn.disabled = false; btn.textContent = 'PUBLICAR PROJETO';
-    if (res.success) {
-      showToast('Projeto publicado com sucesso!', 'success');
-      // Limpar formulário
-      ['projName','projHTML','projPrice','projPixKey','socialDiscord','socialWhatsapp','socialInstagram','socialGithub']
-        .forEach(id => document.getElementById(id).value = '');
-      document.getElementById('projFree').checked       = true;
-      document.getElementById('projOpenSource').checked = false;
-      document.getElementById('projPrivate').checked    = false;
-      togglePriceField();
-      switchPage('discover');
-    } else { showToast('Erro: ' + (res.error || 'desconhecido'), 'error'); }
+    if (r.success) {
+      toast('Projeto publicado!','suc');
+      ['uName','uHTML','uPrice','uPix','uDisc','uWA','uIG','uGH'].forEach(i => document.getElementById(i).value='');
+      document.getElementById('uFree').checked = true;
+      document.getElementById('uOpen').checked = false;
+      document.getElementById('uPriv').checked = false;
+      togPrice();
+      goPage('discover');
+    } else { toast('Erro: '+(r.error||'desconhecido'),'err'); }
   });
 }
 
-// ════════════════════════════════
-// NAVEGAÇÃO ENTRE PÁGINAS
-// ════════════════════════════════
-function switchPage(page) {
-  document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
-  document.getElementById('page' + page.charAt(0).toUpperCase() + page.slice(1)).classList.add('active');
-
-  // Atualiza todas as instâncias de nav-tab (desktop + mobile)
-  document.querySelectorAll('.nav-tab').forEach((t, i) => {
-    t.classList.toggle('active',
-      (page === 'discover' && (i === 0 || i === 2)) ||
-      (page === 'upload'   && (i === 1 || i === 3))
+// ─────────────────────────────────────
+//  NAVEGAÇÃO PÁGINAS
+// ─────────────────────────────────────
+function goPage(pg) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.getElementById('p'+pg.charAt(0).toUpperCase()+pg.slice(1)).classList.add('on');
+  document.querySelectorAll('.ntab').forEach((t,i) => {
+    t.classList.toggle('on',
+      (pg==='discover' && (i===0||i===2)) ||
+      (pg==='upload'   && (i===1||i===3))
     );
   });
-
-  if (page === 'discover') requestProjects();
+  if (pg==='discover') reqProjects();
 }
 
-// ════════════════════════════════
-// UTILS
-// ════════════════════════════════
-function setStatus(state, text) {
-  document.getElementById('statusDot').className = 'status-dot ' + state;
-  document.getElementById('statusText').textContent = text;
+// ─────────────────────────────────────
+//  HELPERS UI
+// ─────────────────────────────────────
+function setConn(state, txt) {
+  const d = document.getElementById('cDot');
+  const t = document.getElementById('cTxt');
+  if (d) d.className = 'dot ' + state;
+  if (t) t.textContent = txt;
 }
-function setRetry(txt) { document.getElementById('retryLine').textContent = txt; }
+function setRetry(txt) { const e = document.getElementById('cRetry'); if (e) e.textContent = txt; }
 
-function showToast(msg, type = 'info') {
+function toast(msg, type='inf') {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'show ' + type;
-  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3500);
+  t.textContent = msg; t.className = 'on ' + type;
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('on'), 3500);
 }
 
-function esc(s) {
-  if (!s) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function escAttr(s) {
-  if (!s) return '';
-  return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
+// HTML escape
+function x(s)  { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function xa(s) { if (!s) return ''; return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
 // ESC fecha modais
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeEditModal(); closeModal(); }
-});
-
-// Enter nos campos de auth
-document.addEventListener('keydown', e => {
-  if (e.key !== 'Enter') return;
-  const active = document.querySelector('.screen.active');
-  if (!active) return;
-  if (active.id === 'screenAuth') {
-    if (document.getElementById('loginForm').style.display !== 'none') doLogin();
-    else doRegister();
+  if (e.key === 'Escape') { closeEdit(); closeProj(); }
+  if (e.key === 'Enter') {
+    const sc = document.querySelector('.screen.on');
+    if (!sc) return;
+    if (sc.id === 'sAuth') {
+      if (document.getElementById('fLogin').style.display !== 'none') doLogin();
+      else doRegister();
+    }
   }
 });
 
-// Refresh periódico de projetos
-setInterval(() => { if (hostOnline && currentUser) requestProjects(); }, 15000);
+// Refresh periódico
+setInterval(() => { if (hostOnline && currentUser) reqProjects(); }, 15000);
 
-// Notifica host antes de fechar
+// Notifica host ao fechar
 window.addEventListener('beforeunload', () => {
-  if (hostConn && currentUser) {
-    try { hostConn.send({ type: 'CLIENT_DISCONNECT', username: currentUser }); } catch(e){}
-  }
+  if (conn && currentUser) try { conn.send({ type:'CLIENT_DISCONNECT', username:currentUser }); } catch(e){}
   if (peer && !peer.destroyed) try { peer.destroy(); } catch(e){}
 });
-
-// START
-init();
 </script>
 </body>
 </html>
